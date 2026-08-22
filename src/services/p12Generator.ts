@@ -1,5 +1,5 @@
 import forge from 'node-forge';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, PDFPage, rgb, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
 import { compressImage } from '../utils/imageCompression';
 import { 
@@ -1124,32 +1124,78 @@ export interface QrGenerationConfig {
 /**
  * Genera el payload de texto estructurado según los estándares oficiales de FirmaEC
  * y los analizadores de escáneres móviles (iOS Camera, Google Lens, Xiaomi, Samsung, Huawei).
- * Mantiene la longitud compacta para generar una matriz QR de baja densidad (Versión 4-5)
- * con módulos grandes, nítidos y reconocibles al instante.
+ * Mantiene una longitud óptima y concisa para generar una matriz QR de baja densidad
+ * con módulos amplios, nítidos y de lectura instantánea por cámaras móviles.
  */
 export function buildScannerFriendlyQrText(config: QrGenerationConfig): string {
   const signer = (config.signerName || 'TITULAR ECUADOR').trim().toUpperCase();
-  const idNum = config.idNumber && config.idNumber.trim() ? config.idNumber.trim() : 'N/A';
+  const idNum = config.idNumber && config.idNumber.trim() ? config.idNumber.trim() : '';
   const date = config.dateFormatted || new Date().toLocaleString('es-EC', { hour12: false });
   const entity = (config.entityName || 'MINTEL / FIRMAEC EC').trim();
   const url = config.validatorUrl || 'https://firmadigital.gob.ec';
 
-  // Formato estandarizado que los smartphones interpretan sin truncar
+  // Formato estandarizado de alta compatibilidad que cualquier smartphone decodifica sin truncar
   const lines: string[] = [
     'FIRMA DIGITAL ECUADOR',
     `Firmante: ${signer}`,
-    `CI/RUC: ${idNum}`,
+    ...(idNum ? [`CI/RUC: ${idNum}`] : []),
     `Fecha: ${date}`,
-    `Entidad: ${entity}`
+    `Entidad: ${entity}`,
+    `Validador: ${url}`
   ];
 
-  if (config.sha256) {
-    lines.push(`Doc SHA256: ${config.sha256.substring(0, 16)}...`);
-  }
-
-  lines.push(`Validador: ${url}`);
-
   return lines.join('\n');
+}
+
+/**
+ * Dibuja un código QR 100% vectorial nativo directamente en la página PDF con pdf-lib.
+ * A diferencia del renderizado rasterizado (PNG/JPEG) que sufre de desenfoque por interpolación
+ * bilineal al escalar a tamaños pequeños (50-60pt), los módulos vectoriales mantienen
+ * un contraste 100% puro (#000000 sobre #FFFFFF) y bordes matemáticamente perfectos.
+ * Esto garantiza que cámaras de teléfonos móviles (iOS Camera, Google Lens, Xiaomi, Samsung, Huawei)
+ * lean el código QR instantáneamente y sin errores de enfoque.
+ */
+export function drawVectorQrCodeToPdfPage(
+  page: PDFPage,
+  payloadText: string,
+  options: {
+    x: number;
+    y: number;
+    size: number;
+    marginModules?: number;
+    errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
+  }
+): void {
+  const ecLevel = options.errorCorrectionLevel || 'M';
+  const qr = QRCode.create(payloadText, { errorCorrectionLevel: ecLevel });
+  const N = qr.modules.size;
+  const margin = options.marginModules ?? 3; // 3-4 módulos de quiet zone conforme a ISO/IEC 18004
+  const totalModules = N + margin * 2;
+  const s = options.size / totalModules;
+
+  // 1. Fondo blanco puro opaco para garantizar la zona de silencio (Quiet Zone)
+  page.drawRectangle({
+    x: options.x,
+    y: options.y,
+    width: options.size,
+    height: options.size,
+    color: rgb(1, 1, 1),
+  });
+
+  // 2. Módulos oscuros vectoriales de alta precisión con micro-solapamiento (+0.04pt)
+  for (let r = 0; r < N; r++) {
+    for (let c = 0; c < N; c++) {
+      if (qr.modules.get(r, c)) {
+        page.drawRectangle({
+          x: options.x + (c + margin) * s,
+          y: options.y + (N - 1 - r + margin) * s,
+          width: s + 0.04,
+          height: s + 0.04,
+          color: rgb(0, 0, 0),
+        });
+      }
+    }
+  }
 }
 
 /**
@@ -1222,15 +1268,12 @@ export async function signAndStampDocumentPdf(
     validatorUrl: 'https://firmadigital.gob.ec'
   });
   
+  // Generar PNG en HD para descarga o vistas previas web
   const qrDataUrl = await generateHighReadabilityQr(qrVerificationText, {
     width: 1024,
     margin: 4,
     errorCorrectionLevel: 'M'
   });
-
-  // Convertir DataURL de QR a imagen PNG embebida en el PDF
-  const qrImageBytes = Uint8Array.from(atob(qrDataUrl.split(',')[1]), c => c.charCodeAt(0));
-  const embeddedQrImage = await pdfDoc.embedPng(qrImageBytes);
 
   // Tipografías estándar embebidas en PDF
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -1319,23 +1362,15 @@ export async function signAndStampDocumentPdf(
         borderWidth: config.stampStyle === 'minimal-box' ? 0.8 : 0
       });
 
-      // Código QR a la izquierda con zona de silencio protegida
-      const qrSize = Math.min(58, stampHeight - 8);
+      // Código QR a la izquierda con renderizado vectorial nativo (0 blur, 100% contraste)
+      const qrSize = Math.min(60, stampHeight - 8);
       if (config.includeQrCode) {
-        // Base blanca nítida para asegurar contraste óptimo 100%
-        page.drawRectangle({
-          x: stampX + 3,
-          y: stampY + (stampHeight - qrSize) / 2 - 1,
-          width: qrSize + 2,
-          height: qrSize + 2,
-          color: rgb(1, 1, 1)
-        });
-
-        page.drawImage(embeddedQrImage, {
+        drawVectorQrCodeToPdfPage(page, qrVerificationText, {
           x: stampX + 4,
           y: stampY + (stampHeight - qrSize) / 2,
-          width: qrSize,
-          height: qrSize
+          size: qrSize,
+          marginModules: 3,
+          errorCorrectionLevel: 'M'
         });
       }
 
@@ -1402,19 +1437,13 @@ export async function signAndStampDocumentPdf(
       });
 
       if (config.includeQrCode) {
-        const qrSize = 54;
-        page.drawRectangle({
-          x: stampX + stampWidth - 62,
+        const qrSize = Math.min(58, stampHeight - 16);
+        drawVectorQrCodeToPdfPage(page, qrVerificationText, {
+          x: stampX + stampWidth - qrSize - 6,
           y: stampY + 6,
-          width: qrSize + 4,
-          height: qrSize + 4,
-          color: rgb(1, 1, 1)
-        });
-        page.drawImage(embeddedQrImage, {
-          x: stampX + stampWidth - 60,
-          y: stampY + 8,
-          width: qrSize,
-          height: qrSize
+          size: qrSize,
+          marginModules: 3,
+          errorCorrectionLevel: 'M'
         });
       }
 
@@ -1492,19 +1521,13 @@ export async function signAndStampDocumentPdf(
       });
 
       if (config.includeQrCode) {
-        const qrSize = 54;
-        page.drawRectangle({
-          x: stampX + stampWidth - 62,
+        const qrSize = Math.min(58, stampHeight - 16);
+        drawVectorQrCodeToPdfPage(page, qrVerificationText, {
+          x: stampX + stampWidth - qrSize - 6,
           y: stampY + 6,
-          width: qrSize + 4,
-          height: qrSize + 4,
-          color: rgb(1, 1, 1)
-        });
-        page.drawImage(embeddedQrImage, {
-          x: stampX + stampWidth - 60,
-          y: stampY + 8,
-          width: qrSize,
-          height: qrSize
+          size: qrSize,
+          marginModules: 3,
+          errorCorrectionLevel: 'M'
         });
       }
 
@@ -1566,19 +1589,13 @@ export async function signAndStampDocumentPdf(
       });
 
       if (config.includeQrCode) {
-        const qrSize = 52;
-        page.drawRectangle({
-          x: stampX + stampWidth - 60,
+        const qrSize = Math.min(56, stampHeight - 14);
+        drawVectorQrCodeToPdfPage(page, qrVerificationText, {
+          x: stampX + stampWidth - qrSize - 6,
           y: stampY + 7,
-          width: qrSize + 4,
-          height: qrSize + 4,
-          color: rgb(1, 1, 1)
-        });
-        page.drawImage(embeddedQrImage, {
-          x: stampX + stampWidth - 58,
-          y: stampY + 9,
-          width: qrSize,
-          height: qrSize
+          size: qrSize,
+          marginModules: 3,
+          errorCorrectionLevel: 'M'
         });
       }
 

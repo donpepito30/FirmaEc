@@ -375,8 +375,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
         entityName: 'FirmaEC - Autoridad de Certificación',
         includeQrCode,
         includeLegalRef: true,
-        stampWidth: 240,
-        stampHeight: 60
+        stampWidth: 245,
+        stampHeight: 68
       };
 
       // 3. Process all documents in batch
