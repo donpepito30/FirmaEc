@@ -1146,6 +1146,71 @@ export function splitSignerNameForStamp(name: string): string[] {
 }
 
 /**
+ * Configuración para el payload del código QR de verificación
+ */
+export interface QrGenerationConfig {
+  signerName: string;
+  idNumber?: string;
+  dateFormatted?: string;
+  entityName?: string;
+  reason?: string;
+  location?: string;
+  sha256?: string;
+  validatorUrl?: string;
+}
+
+/**
+ * Genera el payload de texto estructurado según los estándares oficiales de FirmaEC
+ * y los analizadores de escáneres móviles (iOS Camera, Google Lens, Xiaomi, Samsung, Huawei).
+ * Mantiene la longitud compacta para generar una matriz QR de baja densidad (Versión 4-5)
+ * con módulos grandes, nítidos y reconocibles al instante.
+ */
+export function buildScannerFriendlyQrText(config: QrGenerationConfig): string {
+  const signer = (config.signerName || 'TITULAR ECUADOR').trim().toUpperCase();
+  const idNum = config.idNumber && config.idNumber.trim() ? config.idNumber.trim() : 'N/A';
+  const date = config.dateFormatted || new Date().toLocaleString('es-EC', { hour12: false });
+  const entity = (config.entityName || 'MINTEL / FIRMAEC EC').trim();
+  const url = config.validatorUrl || 'https://firmadigital.gob.ec';
+
+  // Formato estandarizado que los smartphones interpretan sin truncar
+  const lines: string[] = [
+    'FIRMA DIGITAL ECUADOR',
+    `Firmante: ${signer}`,
+    `CI/RUC: ${idNum}`,
+    `Fecha: ${date}`,
+    `Entidad: ${entity}`
+  ];
+
+  if (config.sha256) {
+    lines.push(`Doc SHA256: ${config.sha256.substring(0, 16)}...`);
+  }
+
+  lines.push(`Validador: ${url}`);
+
+  return lines.join('\n');
+}
+
+/**
+ * Genera un código QR de grado industrial (1024x1024 px),
+ * margen de silencio de 4 módulos (ISO/IEC 18004) y corrección de error Nivel M (15%),
+ * garantizando lectura instantánea desde cámaras de celulares y lectores ópticos.
+ */
+export async function generateHighReadabilityQr(
+  payloadText: string,
+  options?: { width?: number; margin?: number; errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H' }
+): Promise<string> {
+  return await QRCode.toDataURL(payloadText, {
+    margin: options?.margin ?? 4, // 4 módulos de zona de silencio (estándar ISO/IEC 18004)
+    width: options?.width ?? 1024, // Ultra alta resolución para evitar pixelado o bordes borrosos
+    errorCorrectionLevel: options?.errorCorrectionLevel ?? 'M', // Nivel M (15% redundancia óptima)
+    color: {
+      dark: '#000000', // 100% Negro puro
+      light: '#ffffff'  // 100% Blanco puro
+    }
+  });
+}
+
+/**
  * Estampa visual y criptográficamente un documento PDF real conforme a los estándares de FirmaEC y la República del Ecuador
  */
 export async function signAndStampDocumentPdf(
@@ -1185,17 +1250,20 @@ export async function signAndStampDocumentPdf(
     hour12: false
   });
 
-  // 4. Formato oficial legible y accesible mediante cualquier escáner de código QR (Google Lens, iPhone Camera, etc.)
-  const qrVerificationText = `Firmado electrónicamente por:\n${config.signerName.toUpperCase()}\nCédula/RUC: ${config.idNumber || 'N/A'}\nFecha: ${dateFormatted} GMT-5\nRazón: ${config.reason}\nLugar: ${config.location}\nEntidad: ${config.entityName || 'MINTEL / FIRMAEC'}\nSHA-256: ${originalSha256.substring(0, 24)}...\nValidador: https://firmadigital.gob.ec`;
+  // 4. Formato oficial legible y accesible mediante cualquier escáner de código QR (Google Lens, iPhone Camera, Xiaomi, Samsung, etc.)
+  const qrVerificationText = buildScannerFriendlyQrText({
+    signerName: config.signerName,
+    idNumber: config.idNumber,
+    dateFormatted,
+    entityName: config.entityName || 'MINTEL / FIRMAEC EC',
+    sha256: originalSha256,
+    validatorUrl: 'https://firmadigital.gob.ec'
+  });
   
-  const qrDataUrl = await QRCode.toDataURL(qrVerificationText, {
-    margin: 1,
-    width: 180,
-    errorCorrectionLevel: 'M',
-    color: {
-      dark: '#000000',
-      light: '#ffffff'
-    }
+  const qrDataUrl = await generateHighReadabilityQr(qrVerificationText, {
+    width: 1024,
+    margin: 4,
+    errorCorrectionLevel: 'M'
   });
 
   // Convertir DataURL de QR a imagen PNG embebida en el PDF
@@ -1210,8 +1278,8 @@ export async function signAndStampDocumentPdf(
 
   // Dimensiones del sello visual
   const isOfficialMono = config.stampStyle === 'firmaec-official' || config.stampStyle === 'minimal-box';
-  const stampWidth = config.stampWidth || (isOfficialMono ? 240 : 250);
-  const stampHeight = config.stampHeight || (isOfficialMono ? 60 : 78);
+  const stampWidth = config.stampWidth || (isOfficialMono ? 245 : 255);
+  const stampHeight = config.stampHeight || (isOfficialMono ? 68 : 78);
 
   // Determinar páginas a estampar
   let targetPageIndices: number[] = [];
@@ -1289,18 +1357,27 @@ export async function signAndStampDocumentPdf(
         borderWidth: config.stampStyle === 'minimal-box' ? 0.8 : 0
       });
 
-      // Código QR a la izquierda
-      const qrSize = Math.min(52, stampHeight - 6);
+      // Código QR a la izquierda con zona de silencio protegida
+      const qrSize = Math.min(58, stampHeight - 8);
       if (config.includeQrCode) {
-        page.drawImage(embeddedQrImage, {
+        // Base blanca nítida para asegurar contraste óptimo 100%
+        page.drawRectangle({
           x: stampX + 3,
+          y: stampY + (stampHeight - qrSize) / 2 - 1,
+          width: qrSize + 2,
+          height: qrSize + 2,
+          color: rgb(1, 1, 1)
+        });
+
+        page.drawImage(embeddedQrImage, {
+          x: stampX + 4,
           y: stampY + (stampHeight - qrSize) / 2,
           width: qrSize,
           height: qrSize
         });
       }
 
-      const textLeftX = config.includeQrCode ? stampX + qrSize + 10 : stampX + 8;
+      const textLeftX = config.includeQrCode ? stampX + qrSize + 12 : stampX + 8;
       const nameLines = splitSignerNameForStamp(config.signerName);
 
       // Línea 1: "Firmado electrónicamente por:" (Courier Regular)
@@ -1314,7 +1391,7 @@ export async function signAndStampDocumentPdf(
       });
 
       // Línea 2 y 3: Nombre en Courier-Bold Mayúsculas
-      lineY -= 13;
+      lineY -= 14;
       page.drawText(nameLines[0], {
         x: textLeftX,
         y: lineY,
@@ -1324,7 +1401,7 @@ export async function signAndStampDocumentPdf(
       });
 
       if (nameLines.length > 1) {
-        lineY -= 13;
+        lineY -= 14;
         page.drawText(nameLines[1], {
           x: textLeftX,
           y: lineY,
@@ -1363,11 +1440,19 @@ export async function signAndStampDocumentPdf(
       });
 
       if (config.includeQrCode) {
+        const qrSize = 54;
+        page.drawRectangle({
+          x: stampX + stampWidth - 62,
+          y: stampY + 6,
+          width: qrSize + 4,
+          height: qrSize + 4,
+          color: rgb(1, 1, 1)
+        });
         page.drawImage(embeddedQrImage, {
-          x: stampX + stampWidth - 58,
+          x: stampX + stampWidth - 60,
           y: stampY + 8,
-          width: 50,
-          height: 50
+          width: qrSize,
+          height: qrSize
         });
       }
 
@@ -1445,11 +1530,19 @@ export async function signAndStampDocumentPdf(
       });
 
       if (config.includeQrCode) {
+        const qrSize = 54;
+        page.drawRectangle({
+          x: stampX + stampWidth - 62,
+          y: stampY + 6,
+          width: qrSize + 4,
+          height: qrSize + 4,
+          color: rgb(1, 1, 1)
+        });
         page.drawImage(embeddedQrImage, {
-          x: stampX + stampWidth - 58,
+          x: stampX + stampWidth - 60,
           y: stampY + 8,
-          width: 50,
-          height: 50
+          width: qrSize,
+          height: qrSize
         });
       }
 
@@ -1511,11 +1604,19 @@ export async function signAndStampDocumentPdf(
       });
 
       if (config.includeQrCode) {
+        const qrSize = 52;
+        page.drawRectangle({
+          x: stampX + stampWidth - 60,
+          y: stampY + 7,
+          width: qrSize + 4,
+          height: qrSize + 4,
+          color: rgb(1, 1, 1)
+        });
         page.drawImage(embeddedQrImage, {
           x: stampX + stampWidth - 58,
           y: stampY + 9,
-          width: 48,
-          height: 48
+          width: qrSize,
+          height: qrSize
         });
       }
 

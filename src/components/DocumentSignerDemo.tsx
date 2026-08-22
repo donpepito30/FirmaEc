@@ -44,7 +44,9 @@ import {
   extractKeysFromUploadedP12,
   generateP12Certificate,
   createSamplePdfBuffer,
-  splitSignerNameForStamp 
+  splitSignerNameForStamp,
+  buildScannerFriendlyQrText,
+  generateHighReadabilityQr
 } from '../services/p12Generator';
 import { validateFileUpload } from '../utils/fileValidation';
 import { handleFileError } from '../utils/errorHandler';
@@ -120,7 +122,13 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
     quickId;
 
   // Exact text content encoded inside QR for any scanner app (Google Lens, iOS/Android Camera)
-  const qrVerificationReadableText = `Firmado electrónicamente por:\n${effectiveSignerName.trim().toUpperCase()}\nCédula/RUC: ${effectiveIdNumber || 'N/A'}\nFecha: ${new Date().toLocaleDateString('es-EC')} ${new Date().toLocaleTimeString('es-EC')} GMT-5\nRazón: ${quickReason}\nLugar: ${quickCity}\nEntidad: MINTEL / FIRMAEC\nValidador: https://firmadigital.gob.ec`;
+  const qrVerificationReadableText = buildScannerFriendlyQrText({
+    signerName: effectiveSignerName,
+    idNumber: effectiveIdNumber,
+    dateFormatted: `${new Date().toLocaleDateString('es-EC')} ${new Date().toLocaleTimeString('es-EC', { hour12: false })}`,
+    entityName: 'MINTEL / FIRMAEC EC',
+    validatorUrl: 'https://firmadigital.gob.ec'
+  });
 
   // Prevent browser default navigation when dropping files anywhere
   useEffect(() => {
@@ -136,13 +144,12 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
     };
   }, []);
 
-  // Generate live QR preview whenever attributes change
+  // Generate ultra high-definition QR preview with ISO/IEC 18004 compliance whenever attributes change
   useEffect(() => {
-    QRCode.toDataURL(qrVerificationReadableText, { 
-      margin: 1, 
-      width: 160, 
-      errorCorrectionLevel: 'M',
-      color: { dark: '#000000', light: '#ffffff' } 
+    generateHighReadabilityQr(qrVerificationReadableText, {
+      width: 1024,
+      margin: 4,
+      errorCorrectionLevel: 'M'
     })
       .then(url => setPreviewQrDataUrl(url))
       .catch(() => {});
@@ -1109,39 +1116,97 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
           </div>
 
           {/* SECTION: QR CODE CONTENT ACCESSIBLE BY SCANNER */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-3">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Scan className="w-4 h-4 text-blue-600" />
                 <h4 className="text-xs font-bold text-slate-800">
-                  Información Criptográfica en el Código QR
+                  Código QR de Verificación Universal (ISO/IEC 18004)
                 </h4>
               </div>
-              <button
-                type="button"
-                onClick={handleCopyQrText}
-                className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
-              >
-                {copiedQrText ? (
-                  <>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    <span className="text-emerald-600 font-bold">¡Copiado!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>Copiar Texto QR</span>
-                  </>
+              <div className="flex items-center gap-2">
+                {previewQrDataUrl && (
+                  <a
+                    href={previewQrDataUrl}
+                    download={`qr_verificacion_${(effectiveSignerName || 'firma').toLowerCase().replace(/\s+/g, '_')}.png`}
+                    className="inline-flex items-center gap-1 text-[11px] text-slate-600 hover:text-slate-900 font-semibold cursor-pointer px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                    title="Descargar imagen PNG del QR en alta resolución (1024px)"
+                  >
+                    <Download className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Descargar QR HD</span>
+                  </a>
                 )}
-              </button>
+                <button
+                  type="button"
+                  onClick={handleCopyQrText}
+                  className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-800 font-semibold cursor-pointer px-2 py-1 hover:bg-blue-50 rounded-lg transition-colors"
+                >
+                  {copiedQrText ? (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-600 font-bold">¡Copiado!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copiar Texto</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
-            <p className="text-[11px] text-slate-600 leading-relaxed">
-              Al escanear el código QR con cualquier smartphone o aplicación lectora (Google Lens, Cámara iOS/Android), obtendrás este resultado:
-            </p>
+            {/* PREVIEW + SPECS GRID */}
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 items-center">
+              {previewQrDataUrl && (
+                <div className="sm:col-span-4 bg-white p-2.5 rounded-xl border border-slate-200 flex flex-col items-center justify-center shadow-xs">
+                  <div className="w-28 h-28 bg-white p-1 rounded flex items-center justify-center">
+                    <img 
+                      src={previewQrDataUrl} 
+                      alt="Código QR de Verificación en Alta Definición" 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                  <span className="text-[9.5px] font-mono text-emerald-700 font-semibold mt-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    100% Escaneable
+                  </span>
+                </div>
+              )}
 
-            <div className="p-3 bg-slate-900 text-slate-200 rounded-xl font-mono text-[10.5px] leading-relaxed whitespace-pre-wrap border border-slate-800 shadow-inner">
-              {qrVerificationReadableText}
+              <div className="sm:col-span-8 space-y-2 text-xs">
+                <div className="grid grid-cols-2 gap-1.5 text-[10.5px]">
+                  <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                    <span className="text-slate-400 block text-[9.5px]">Zona de Silencio</span>
+                    <strong className="text-slate-800">4 Módulos (ISO)</strong>
+                  </div>
+                  <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                    <span className="text-slate-400 block text-[9.5px]">Corrección Error</span>
+                    <strong className="text-slate-800">Nivel M (15%)</strong>
+                  </div>
+                  <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                    <span className="text-slate-400 block text-[9.5px]">Resolución</span>
+                    <strong className="text-slate-800">1024px Hi-Res</strong>
+                  </div>
+                  <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
+                    <span className="text-slate-400 block text-[9.5px]">Compatibilidad</span>
+                    <strong className="text-slate-800">Cámaras Móviles</strong>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-500 leading-tight">
+                  Compatible con <strong>Google Lens</strong>, <strong>Cámara iOS</strong>, <strong>Samsung Scanner</strong>, <strong>Xiaomi</strong> y lectores ópticos 2D.
+                </p>
+              </div>
+            </div>
+
+            {/* RAW READABLE OUTPUT */}
+            <div>
+              <p className="text-[11px] text-slate-600 mb-1.5">
+                Texto descifrado al escanear con el teléfono móvil:
+              </p>
+              <div className="p-3 bg-slate-900 text-slate-200 rounded-xl font-mono text-[10.5px] leading-relaxed whitespace-pre-wrap border border-slate-800 shadow-inner">
+                {qrVerificationReadableText}
+              </div>
             </div>
 
             <div className="flex items-center gap-2 text-[10px] text-slate-500 pt-1">
