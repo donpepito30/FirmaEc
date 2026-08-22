@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+import sharp from 'sharp';
+import fs from 'fs';
+import path from 'path';
+
+const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#0f172a"/>
@@ -52,4 +56,54 @@
     <circle cx="335" cy="180" r="13" fill="#fbbf24"/>
     <circle cx="256" cy="162" r="17" fill="url(#cyanGrad)" opacity="0.9"/>
   </g>
-</svg>
+</svg>`;
+
+async function generateIcons() {
+  const publicDir = path.join(process.cwd(), 'public');
+  
+  // Guardar favicon.svg
+  fs.writeFileSync(path.join(publicDir, 'favicon.svg'), svgContent, 'utf-8');
+  console.log('✓ Creado favicon.svg');
+
+  const svgBuffer = Buffer.from(svgContent);
+
+  // 1. pwa-512x512.png (512x512)
+  await sharp(svgBuffer)
+    .resize(512, 512)
+    .png()
+    .toFile(path.join(publicDir, 'pwa-512x512.png'));
+  console.log('✓ Creado pwa-512x512.png');
+
+  // 2. pwa-192x192.png (192x192)
+  await sharp(svgBuffer)
+    .resize(192, 192)
+    .png()
+    .toFile(path.join(publicDir, 'pwa-192x192.png'));
+  console.log('✓ Creado pwa-192x192.png');
+
+  // 3. apple-touch-icon.png (180x180)
+  await sharp(svgBuffer)
+    .resize(180, 180)
+    .png()
+    .toFile(path.join(publicDir, 'apple-touch-icon.png'));
+  console.log('✓ Creado apple-touch-icon.png');
+
+  // 4. favicon.png (512x512)
+  await sharp(svgBuffer)
+    .resize(512, 512)
+    .png()
+    .toFile(path.join(publicDir, 'favicon.png'));
+  console.log('✓ Creado favicon.png');
+
+  // 5. favicon.jpg (512x512)
+  await sharp(svgBuffer)
+    .resize(512, 512)
+    .jpeg({ quality: 95 })
+    .toFile(path.join(publicDir, 'favicon.jpg'));
+  console.log('✓ Creado favicon.jpg');
+}
+
+generateIcons().catch(err => {
+  console.error('Error generando íconos:', err);
+  process.exit(1);
+});
