@@ -1169,7 +1169,7 @@ export function drawVectorQrCodeToPdfPage(
   const ecLevel = options.errorCorrectionLevel || 'M';
   const qr = QRCode.create(payloadText, { errorCorrectionLevel: ecLevel });
   const N = qr.modules.size;
-  const margin = options.marginModules ?? 3; // 3-4 módulos de quiet zone conforme a ISO/IEC 18004
+  const margin = options.marginModules ?? 4; // 4 módulos de Quiet Zone (Zona de Silencio) conforme a la norma ISO/IEC 18004
   const totalModules = N + margin * 2;
   const s = options.size / totalModules;
 
@@ -1369,7 +1369,7 @@ export async function signAndStampDocumentPdf(
           x: stampX + 4,
           y: stampY + (stampHeight - qrSize) / 2,
           size: qrSize,
-          marginModules: 3,
+          marginModules: 4,
           errorCorrectionLevel: 'M'
         });
       }
@@ -1442,7 +1442,7 @@ export async function signAndStampDocumentPdf(
           x: stampX + stampWidth - qrSize - 6,
           y: stampY + 6,
           size: qrSize,
-          marginModules: 3,
+          marginModules: 4,
           errorCorrectionLevel: 'M'
         });
       }
@@ -1526,7 +1526,7 @@ export async function signAndStampDocumentPdf(
           x: stampX + stampWidth - qrSize - 6,
           y: stampY + 6,
           size: qrSize,
-          marginModules: 3,
+          marginModules: 4,
           errorCorrectionLevel: 'M'
         });
       }
@@ -1594,7 +1594,7 @@ export async function signAndStampDocumentPdf(
           x: stampX + stampWidth - qrSize - 6,
           y: stampY + 7,
           size: qrSize,
-          marginModules: 3,
+          marginModules: 4,
           errorCorrectionLevel: 'M'
         });
       }

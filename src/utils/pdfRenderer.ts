@@ -1,10 +1,10 @@
 import * as pdfjsLib from 'pdfjs-dist';
+// Importar el worker de pdfjs-dist directamente con Vite para evitar timeouts de red o CDN caídos
+// @ts-ignore
+import pdfjsWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
-// Configurar el worker y fuentes estándar de pdfjs-dist desde cdnjs
 if (typeof window !== 'undefined') {
-  const version = pdfjsLib.version || '4.10.38';
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`;
-  (pdfjsLib.GlobalWorkerOptions as any).standardFontDataUrl = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/standard_fonts/`;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerUrl;
 }
 
 /**
@@ -77,12 +77,10 @@ async function getPdfDocument(pdfBuffer: Uint8Array | ArrayBuffer): Promise<pdfj
     return pdfDocCache.get(cacheKey)!;
   }
 
-  const version = pdfjsLib.version || '4.10.38';
   const loadingTask = pdfjsLib.getDocument({
     data: bytes,
-    cMapUrl: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/cmaps/`,
-    cMapPacked: true,
-    standardFontDataUrl: `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/standard_fonts/`,
+    useSystemFonts: true,
+    stopAtErrors: false,
   });
 
   const doc = await loadingTask.promise;

@@ -9,6 +9,17 @@ export interface GeminiDocumentAnalysis {
   error?: string;
 }
 
+function uint8ArrayToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const len = bytes.byteLength;
+  const chunkSize = 0x8000; // 32KB chunks to prevent stack overflow and high CPU usage
+  for (let i = 0; i < len; i += chunkSize) {
+    const chunk = bytes.subarray(i, Math.min(i + chunkSize, len));
+    binary += String.fromCharCode.apply(null, chunk as unknown as number[]);
+  }
+  return btoa(binary);
+}
+
 /**
  * Analiza un documento llamando al endpoint /api/analyze-document con fallback seguro
  */
@@ -18,6 +29,9 @@ export async function analyzeDocumentWithGemini(
   fileName: string
 ): Promise<GeminiDocumentAnalysis> {
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000); // 12s max timeout
+
     const response = await fetch('/api/analyze-document', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -26,6 +40,9 @@ export async function analyzeDocumentWithGemini(
         mimeType,
         fileName,
       }),
+      signal: controller.signal,
+    }).finally(() => {
+      clearTimeout(timeoutId);
     });
 
     const data: any = await response.json();
@@ -152,12 +169,7 @@ export async function validateDocumentWithGemini(
   const maxBytes = 4 * 1024 * 1024; // 4MB slice for fast transmission
   const bufferSlice = fileBuffer.byteLength > maxBytes ? fileBuffer.slice(0, maxBytes) : fileBuffer;
   const bytes = new Uint8Array(bufferSlice);
-  let binary = '';
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  const base64Data = btoa(binary);
+  const base64Data = uint8ArrayToBase64(bytes);
 
   return analyzeDocumentWithGemini(
     base64Data,
