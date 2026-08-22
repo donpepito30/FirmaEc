@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
               <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs">
                 <FileSignature className="w-4 h-4" />
               </div>
-              <span className="tracking-tight">FirmaEC Pro Ecuador</span>
+              <span className="tracking-tight">FirmaEC _PRO Ecuador</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
               Plataforma de firmado electrónico, estampado visual en documentos PDF, generación de archivos PKCS#12 (.p12) e inspección criptográfica bajo la Ley de Comercio Electrónico del Ecuador.
@@ -85,7 +85,7 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-          <p>© 2026 FirmaEC Pro Ecuador. Cumplimiento estricto con la Ley de Comercio Electrónico y Firmas Digitales (R.O. 557).</p>
+          <p>© 2026 FirmaEC _PRO Ecuador. Cumplimiento estricto con la Ley de Comercio Electrónico y Firmas Digitales (R.O. 557).</p>
           <div className="flex items-center gap-1">
             <ShieldCheck className="w-4 h-4 text-blue-400" />
             <span>Infraestructura PKI Estándar X.509 v3 / PKCS#12</span>

@@ -1,5 +1,5 @@
 {
-  "name": "FirmaEC - Firma Electrónica & Estampado PDF Ecuador",
+  "name": "FirmaEC _PRO - Firma Electrónica & Estampado PDF Ecuador",
   "description": "Portal integral para la generación de archivos .p12, firmado y estampado visual de documentos PDF según los estándares de FirmaEC y la República del Ecuador.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

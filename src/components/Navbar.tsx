@@ -57,18 +57,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('signer')}
             className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
           >
-            <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/50 p-0.5 overflow-hidden shadow-sm group-hover:border-blue-500 transition-colors flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/50 p-1 overflow-hidden shadow-sm group-hover:border-blue-500 transition-colors flex items-center justify-center">
               <img 
-                src="/favicon.png" 
-                alt="FirmaEC Pro Logo" 
-                className="w-full h-full object-cover rounded-lg"
-                referrerPolicy="no-referrer"
+                src="/favicon.svg" 
+                alt="FirmaEC _PRO Logo" 
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  // Fallback to SVG asset or icon
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
               />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg text-slate-900 font-display tracking-tight">
-                  FirmaEC <span className="text-blue-600">Pro</span>
+                  FirmaEC <span className="text-blue-600">_PRO</span>
                 </span>
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 uppercase">
                   Ecuador PKI

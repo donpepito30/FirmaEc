@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#2563eb" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded box -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  
+  <!-- Outer glowing accent border -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#3b82f6" stroke-opacity="0.3" stroke-width="8"/>
+
+  <!-- Escudo PKI (Shield) -->
+  <path d="M 256,80 L 390,130 C 390,290 290,380 256,420 C 222,380 122,290 122,130 Z" 
+        fill="url(#shieldGrad)" 
+        filter="url(#glow)"/>
+
+  <!-- Interior Shield Contour -->
+  <path d="M 256,104 L 370,148 C 370,280 282,358 256,392 C 230,358 142,280 142,148 Z" 
+        fill="none" 
+        stroke="#60a5fa" 
+        stroke-opacity="0.4" 
+        stroke-width="6"/>
+
+  <!-- Pluma Digital / Checkmark Criptográfico (Digital Signature Quill/Check) -->
+  <!-- Checkmark parte baja -->
+  <path d="M 190,250 L 240,300 L 335,185" 
+        fill="none" 
+        stroke="url(#goldGrad)" 
+        stroke-width="38" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+
+  <!-- Detalle de sello digital/llave superior -->
+  <circle cx="340" cy="180" r="14" fill="#fbbf24"/>
+  <circle cx="256" cy="160" r="18" fill="url(#cyanGrad)" opacity="0.9"/>
+</svg>
