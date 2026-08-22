@@ -53,6 +53,7 @@ import { validateFileUpload } from '../utils/fileValidation';
 import { handleFileError } from '../utils/errorHandler';
 import { validateDocumentWithGemini } from '../services/geminiProcessor';
 import { InteractiveStampPositioner } from './InteractiveStampPositioner';
+import { renderPdfPageToDataUrl } from '../utils/pdfRenderer';
 
 interface DocumentSignerDemoProps {
   initialResult?: GeneratedP12Result | null;
@@ -190,19 +191,27 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
           // Convertir y procesar
           const converted = await convertFileToPdfBuffer(file);
           let previewUrl: string | undefined;
-          if (file.type && file.type.startsWith('image/')) {
-            try {
-              previewUrl = URL.createObjectURL(file);
-            } catch (e) {
-              // Ignore preview URL creation error
+
+          try {
+            // Renderizar la página original del PDF con un clon aislado
+            const pageToRender = converted.pageCount || 1;
+            const rendered = await renderPdfPageToDataUrl(converted.buffer.slice(0), pageToRender, 900);
+            previewUrl = rendered.dataUrl;
+          } catch (renderErr) {
+            if (file.type && file.type.startsWith('image/')) {
+              try {
+                previewUrl = URL.createObjectURL(file);
+              } catch (e) {
+                // Ignore preview URL creation error
+              }
             }
           }
 
-          // Ejecutar análisis Gemini AI (asíncrono con fallback)
+          // Ejecutar análisis Gemini AI con un clon aislado
           let geminiInfo;
           try {
             geminiInfo = await validateDocumentWithGemini(
-              converted.buffer,
+              converted.buffer.slice(0),
               file.name,
               converted.fileType
             );
@@ -214,7 +223,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             name: file.name,
             size: file.size,
             type: converted.fileType,
-            buffer: converted.buffer,
+            buffer: converted.buffer.slice(0),
             pageCount: converted.pageCount,
             previewDataUrl: previewUrl,
             isConvertedToPdf: converted.isConverted,
@@ -874,6 +883,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             signerName={effectiveSignerName}
             idNumber={effectiveIdNumber}
             qrDataUrl={previewQrDataUrl}
+            pdfBuffer={uploadedDocs[0]?.buffer}
             documentPreviewUrl={uploadedDocs[0]?.previewDataUrl}
             documentPageCount={uploadedDocs[0]?.pageCount || 1}
             documentName={uploadedDocs[0]?.name}

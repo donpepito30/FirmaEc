@@ -11,10 +11,12 @@ import {
   Minus, 
   RotateCcw,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  RefreshCw
 } from 'lucide-react';
 import { StampStyleType } from '../types';
 import { splitSignerNameForStamp } from '../services/p12Generator';
+import { renderPdfPageToDataUrl } from '../utils/pdfRenderer';
 
 interface InteractiveStampPositionerProps {
   positionPreset: 'bottom-right' | 'bottom-center' | 'bottom-left' | 'top-right' | 'top-left' | 'custom';
@@ -34,6 +36,7 @@ interface InteractiveStampPositionerProps {
   signerName: string;
   idNumber: string;
   qrDataUrl: string;
+  pdfBuffer?: ArrayBuffer;
   documentPreviewUrl?: string;
   documentPageCount: number;
   documentName?: string;
@@ -57,6 +60,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   signerName,
   idNumber,
   qrDataUrl,
+  pdfBuffer,
   documentPreviewUrl,
   documentPageCount,
   documentName
@@ -64,6 +68,52 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
+
+  // Estados para renderizado dinámico de la página real del PDF
+  const [renderedPageUrl, setRenderedPageUrl] = useState<string | null>(null);
+  const [pageAspectRatio, setPageAspectRatio] = useState<number | null>(null);
+  const [isRenderingPage, setIsRenderingPage] = useState<boolean>(false);
+
+  // Renderizar la página real del PDF cuando cambia la página seleccionada o el documento
+  useEffect(() => {
+    if (!pdfBuffer) {
+      setRenderedPageUrl(null);
+      setPageAspectRatio(null);
+      return;
+    }
+
+    let pageNum = 1;
+    const total = documentPageCount || 1;
+    if (pageOption === 'last') {
+      pageNum = total;
+    } else if (pageOption === 'first' || pageOption === 'all') {
+      pageNum = 1;
+    } else if (pageOption === 'specific') {
+      pageNum = Math.max(1, Math.min(specificPage, total));
+    }
+
+    let isSubscribed = true;
+    setIsRenderingPage(true);
+
+    renderPdfPageToDataUrl(pdfBuffer.slice(0), pageNum, 900)
+      .then((res) => {
+        if (isSubscribed) {
+          setRenderedPageUrl(res.dataUrl);
+          setPageAspectRatio(res.aspectRatio);
+          setIsRenderingPage(false);
+        }
+      })
+      .catch((err) => {
+        console.warn('No se pudo renderizar la vista previa exacta del PDF:', err);
+        if (isSubscribed) {
+          setIsRenderingPage(false);
+        }
+      });
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [pdfBuffer, pageOption, specificPage, documentPageCount]);
 
   // Divide el nombre del firmante para el sello
   const signerNameLines = splitSignerNameForStamp(signerName || 'TITULAR ECUADOR');
@@ -244,16 +294,28 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
-                className={`relative w-[280px] sm:w-[320px] h-[396px] sm:h-[452px] bg-white rounded-lg shadow-2xl border border-slate-300 cursor-crosshair overflow-hidden transition-all ${
+                style={{
+                  aspectRatio: pageAspectRatio ? `${pageAspectRatio}` : '595/842'
+                }}
+                className={`relative w-[280px] sm:w-[320px] max-h-[460px] bg-white rounded-lg shadow-2xl border border-slate-300 cursor-crosshair overflow-hidden transition-all ${
                   isDragging ? 'ring-2 ring-blue-500 shadow-blue-500/20' : 'hover:border-blue-400'
                 }`}
               >
-                {/* 1. CONTENIDO DE FONDO (Si hay imagen subida o maqueta A4 oficial) */}
-                {documentPreviewUrl ? (
+                {/* 1. INDICADOR DE CARGA MIENTRAS SE RENDERIZA LA PÁGINA REAL */}
+                {isRenderingPage && (
+                  <div className="absolute inset-0 bg-white/90 backdrop-blur-xs z-30 flex flex-col items-center justify-center p-4 text-center">
+                    <RefreshCw className="w-6 h-6 text-blue-600 animate-spin mb-2" />
+                    <p className="text-xs font-bold text-slate-800">Cargando vista previa original...</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">Renderizando contenido real del PDF</p>
+                  </div>
+                )}
+
+                {/* 2. CONTENIDO DE FONDO (Página real renderizada o fallback) */}
+                {renderedPageUrl || documentPreviewUrl ? (
                   <img 
-                    src={documentPreviewUrl} 
-                    alt="Documento cargado" 
-                    className="w-full h-full object-contain pointer-events-none opacity-90"
+                    src={renderedPageUrl || documentPreviewUrl} 
+                    alt="Documento cargado original" 
+                    className="w-full h-full object-fill pointer-events-none select-none opacity-95"
                   />
                 ) : (
                   <div className="p-4 h-full flex flex-col justify-between pointer-events-none text-slate-400 font-sans text-[8px] space-y-2">
