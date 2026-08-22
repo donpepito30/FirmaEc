@@ -91,56 +91,18 @@ export const CA_PROFILES: Record<string, CAAuthorityProfile> = {
   }
 };
 
+import { validateEcuadorianId as validateIdInput } from '../utils/inputValidator';
+
 /**
- * Valida el algoritmo de cédula ecuatoriana (Módulo 10)
+ * Valida el algoritmo de cédula o RUC ecuatoriano (Módulo 10 y Provincias)
  */
 export function validateEcuadorianId(id: string): { isValid: boolean; message: string; type: 'cedula' | 'ruc' | 'invalido' } {
-  const clean = id.trim();
-  if (!/^\d+$/.test(clean)) {
-    return { isValid: false, message: 'La cédula o RUC debe contener solo números', type: 'invalido' };
-  }
-
-  if (clean.length === 10) {
-    // Validar cédula (10 dígitos)
-    const province = parseInt(clean.substring(0, 2), 10);
-    if ((province < 1 || province > 24) && province !== 30) {
-      return { isValid: false, message: 'Código de provincia inválido (01-24)', type: 'invalido' };
-    }
-
-    const thirdDigit = parseInt(clean[2], 10);
-    if (thirdDigit < 0 || thirdDigit > 5) {
-      return { isValid: false, message: 'El tercer dígito de cédula debe ser entre 0 y 5', type: 'invalido' };
-    }
-
-    const coefficients = [2, 1, 2, 1, 2, 1, 2, 1, 2];
-    let sum = 0;
-    for (let i = 0; i < 9; i++) {
-      let val = parseInt(clean[i], 10) * coefficients[i];
-      if (val >= 10) val -= 9;
-      sum += val;
-    }
-
-    const verifier = (10 - (sum % 10)) % 10;
-    const lastDigit = parseInt(clean[9], 10);
-
-    if (verifier === lastDigit) {
-      return { isValid: true, message: 'Cédula de identidad ecuatoriana válida', type: 'cedula' };
-    } else {
-      return { isValid: false, message: `Dígito verificador incorrecto (esperado ${verifier}, recibido ${lastDigit})`, type: 'invalido' };
-    }
-  } else if (clean.length === 13) {
-    // Validar RUC persona natural (termina en 001 y los primeros 10 son cédula)
-    if (clean.endsWith('001')) {
-      const subCedula = clean.substring(0, 10);
-      const cedResult = validateEcuadorianId(subCedula);
-      if (cedResult.isValid) {
-        return { isValid: true, message: 'RUC de Persona Natural válido', type: 'ruc' };
-      }
-    }
-    return { isValid: true, message: 'Formato de RUC ecuatoriano de 13 dígitos', type: 'ruc' };
-  }
-
-  return { isValid: false, message: 'Debe tener 10 dígitos (Cédula) o 13 dígitos (RUC)', type: 'invalido' };
+  const result = validateIdInput(id);
+  return {
+    isValid: result.isValid,
+    message: result.isValid ? (result.type === 'cedula' ? 'Cédula de identidad ecuatoriana válida' : 'RUC ecuatoriano válido') : (result.error || 'Identificación inválida'),
+    type: result.type || 'invalido',
+  };
 }
 
 /**

@@ -17,6 +17,7 @@ import {
   Stamp, 
   Lock, 
   Info,
+  EyeOff,
   Sparkles,
   ArrowRight,
   Shield,
@@ -73,6 +74,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   const [keySource, setKeySource] = useState<'session' | 'custom_p12' | 'quick_generate'>('quick_generate');
   const [uploadedP12File, setUploadedP12File] = useState<File | null>(null);
   const [p12Password, setP12Password] = useState('');
+  const [showUnlockPassword, setShowUnlockPassword] = useState(false);
   const [unlockedP12Data, setUnlockedP12Data] = useState<{
     privateKeyPem: string;
     certPem: string;
@@ -586,9 +588,22 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                               </span>
                             )}
                             {doc?.geminiAnalysis && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 font-semibold text-[10px] border border-purple-200" title={doc.geminiAnalysis.recommendations.join('\n')}>
-                                <Sparkles className="w-3 h-3 text-purple-600" />
-                                <span>IA Gemini: {doc.geminiAnalysis.documentType} ({doc.geminiAnalysis.quality})</span>
+                              <span 
+                                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-semibold text-[10px] border ${
+                                  doc.geminiAnalysis.isValid === true 
+                                    ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                    : doc.geminiAnalysis.isValid === false
+                                      ? 'bg-rose-50 text-rose-700 border-rose-200'
+                                      : 'bg-amber-50 text-amber-700 border-amber-200'
+                                }`} 
+                                title={(doc.geminiAnalysis.recommendations || []).join('\n')}
+                              >
+                                <Sparkles className="w-3 h-3 text-current" />
+                                <span>
+                                  {doc.geminiAnalysis.isValid === true && `IA: ${doc.geminiAnalysis.documentType}`}
+                                  {doc.geminiAnalysis.isValid === false && `IA Rechazado (${doc.geminiAnalysis.rejectionReason || 'No válido'})`}
+                                  {doc.geminiAnalysis.isValid === null && `IA: Sin validar (${doc.geminiAnalysis.validationMode || 'offline'})`}
+                                </span>
                               </span>
                             )}
                           </p>
@@ -787,18 +802,28 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                       Contraseña del archivo .p12
                     </label>
                     <div className="flex gap-2">
-                      <input
-                        type="password"
-                        placeholder="Contraseña del .p12"
-                        value={p12Password}
-                        onChange={(e) => setP12Password(e.target.value)}
-                        className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:bg-white focus:ring-2 focus:ring-blue-500"
-                      />
+                      <div className="flex-1 relative flex items-center">
+                        <input
+                          type={showUnlockPassword ? "text" : "password"}
+                          placeholder="Contraseña del .p12"
+                          value={p12Password}
+                          onChange={(e) => setP12Password(e.target.value)}
+                          className="w-full pl-3 pr-8 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono-code focus:bg-white focus:ring-2 focus:ring-blue-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowUnlockPassword(!showUnlockPassword)}
+                          className="absolute right-2 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                          title={showUnlockPassword ? "Ocultar" : "Mostrar"}
+                        >
+                          {showUnlockPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
                       <button
                         type="button"
                         onClick={handleUnlockCustomP12}
                         disabled={isUnlockingP12 || !uploadedP12File || !p12Password}
-                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                        className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer shrink-0"
                       >
                         {isUnlockingP12 ? '...' : 'Desbloquear'}
                       </button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 import { 
   KeyRound, 
@@ -20,15 +20,25 @@ import {
   FileCheck2,
   Shield,
   Layers,
-  Award
+  Award,
+  AlertCircle
 } from 'lucide-react';
 import { GeneratedP12Result, P12GenerateOptions, FirmaECTestCheck } from '../types';
 import { 
   generateP12Certificate, 
-  validateEcuadorianId, 
   runFirmaECTestSuite, 
   CA_PROFILES 
 } from '../services/p12Generator';
+import { SecurePasswordManager, usePasswordStrength } from '../utils/securePasswordManager';
+import { SecurePasswordDisplay } from './SecurePasswordDisplay';
+import { 
+  validateP12FormData, 
+  validateFullName, 
+  validateEmail, 
+  validateEcuadorianId, 
+  validateCity, 
+  validateOrganization 
+} from '../utils/inputValidator';
 
 interface P12GeneratorViewProps {
   onLoadIntoSigner?: (generated: GeneratedP12Result) => void;
@@ -67,24 +77,39 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
   const [activeResultsTab, setActiveResultsTab] = useState<'info' | 'tests' | 'firmaec_guide'>('info');
   const [error, setError] = useState<string | null>(null);
 
-  // Validación de cédula en tiempo real
-  const idValidation = validateEcuadorianId(form.idNumber);
+  // Validaciones en tiempo real
+  const fullNameValidation = useMemo(() => validateFullName(form.fullName), [form.fullName]);
+  const idValidation = useMemo(() => validateEcuadorianId(form.idNumber), [form.idNumber]);
+  const emailValidation = useMemo(() => validateEmail(form.email), [form.email]);
+  const cityValidation = useMemo(() => validateCity(form.city), [form.city]);
+  const orgValidation = useMemo(() => validateOrganization(form.organization), [form.organization]);
+
+  // Indicador de fortaleza de contraseña en vivo
+  const passwordStrength = usePasswordStrength(form.password);
 
   const generateRandomPassword = () => {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*';
-    let pass = '';
-    for (let i = 0; i < 14; i++) {
-      pass += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    const pass = SecurePasswordManager.generateSecurePassword(20);
     setForm(prev => ({ ...prev, password: pass }));
   };
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.fullName.trim()) {
-      setError('Por favor ingrese el nombre completo para el certificado.');
+
+    // Validar con el motor robusto de entrada
+    const formValidation = validateP12FormData({
+      fullName: form.fullName,
+      idNumber: form.idNumber,
+      email: form.email,
+      city: form.city,
+      organization: form.organization,
+    });
+
+    if (!formValidation.isValid) {
+      const firstError = Object.values(formValidation.errors)[0];
+      setError(`Error de validación de entrada: ${firstError}`);
       return;
     }
+
     if (!form.password || form.password.length < 6) {
       setError('La contraseña del archivo .p12 debe tener al menos 6 caracteres.');
       return;
@@ -98,7 +123,17 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
     try {
       await new Promise(r => setTimeout(r, 120));
 
-      const result = await generateP12Certificate(form, (step, percent) => {
+      // Usar los datos sanitizados/normalizados
+      const sanitizedOptions: P12GenerateOptions = {
+        ...form,
+        fullName: formValidation.normalizedData?.fullName || form.fullName,
+        email: formValidation.normalizedData?.email || form.email,
+        idNumber: formValidation.normalizedData?.idNumber || form.idNumber,
+        city: formValidation.normalizedData?.city || form.city,
+        organization: formValidation.normalizedData?.organization || form.organization,
+      };
+
+      const result = await generateP12Certificate(sanitizedOptions, (step, percent) => {
         setProgressStep(step);
         setProgressPercent(percent);
       });
@@ -273,11 +308,26 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                     value={form.fullName}
                     onChange={(e) => setForm({ ...form, fullName: e.target.value.toUpperCase() })}
                     placeholder="Ej. JOSE RICARDO CANCHINGRE NAPA"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm font-semibold focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all uppercase"
+                    className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-lg text-slate-900 text-xs sm:text-sm font-semibold focus:bg-white focus:ring-2 transition-all uppercase ${
+                      !fullNameValidation.isValid ? 'border-red-500 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500'
+                    }`}
                   />
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Aparecerá en el Common Name (CN), la estampa visual y la cadena X.500.
-                  </p>
+                  {!fullNameValidation.isValid ? (
+                    <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1 font-medium">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{fullNameValidation.error}</span>
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Aparecerá en el Common Name (CN), la estampa visual y la cadena X.500.
+                    </p>
+                  )}
+                  {fullNameValidation.warnings && fullNameValidation.warnings.map((w, idx) => (
+                    <p key={idx} className="text-[11px] text-amber-600 mt-0.5 flex items-center gap-1">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{w}</span>
+                    </p>
+                  ))}
                 </div>
 
                 {/* ID Number & City */}
@@ -287,8 +337,8 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                         Cédula / RUC Ecuatoriano *
                       </label>
-                      <span className={`text-[10px] font-semibold ${idValidation.isValid ? 'text-emerald-600' : 'text-amber-600'}`}>
-                        {idValidation.isValid ? '✓ Válida (Módulo 10)' : 'Formato EC'}
+                      <span className={`text-[10px] font-semibold ${idValidation.isValid ? 'text-emerald-600' : 'text-red-500'}`}>
+                        {idValidation.isValid ? (idValidation.type === 'cedula' ? '✓ Cédula Válida (Módulo 10)' : '✓ RUC Válido') : '✗ Invalida'}
                       </span>
                     </div>
                     <input
@@ -298,11 +348,21 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       value={form.idNumber}
                       onChange={(e) => setForm({ ...form, idNumber: e.target.value })}
                       placeholder="10 dígitos o RUC 13 dígitos"
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm font-mono-code focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-lg text-slate-900 text-xs sm:text-sm font-mono-code focus:bg-white focus:ring-2 transition-all ${
+                        !idValidation.isValid ? 'border-red-500 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500'
+                      }`}
                     />
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      {idValidation.message}
-                    </p>
+                    {!idValidation.isValid ? (
+                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{idValidation.error}</span>
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-emerald-600 mt-1 flex items-center gap-1 font-medium">
+                        <Check className="w-3.5 h-3.5 shrink-0" />
+                        <span>Identificación verificada {idValidation.province ? `(Provincia ${idValidation.province.toString().padStart(2, '0')})` : ''}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -315,8 +375,16 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       value={form.city}
                       onChange={(e) => setForm({ ...form, city: e.target.value })}
                       placeholder="Esmeraldas, Quito, Guayaquil..."
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-lg text-slate-900 text-xs sm:text-sm focus:bg-white focus:ring-2 transition-all ${
+                        !cityValidation.isValid ? 'border-red-500 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500'
+                      }`}
                     />
+                    {!cityValidation.isValid && (
+                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{cityValidation.error}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -332,8 +400,16 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
                       placeholder="correo@ejemplo.ec"
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-lg text-slate-900 text-xs sm:text-sm focus:bg-white focus:ring-2 transition-all ${
+                        !emailValidation.isValid ? 'border-red-500 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500'
+                      }`}
                     />
+                    {!emailValidation.isValid && (
+                      <p className="text-[11px] text-red-600 mt-1 flex items-center gap-1 font-medium">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>{emailValidation.error}</span>
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -400,7 +476,22 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       </button>
                     </div>
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1">
+                  <div className="mt-2.5 space-y-1">
+                    <div className="flex justify-between items-center text-[11px]">
+                      <span className="text-slate-500 font-medium">Fortaleza de contraseña:</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${passwordStrength.color}`}>
+                        {passwordStrength.label} ({passwordStrength.score}/100)
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${passwordStrength.color} transition-all duration-300`}
+                        style={{ width: `${passwordStrength.score}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-500 mt-2 flex items-center gap-1">
                     <Info className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
                     <span>Esta es la contraseña que solicitará FirmaEC al seleccionar el archivo .p12.</span>
                   </p>
@@ -532,9 +623,12 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                   <span>Descargar Archivo .p12</span>
                 </button>
 
-                <p className="mt-3 text-[11px] text-slate-400">
-                  Contraseña: <span className="font-mono-code font-bold text-white ml-1">{generatedResult.password}</span>
-                </p>
+                <div className="w-full mt-4">
+                  <SecurePasswordDisplay
+                    password={generatedResult.password}
+                    autoCleanSeconds={10}
+                  />
+                </div>
               </div>
 
               {/* Tabs for Details vs Compatibility Tests vs FirmaEC Guide */}

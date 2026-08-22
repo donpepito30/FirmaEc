@@ -143,6 +143,8 @@ export interface SignedPdfResult {
   stampCoordinates: { x: number; y: number; width: number; height: number };
 }
 
+import { GeminiDocumentAnalysis } from './services/geminiProcessor';
+
 export interface UploadedDocumentInfo {
   name: string;
   size: number;
@@ -151,14 +153,7 @@ export interface UploadedDocumentInfo {
   pageCount: number;
   previewDataUrl?: string;
   isConvertedToPdf: boolean;
-  geminiAnalysis?: {
-    isValid: boolean;
-    documentType: string;
-    hasSignatureField: boolean;
-    quality: 'good' | 'fair' | 'poor';
-    recommendations: string[];
-    rejectionReason: string | null;
-  };
+  geminiAnalysis?: GeminiDocumentAnalysis;
 }
 
 export interface FaqItem {
