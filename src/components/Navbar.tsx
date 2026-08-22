@@ -57,8 +57,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('signer')}
             className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
           >
-            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:bg-blue-500 transition-colors">
-              <FileSignature className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/50 p-0.5 overflow-hidden shadow-sm group-hover:border-blue-500 transition-colors flex items-center justify-center">
+              <img 
+                src="/favicon.png" 
+                alt="FirmaEC Pro Logo" 
+                className="w-full h-full object-cover rounded-lg"
+                referrerPolicy="no-referrer"
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
