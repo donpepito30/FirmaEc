@@ -1,31 +1,56 @@
 {
   "name": "FirmaEC _PRO - Firma Electrónica Ecuador",
   "short_name": "FirmaEC _PRO",
-  "description": "Generador de firma electrónica .p12, estampado visual de PDF y validación oficial en Ecuador.",
+  "description": "Generador de firma electrónica .p12, firmado visual de PDF y validador de certificados conforme a la normativa de Ecuador.",
   "start_url": "/",
+  "id": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
+  "lang": "es-EC",
   "categories": ["business", "utilities", "productivity"],
   "icons": [
     {
       "src": "/pwa-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/pwa-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Firmar Documento PDF",
+      "short_name": "Firmar PDF",
+      "description": "Abre el estampador y firmador de PDFs con código QR",
+      "url": "/?tab=signer",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Generar Certificado .p12",
+      "short_name": "Generar .p12",
+      "description": "Crea un certificado digital .p12 encriptado RSA",
+      "url": "/?tab=generator",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
     }
   ]
 }
