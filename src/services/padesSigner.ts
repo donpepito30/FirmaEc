@@ -104,11 +104,11 @@ export async function applyPadesDigitalSignature(
 
   // 3. Guardar el PDF con los marcadores de marcador de posición
   const rawSavedPdf = await pdfDoc.save({ useObjectStreams: false });
-  const rawBuffer = Buffer.from(rawSavedPdf);
+  const rawBuffer = new Uint8Array(rawSavedPdf);
 
   // 4. Localizar la posición de /Contents <00000...> y reemplazar con el /ByteRange exacto
   const hexPlaceholder = '0'.repeat(16384);
-  const contentsOffset = rawBuffer.indexOf(hexPlaceholder);
+  const contentsOffset = findAsciiIndex(rawBuffer, hexPlaceholder);
 
   if (contentsOffset === -1) {
     throw new Error('No se pudo encontrar el marcador de posición de firma /Contents en el PDF.');
@@ -119,7 +119,6 @@ export async function applyPadesDigitalSignature(
 
   // ByteRange: [0, hexStart, hexEnd, totalLength - hexEnd]
   const byteRange = [0, hexStart, hexEnd, rawBuffer.length - hexEnd];
-  const byteRangeString = `[0 ${byteRange[1]} ${byteRange[2]} ${byteRange[3]}]`;
 
   // Crear buffers parciales para calcular el digest SHA-256
   const part1 = rawBuffer.subarray(0, byteRange[1]);
@@ -127,8 +126,8 @@ export async function applyPadesDigitalSignature(
 
   // 5. Calcular el SHA-256 Digest sobre las dos partes del ByteRange
   const md = forge.md.sha256.create();
-  md.update(part1.toString('binary'));
-  md.update(part2.toString('binary'));
+  md.update(uint8ArrayToBinaryString(part1));
+  md.update(uint8ArrayToBinaryString(part2));
   const sha256DigestHex = md.digest().toHex();
 
   // 6. Generar la firma PKCS#7 / CMS SignedData
@@ -179,30 +178,66 @@ export async function applyPadesDigitalSignature(
   p7Hex = p7Hex.padEnd(hexPlaceholder.length, '0');
 
   // 7. Insertar el /ByteRange real y la firma Hex en el PDF final
-  const signedPdf = Buffer.from(rawBuffer);
+  const signedPdf = new Uint8Array(rawBuffer);
 
   // Escribir la firma Hex en el buffer
-  signedPdf.write(p7Hex, contentsOffset, 'ascii');
+  writeAsciiAt(signedPdf, p7Hex, contentsOffset);
 
   // Buscar el patrón /ByteRange [0 0 0 0] y actualizarlo
   const byteRangePlaceholder = '/ByteRange [0 0 0 0]';
-  const byteRangeIndex = signedPdf.indexOf(byteRangePlaceholder);
+  const byteRangeIndex = findAsciiIndex(signedPdf, byteRangePlaceholder);
   if (byteRangeIndex !== -1) {
     const formattedByteRange = `/ByteRange [${byteRange[0]} ${byteRange[1]} ${byteRange[2]} ${byteRange[3]}]`.padEnd(
       byteRangePlaceholder.length,
       ' '
     );
-    signedPdf.write(formattedByteRange, byteRangeIndex, 'ascii');
+    writeAsciiAt(signedPdf, formattedByteRange, byteRangeIndex);
   }
 
   return {
-    signedPdfBytes: new Uint8Array(signedPdf),
+    signedPdfBytes: signedPdf,
     byteRange,
     hexContentsLength: p7Hex.length,
     signatureBase64: forge.util.encode64(derBuffer.getBytes()),
     sha256DigestHex,
     padesSubFilter: 'adbe.pkcs7.detached (PAdES-BES / ETSI EN 319 142)',
   };
+}
+
+/**
+ * Busca el índice de una subcadena ASCII dentro de un Uint8Array.
+ */
+function findAsciiIndex(bytes: Uint8Array, asciiStr: string, fromIndex = 0): number {
+  const needleBytes = new TextEncoder().encode(asciiStr);
+  outer: for (let i = fromIndex; i <= bytes.length - needleBytes.length; i++) {
+    for (let j = 0; j < needleBytes.length; j++) {
+      if (bytes[i + j] !== needleBytes[j]) continue outer;
+    }
+    return i;
+  }
+  return -1;
+}
+
+/**
+ * Escribe una cadena ASCII en un Uint8Array a partir de una posición dada.
+ */
+function writeAsciiAt(bytes: Uint8Array, text: string, offset: number) {
+  for (let i = 0; i < text.length; i++) {
+    bytes[offset + i] = text.charCodeAt(i);
+  }
+}
+
+/**
+ * Convierte Uint8Array a cadena binaria para forge MD.
+ */
+function uint8ArrayToBinaryString(bytes: Uint8Array): string {
+  let result = '';
+  const chunkSize = 8192;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize);
+    result += String.fromCharCode.apply(null, Array.from(chunk));
+  }
+  return result;
 }
 
 /**

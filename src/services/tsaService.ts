@@ -74,8 +74,11 @@ export async function requestRfc3161Timestamp(
 
       // Crear TimeStampReq ASN.1 básico
       const tsReqAsn1 = createBasicTimeStampReqAsn1(sha256HashHex);
-      const tsReqDerHex = forge.asn1.toDer(tsReqAsn1).toHex();
-      const tsReqBytes = Uint8Array.from(Buffer.from(tsReqDerHex, 'hex'));
+      const tsReqDerBytes = forge.asn1.toDer(tsReqAsn1).getBytes();
+      const tsReqBytes = new Uint8Array(tsReqDerBytes.length);
+      for (let i = 0; i < tsReqDerBytes.length; i++) {
+        tsReqBytes[i] = tsReqDerBytes.charCodeAt(i);
+      }
 
       const response = await fetch(profile.url, {
         method: 'POST',
@@ -91,7 +94,15 @@ export async function requestRfc3161Timestamp(
 
       if (response.ok) {
         const respBuffer = await response.arrayBuffer();
-        const respHex = Buffer.from(respBuffer).toString('hex');
+        const respUint8 = new Uint8Array(respBuffer);
+        
+        // Convertir Uint8Array a cadena binaria para forge.util
+        let binStr = '';
+        for (let i = 0; i < respUint8.length; i++) {
+          binStr += String.fromCharCode(respUint8[i]);
+        }
+        const respHex = forge.util.bytesToHex(binStr);
+        const tokenBase64 = forge.util.encode64(binStr);
         
         return {
           tsaName: profile.name,
@@ -100,7 +111,7 @@ export async function requestRfc3161Timestamp(
           serialNumber: `EC-TSA-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
           sha256DigestHex: sha256HashHex,
           status: 'granted',
-          tokenBase64: Buffer.from(respBuffer).toString('base64'),
+          tokenBase64,
           tokenHex: respHex,
           isOfficialEcuadorTsa: profile.isOfficialEcuador,
         };
