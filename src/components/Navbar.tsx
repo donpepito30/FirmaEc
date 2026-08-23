@@ -60,7 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/50 p-1 overflow-hidden shadow-sm group-hover:border-blue-500 transition-colors flex items-center justify-center">
               <img 
                 src="/favicon.svg" 
-                alt="FirmaEC _PRO Logo" 
+                alt="FirmaEC PRO Logo" 
                 className="w-full h-full object-contain"
                 onError={(e) => {
                   // Fallback to SVG asset or icon
@@ -71,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg text-slate-900 font-display tracking-tight">
-                  FirmaEC <span className="text-blue-600">_PRO</span>
+                  FirmaEC <span className="text-blue-600">PRO</span>
                 </span>
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 uppercase">
                   Ecuador PKI

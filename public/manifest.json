@@ -1,6 +1,6 @@
 {
-  "name": "FirmaEC _PRO - Firma Electrónica Ecuador",
-  "short_name": "FirmaEC _PRO",
+  "name": "FirmaEC PRO - Firma Electrónica Ecuador",
+  "short_name": "FirmaEC PRO",
   "description": "Generador de firma electrónica .p12, firmado visual de PDF y validador de certificados conforme a la normativa de Ecuador.",
   "start_url": "/",
   "id": "/",
@@ -17,6 +17,12 @@
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/pwa-512x512.png",
