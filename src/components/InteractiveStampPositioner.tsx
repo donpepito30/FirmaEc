@@ -387,8 +387,13 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   <div className="p-1.5 bg-white border-2 border-blue-600 rounded shadow-lg max-w-[170px] sm:max-w-[190px] font-mono text-[8px] leading-tight select-none pointer-events-none">
                     <div className="flex items-center gap-1.5">
                       {includeQrCode && qrDataUrl && (
-                        <div className="w-8 h-8 bg-white p-0.5 border border-slate-300 rounded flex-shrink-0 flex items-center justify-center">
-                          <img src={qrDataUrl} alt="QR" className="w-full h-full object-contain" />
+                        <div className="w-8 h-8 bg-white p-0.5 rounded flex-shrink-0 flex items-center justify-center">
+                          <img 
+                            src={qrDataUrl} 
+                            alt="QR" 
+                            className="w-full h-full object-contain" 
+                            style={{ imageRendering: 'pixelated' }}
+                          />
                         </div>
                       )}
                       <div className="flex-1 min-w-0">

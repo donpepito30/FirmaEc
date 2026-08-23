@@ -1,5 +1,5 @@
 import forge from 'node-forge';
-import { PDFDocument, PDFPage, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, PDFPage, PDFImage, rgb, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
 import { compressImage } from '../utils/imageCompression';
 import { 
@@ -1148,14 +1148,14 @@ export function buildScannerFriendlyQrText(config: QrGenerationConfig): string {
 }
 
 /**
- * Dibuja un código QR 100% vectorial nativo directamente en la página PDF con pdf-lib.
- * A diferencia del renderizado rasterizado (PNG/JPEG) que sufre de desenfoque por interpolación
- * bilineal al escalar a tamaños pequeños (50-60pt), los módulos vectoriales mantienen
- * un contraste 100% puro (#000000 sobre #FFFFFF) y bordes matemáticamente perfectos.
- * Esto garantiza que cámaras de teléfonos móviles (iOS Camera, Google Lens, Xiaomi, Samsung, Huawei)
- * lean el código QR instantáneamente y sin errores de enfoque.
+ * Dibuja un código QR de alta legibilidad en una página PDF insertando una imagen HD embebida.
+ * Al usar un único objeto de imagen en lugar de miles de rectángulos vectoriales independientes,
+ * se elimina completamente la rejilla de rejuntas/líneas blancas internas introducida por el
+ * anti-aliasing de los visores PDF (Chrome, Acrobat, Firefox, PDF.js), garantizando que los
+ * patrones de búsqueda (finder patterns) permanezcan 100% sólidos y legibles por cámaras móviles.
  */
-export function drawVectorQrCodeToPdfPage(
+export async function drawVectorQrCodeToPdfPage(
+  pdfDoc: PDFDocument,
   page: PDFPage,
   payloadText: string,
   options: {
@@ -1165,57 +1165,91 @@ export function drawVectorQrCodeToPdfPage(
     marginModules?: number;
     errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H';
   }
-): void {
+): Promise<void> {
   const ecLevel = options.errorCorrectionLevel || 'M';
-  const qr = QRCode.create(payloadText, { errorCorrectionLevel: ecLevel });
-  const N = qr.modules.size;
-  const margin = options.marginModules ?? 4; // 4 módulos de Quiet Zone (Zona de Silencio) conforme a la norma ISO/IEC 18004
-  const totalModules = N + margin * 2;
-  const s = options.size / totalModules;
+  const margin = options.marginModules ?? 4;
 
-  // 1. Fondo blanco puro opaco para garantizar la zona de silencio (Quiet Zone)
-  page.drawRectangle({
+  const pngDataUrl = await generateHighReadabilityQrPng(payloadText, {
+    width: 2048,
+    margin,
+    errorCorrectionLevel: ecLevel
+  });
+
+  const base64Png = pngDataUrl.replace(/^data:image\/png;base64,/, '');
+  const pngBytes = Uint8Array.from(atob(base64Png), c => c.charCodeAt(0));
+  const qrImage = await pdfDoc.embedPng(pngBytes);
+
+  page.drawImage(qrImage, {
     x: options.x,
     y: options.y,
     width: options.size,
-    height: options.size,
-    color: rgb(1, 1, 1),
+    height: options.size
   });
-
-  // 2. Módulos oscuros vectoriales de alta precisión con micro-solapamiento (+0.04pt)
-  for (let r = 0; r < N; r++) {
-    for (let c = 0; c < N; c++) {
-      if (qr.modules.get(r, c)) {
-        page.drawRectangle({
-          x: options.x + (c + margin) * s,
-          y: options.y + (N - 1 - r + margin) * s,
-          width: s + 0.04,
-          height: s + 0.04,
-          color: rgb(0, 0, 0),
-        });
-      }
-    }
-  }
 }
 
 /**
- * Genera un código QR de grado industrial (1024x1024 px),
- * margen de silencio de 4 módulos (ISO/IEC 18004) y corrección de error Nivel M (15%),
- * garantizando lectura instantánea desde cámaras de celulares y lectores ópticos.
+ * Genera un código QR 100% vectorial SVG nativo con shape-rendering="crispEdges",
+ * fondo blanco puro opaco, zona de silencio de 4 módulos (ISO/IEC 18004) y redundancia Nivel M (15%).
+ * Al ser un formato vectorial SVG puro, elimina completamente el desenfoque bilineal/bicúbico
+ * que los navegadores introducen al redimensionar imágenes PNG en pantallas LCD/OLED,
+ * garantizando que cualquier cámara móvil (Google Lens, iPhone Camera, Xiaomi, Huawei, Samsung)
+ * enfoque y decodifique instantáneamente el código QR desde la pantalla.
  */
-export async function generateHighReadabilityQr(
+export async function generateHighReadabilityQrSvg(
+  payloadText: string,
+  options?: { margin?: number; errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H' }
+): Promise<string> {
+  const ecLevel = options?.errorCorrectionLevel || 'M';
+  const margin = options?.margin ?? 4;
+  
+  const rawSvg = await QRCode.toString(payloadText, {
+    type: 'svg',
+    margin,
+    errorCorrectionLevel: ecLevel,
+    color: {
+      dark: '#000000',
+      light: '#ffffff'
+    }
+  });
+
+  // Asegurar atributo shape-rendering="crispEdges" para bordes matemáticamente perfectos sin anti-aliasing borroso
+  const crispSvg = rawSvg.includes('shape-rendering="crispEdges"')
+    ? rawSvg
+    : rawSvg.replace('<svg ', '<svg shape-rendering="crispEdges" ');
+
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(crispSvg)}`;
+}
+
+/**
+ * Genera un código QR en formato PNG rasterizado de ultra-alta resolución (2048x2048 px)
+ * para descargas directas como archivo de imagen de alta fidelidad.
+ */
+export async function generateHighReadabilityQrPng(
   payloadText: string,
   options?: { width?: number; margin?: number; errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H' }
 ): Promise<string> {
   return await QRCode.toDataURL(payloadText, {
-    margin: options?.margin ?? 4, // 4 módulos de zona de silencio (estándar ISO/IEC 18004)
-    width: options?.width ?? 1024, // Ultra alta resolución para evitar pixelado o bordes borrosos
-    errorCorrectionLevel: options?.errorCorrectionLevel ?? 'M', // Nivel M (15% redundancia óptima)
+    margin: options?.margin ?? 4,
+    width: options?.width ?? 2048,
+    errorCorrectionLevel: options?.errorCorrectionLevel ?? 'M',
     color: {
-      dark: '#000000', // 100% Negro puro
-      light: '#ffffff'  // 100% Blanco puro
+      dark: '#000000',
+      light: '#ffffff'
     }
   });
+}
+
+/**
+ * Genera el Data URL de alta legibilidad para vistas previas web (utiliza SVG vectorial nítido por defecto)
+ */
+export async function generateHighReadabilityQr(
+  payloadText: string,
+  options?: { width?: number; margin?: number; errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H'; preferPng?: boolean }
+): Promise<string> {
+  if (options?.preferPng) {
+    return await generateHighReadabilityQrPng(payloadText, options);
+  }
+  return await generateHighReadabilityQrSvg(payloadText, options);
 }
 
 /**
@@ -1274,6 +1308,23 @@ export async function signAndStampDocumentPdf(
     margin: 4,
     errorCorrectionLevel: 'M'
   });
+
+  // Pre-embeber la imagen PNG del código QR en ultra-alta definición (2048x2048 px) en los recursos del PDF.
+  // Al usar una imagen rasterizada HD embebida en lugar de miles de rectángulos vectoriales independientes,
+  // se elimina completamente el artefacto de rejilla de subpíxeles/líneas blancas internas que introducen
+  // los visores PDF (Chrome, Acrobat, Firefox) por anti-aliasing, garantizando que los tres patrones de búsqueda
+  // (finder patterns) se mantengan 100% sólidos, negros y de lectura instantánea por cámaras móviles.
+  let embeddedQrImage: PDFImage | null = null;
+  if (config.includeQrCode) {
+    const qrPngUrl = await generateHighReadabilityQrPng(qrVerificationText, {
+      width: 2048,
+      margin: 4,
+      errorCorrectionLevel: 'M'
+    });
+    const base64Png = qrPngUrl.replace(/^data:image\/png;base64,/, '');
+    const pngBytes = Uint8Array.from(atob(base64Png), c => c.charCodeAt(0));
+    embeddedQrImage = await pdfDoc.embedPng(pngBytes);
+  }
 
   // Tipografías estándar embebidas en PDF
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -1362,15 +1413,14 @@ export async function signAndStampDocumentPdf(
         borderWidth: config.stampStyle === 'minimal-box' ? 0.8 : 0
       });
 
-      // Código QR a la izquierda con renderizado vectorial nativo (0 blur, 100% contraste)
+      // Código QR a la izquierda con alta fidelidad (0 antialiasing seams, 100% contraste)
       const qrSize = Math.min(60, stampHeight - 8);
-      if (config.includeQrCode) {
-        drawVectorQrCodeToPdfPage(page, qrVerificationText, {
+      if (config.includeQrCode && embeddedQrImage) {
+        page.drawImage(embeddedQrImage, {
           x: stampX + 4,
           y: stampY + (stampHeight - qrSize) / 2,
-          size: qrSize,
-          marginModules: 4,
-          errorCorrectionLevel: 'M'
+          width: qrSize,
+          height: qrSize
         });
       }
 
@@ -1436,14 +1486,13 @@ export async function signAndStampDocumentPdf(
         color: rgb(1, 1, 1)
       });
 
-      if (config.includeQrCode) {
+      if (config.includeQrCode && embeddedQrImage) {
         const qrSize = Math.min(58, stampHeight - 16);
-        drawVectorQrCodeToPdfPage(page, qrVerificationText, {
+        page.drawImage(embeddedQrImage, {
           x: stampX + stampWidth - qrSize - 6,
           y: stampY + 6,
-          size: qrSize,
-          marginModules: 4,
-          errorCorrectionLevel: 'M'
+          width: qrSize,
+          height: qrSize
         });
       }
 
@@ -1520,14 +1569,13 @@ export async function signAndStampDocumentPdf(
         color: rgb(1, 1, 1)
       });
 
-      if (config.includeQrCode) {
+      if (config.includeQrCode && embeddedQrImage) {
         const qrSize = Math.min(58, stampHeight - 16);
-        drawVectorQrCodeToPdfPage(page, qrVerificationText, {
+        page.drawImage(embeddedQrImage, {
           x: stampX + stampWidth - qrSize - 6,
           y: stampY + 6,
-          size: qrSize,
-          marginModules: 4,
-          errorCorrectionLevel: 'M'
+          width: qrSize,
+          height: qrSize
         });
       }
 
@@ -1588,14 +1636,13 @@ export async function signAndStampDocumentPdf(
         borderWidth: 0.5
       });
 
-      if (config.includeQrCode) {
+      if (config.includeQrCode && embeddedQrImage) {
         const qrSize = Math.min(56, stampHeight - 14);
-        drawVectorQrCodeToPdfPage(page, qrVerificationText, {
+        page.drawImage(embeddedQrImage, {
           x: stampX + stampWidth - qrSize - 6,
           y: stampY + 7,
-          size: qrSize,
-          marginModules: 4,
-          errorCorrectionLevel: 'M'
+          width: qrSize,
+          height: qrSize
         });
       }
 

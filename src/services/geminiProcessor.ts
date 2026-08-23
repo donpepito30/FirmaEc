@@ -45,7 +45,7 @@ export async function analyzeDocumentWithGemini(
       clearTimeout(timeoutId);
     });
 
-    const data: any = await response.json();
+    const data: any = await response.json().catch(() => ({}));
 
     // ✅ CASO 1: Validación exitosa online
     if (response.ok && data.validationMode === 'online') {
@@ -60,21 +60,20 @@ export async function analyzeDocumentWithGemini(
       };
     }
 
-    // ⚠️ CASO 2: Error en Gemini (fallback error, status 503)
-    if (response.status === 503) {
+    // ⚠️ CASO 2: Fallback por alta demanda temporal o error de IA (status 200 o 503)
+    if (data.validationMode === 'fallback_error' || response.status === 503) {
       return {
-        isValid: null, // IMPORTANTE: null, no false (no validado)
+        isValid: null, // null = no validado (permite continuar con verificación manual)
         documentType: data.documentType || 'sin_validar',
         quality: 'unknown',
         hasSignatureField: null,
-        recommendations: [
-          '❌ Validación con IA no disponible',
-          `Razón: ${data.error || 'Servicio de IA no disponible temporalmente'}`,
-          '✓ Puede proceder bajo verificación manual',
+        recommendations: Array.isArray(data.recommendations) ? data.recommendations : [
+          'ℹ️ Validación automática con IA pausada por alta demanda temporal',
+          '✓ Puede continuar con la firma y verificación manual del documento',
         ],
         rejectionReason: null,
         validationMode: 'fallback_error',
-        error: data.error,
+        error: data.error || 'Servicio de IA en alta demanda temporal',
       };
     }
 
