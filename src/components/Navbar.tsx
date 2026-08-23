@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   KeyRound, 
   ShieldCheck, 
@@ -10,6 +10,7 @@ import {
   FileText,
   Lock
 } from 'lucide-react';
+import headerLogo from '../assets/logo.png';
 
 interface NavbarProps {
   activeTab: string;
@@ -57,16 +58,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('signer')}
             className="flex items-center gap-3 cursor-pointer group flex-shrink-0"
           >
-            <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/50 p-1 overflow-hidden shadow-sm group-hover:border-blue-500 transition-colors flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/50 p-1 overflow-hidden shadow-sm group-hover:border-blue-500 transition-colors flex items-center justify-center relative">
               <img 
-                src="/pwa-192x192.png" 
+                src={headerLogo} 
                 alt="FirmaEC PRO Logo" 
-                className="w-full h-full object-contain rounded-lg"
+                className="w-full h-full object-contain rounded-lg relative z-10"
                 onError={(e) => {
-                  // Fallback to SVG asset or icon
-                  (e.target as HTMLElement).style.display = 'none';
+                  const target = e.currentTarget;
+                  if (target.src !== '/logo.png') {
+                    target.src = '/logo.png';
+                  } else {
+                    target.style.opacity = '0';
+                  }
                 }}
               />
+              <FileSignature className="w-5 h-5 text-blue-400 absolute inset-0 m-auto z-0" />
             </div>
             <div>
               <div className="flex items-center gap-2">

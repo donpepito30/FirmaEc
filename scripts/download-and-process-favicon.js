@@ -88,6 +88,27 @@ async function processIcons() {
     .png({ quality: 100 })
     .toFile(path.join(publicDir, 'favicon.png'));
 
+  // Generate favicon.ico (32x32 ICO/PNG)
+  await sharp(sourceFile)
+    .resize(32, 32, { fit: 'contain', background: { r: 15, g: 23, b: 42, alpha: 1 } })
+    .toFile(path.join(publicDir, 'favicon.ico'));
+
+  // Save to src/assets/logo.png for direct Vite bundler imports
+  const srcAssetsDir = path.resolve('src/assets');
+  if (!fs.existsSync(srcAssetsDir)) {
+    fs.mkdirSync(srcAssetsDir, { recursive: true });
+  }
+  await sharp(sourceFile)
+    .resize(192, 192, { fit: 'contain', background: { r: 15, g: 23, b: 42, alpha: 1 } })
+    .png({ quality: 100 })
+    .toFile(path.join(srcAssetsDir, 'logo.png'));
+
+  // Also save public/logo.png
+  await sharp(sourceFile)
+    .resize(192, 192, { fit: 'contain', background: { r: 15, g: 23, b: 42, alpha: 1 } })
+    .png({ quality: 100 })
+    .toFile(path.join(publicDir, 'logo.png'));
+
   await sharp(sourceFile)
     .resize(512, 512, { fit: 'contain', background: { r: 15, g: 23, b: 42, alpha: 1 } })
     .jpeg({ quality: 95 })
