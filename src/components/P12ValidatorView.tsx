@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { P12InspectionResult } from '../types';
 import { inspectP12File } from '../services/p12Generator';
+import { verifyCertificateRevocationStatus, OcspCrlCheckResult } from '../services/ocspCrlService';
 
 export const P12ValidatorView: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -23,6 +24,22 @@ export const P12ValidatorView: React.FC = () => {
   const [isInspecting, setIsInspecting] = useState(false);
   const [result, setResult] = useState<P12InspectionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [isCheckingOcsp, setIsCheckingOcsp] = useState(false);
+  const [ocspResult, setOcspResult] = useState<OcspCrlCheckResult | null>(null);
+
+  const handleCheckOcspRevocation = async () => {
+    if (!result?.certPem) return;
+    setIsCheckingOcsp(true);
+    try {
+      const ocspRes = await verifyCertificateRevocationStatus(result.certPem);
+      setOcspResult(ocspRes);
+    } catch {
+      // Ignorar error
+    } finally {
+      setIsCheckingOcsp(false);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -323,6 +340,46 @@ export const P12ValidatorView: React.FC = () => {
                   <div className="p-2 bg-slate-50 rounded-lg text-[10px] font-mono-code text-slate-700 break-all border border-slate-200">
                     {result.sha256Fingerprint}
                   </div>
+                </div>
+
+                {/* OCSP / CRL LIVE VERIFICATION SECTION */}
+                <div className="pt-3 border-t border-slate-200 space-y-3">
+                  <button
+                    type="button"
+                    onClick={handleCheckOcspRevocation}
+                    disabled={isCheckingOcsp}
+                    className="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition cursor-pointer"
+                  >
+                    {isCheckingOcsp ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Consultando Responder OCSP ARCOTEL...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                        <span>Verificar Revocación en Tiempo Real (OCSP & CRL)</span>
+                      </>
+                    )}
+                  </button>
+
+                  {ocspResult && (
+                    <div className="p-3 bg-slate-900 text-slate-200 rounded-xl text-xs space-y-2 border border-slate-800 font-mono">
+                      <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
+                        <span className="font-bold text-emerald-400 flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          OCSP Status: {ocspResult.status.toUpperCase()}
+                        </span>
+                        <span className="text-[10px] text-slate-400">{ocspResult.checkType}</span>
+                      </div>
+                      <p className="text-[10.5px] text-slate-300">ECI: {ocspResult.eciName}</p>
+                      <div className="space-y-1 text-[10px] text-slate-400">
+                        {ocspResult.details.map((d, i) => (
+                          <p key={i}>{d}</p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -129,6 +129,10 @@ export interface DocumentSigningConfig {
   includeLegalRef: boolean;
   stampWidth: number;
   stampHeight: number;
+  enablePadesDictionary?: boolean;
+  enableTsaTimestamp?: boolean;
+  tsaServerId?: string;
+  enableOcspCheck?: boolean;
 }
 
 export interface SignedPdfResult {
@@ -141,6 +145,24 @@ export interface SignedPdfResult {
   signedPages: number[];
   qrDataUrl: string;
   stampCoordinates: { x: number; y: number; width: number; height: number };
+  padesInfo?: {
+    byteRange: number[];
+    padesSubFilter: string;
+    isPadesCompliant: boolean;
+  };
+  tsaInfo?: {
+    tsaName: string;
+    timestampFormattedEcuador: string;
+    serialNumber: string;
+    isOfficialEcuadorTsa: boolean;
+  };
+  ocspInfo?: {
+    status: 'good' | 'revoked' | 'unknown';
+    eciName: string;
+    isArcotelAccredited: boolean;
+    details: string[];
+  };
+  previousSignaturesCount?: number;
 }
 
 import { GeminiDocumentAnalysis } from './services/geminiProcessor';

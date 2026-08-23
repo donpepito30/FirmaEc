@@ -33,7 +33,8 @@ import {
   Minimize2,
   ZoomIn,
   Smartphone,
-  X
+  X,
+  Clock
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import confetti from 'canvas-confetti';
@@ -62,6 +63,8 @@ import { validateDocumentWithGemini } from '../services/geminiProcessor';
 import { InteractiveStampPositioner } from './InteractiveStampPositioner';
 import { renderPdfPageToDataUrl } from '../utils/pdfRenderer';
 import { ExternalValidationGuide } from './ExternalValidationGuide';
+import { XadesSignerTool } from './XadesSignerTool';
+import { TSA_SERVERS } from '../services/tsaService';
 
 interface DocumentSignerDemoProps {
   initialResult?: GeneratedP12Result | null;
@@ -100,6 +103,15 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   const [quickId, setQuickId] = useState('1715894320');
   const [quickCity, setQuickCity] = useState('Quito, Ecuador');
   const [quickReason, setQuickReason] = useState('Suscripción y conformidad del documento');
+
+  // Tool mode tab: PDF Signer (PAdES) vs XML SRI Signer (XAdES)
+  const [activeModeTab, setActiveModeTab] = useState<'pdf_pades' | 'xml_xades'>('pdf_pades');
+
+  // Advanced Security & Cryptographic Options (PAdES, TSA RFC 3161, OCSP Revocation)
+  const [enablePadesDictionary, setEnablePadesDictionary] = useState(true);
+  const [enableTsaTimestamp, setEnableTsaTimestamp] = useState(true);
+  const [tsaServerId, setTsaServerId] = useState('bce_tsa');
+  const [enableOcspCheck, setEnableOcspCheck] = useState(true);
 
   // Stamping Configuration State - Defaults match Ecuador usage (last page, bottom-right signature field)
   const [pageOption, setPageOption] = useState<'last' | 'first' | 'all' | 'specific'>('last');
@@ -406,7 +418,11 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
         includeQrCode,
         includeLegalRef: true,
         stampWidth: 245,
-        stampHeight: 68
+        stampHeight: 68,
+        enablePadesDictionary,
+        enableTsaTimestamp,
+        tsaServerId,
+        enableOcspCheck,
       };
 
       // 3. Process all documents in batch
@@ -482,20 +498,64 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
         <div className="relative z-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
             <Stamp className="w-3.5 h-3.5 text-blue-400" />
-            <span>Estándar Oficial Ecuador • FirmaEC & Quipux</span>
+            <span>Suite de Firma Electrónica Ecuador • FirmaEC & SRI</span>
           </div>
           
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            Firmado y Estampado Digital de Documentos PDF
+            Firmado Digital PAdES (PDF) & XAdES (XML SRI)
           </h1>
           
           <p className="text-slate-300 text-xs sm:text-sm max-w-3xl leading-relaxed">
-            Sube la cantidad de documentos que requieras (PDF, imágenes o texto). Conforme al uso y estándar en Ecuador, el sello visual con <strong>Código QR de verificación accesible</strong> se estampa directamente <strong>en la última hoja sobre el campo reservado para la firma</strong>.
+            Soporte integral para firmado PAdES-BES en documentos PDF con sello de tiempo RFC 3161 y validación de revocación OCSP, más firmado XAdES-BES para comprobantes de facturación electrónica del SRI.
           </p>
+
+          {/* MODE SWITCHER TABS */}
+          <div className="flex flex-wrap gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setActiveModeTab('pdf_pades')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+                activeModeTab === 'pdf_pades'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
+                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              <span>Firmador PDF (PAdES / FirmaEC)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveModeTab('xml_xades')}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
+                activeModeTab === 'xml_xades'
+                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/50'
+                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
+              }`}
+            >
+              <FileCode className="w-4 h-4" />
+              <span>Firmador XML Comprobantes SRI (XAdES-BES)</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {activeModeTab === 'xml_xades' ? (
+        <XadesSignerTool
+          initialP12Pem={
+            initialResult
+              ? {
+                  certPem: initialResult.certPem,
+                  privateKeyPem: initialResult.privateKeyPem,
+                  signerName: initialResult.subject.cn,
+                  idNumber: initialResult.subject.serialNumber || '1715894320',
+                }
+              : null
+          }
+        />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* LEFT COLUMN: CONTROLS & SETTINGS (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
@@ -919,6 +979,84 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             documentName={uploadedDocs[0]?.name}
           />
 
+          {/* ADVANCED CRYPTOGRAPHIC OPTIONS PANEL */}
+          <div className="bg-slate-900 text-slate-100 rounded-2xl p-5 border border-slate-800 space-y-4 shadow-lg">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-800 text-xs font-bold text-blue-400">
+              <ShieldCheck className="w-4 h-4 text-blue-400" />
+              <span>Opciones Criptográficas e Integridad Legal (PAdES / TSA / OCSP)</span>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              {/* PAdES Diccionario /Sig Toggle */}
+              <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={enablePadesDictionary}
+                  onChange={(e) => setEnablePadesDictionary(e.target.checked)}
+                  className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
+                />
+                <div>
+                  <span className="font-bold text-slate-200 block">Inyectar Diccionario Criptográfico PAdES (/ByteRange & /Sig)</span>
+                  <span className="text-[11px] text-slate-400">
+                    Genera el contenedor PKCS#7 conforme a ISO 32000-1 para panel verde en Adobe Acrobat.
+                  </span>
+                </div>
+              </label>
+
+              {/* TSA Timestamp Toggle & Selector */}
+              <div className="space-y-2 pt-1 border-t border-slate-800/80">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={enableTsaTimestamp}
+                    onChange={(e) => setEnableTsaTimestamp(e.target.checked)}
+                    className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
+                  />
+                  <div>
+                    <span className="font-bold text-slate-200 block">Sello de Tiempo Criptográfico TSA (RFC 3161)</span>
+                    <span className="text-[11px] text-slate-400">
+                      Incrusta estampa de hora oficial e inalterable para validez PAdES-B-T.
+                    </span>
+                  </div>
+                </label>
+
+                {enableTsaTimestamp && (
+                  <div className="ml-7 pt-1">
+                    <select
+                      value={tsaServerId}
+                      onChange={(e) => setTsaServerId(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:ring-2 focus:ring-blue-500"
+                    >
+                      {TSA_SERVERS.map((tsa) => (
+                        <option key={tsa.id} value={tsa.id}>
+                          {tsa.name} ({tsa.country})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* OCSP Revocation Check Toggle */}
+              <div className="pt-1 border-t border-slate-800/80">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={enableOcspCheck}
+                    onChange={(e) => setEnableOcspCheck(e.target.checked)}
+                    className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
+                  />
+                  <div>
+                    <span className="font-bold text-slate-200 block">Verificación de Revocación en Tiempo Real (OCSP & CRL)</span>
+                    <span className="text-[11px] text-slate-400">
+                      Valida la serie del certificado contra los responders autorizados por ARCOTEL.
+                    </span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
           {/* ERROR DISPLAY */}
           {signingError && (
             <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-3">
@@ -1001,6 +1139,57 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     <p className="text-[9.5px] text-slate-400 break-all truncate">
                       SHA-256: <span className="text-blue-400">{res.originalSha256}</span>
                     </p>
+
+                    {/* BADGES OF PADIES, TSA, OCSP, MULTI-FIRMA */}
+                    <div className="pt-2 border-t border-slate-700/60 space-y-1.5 text-[10px] font-sans">
+                      {res.padesInfo && (
+                        <div className="flex items-center justify-between text-blue-300 bg-blue-950/60 px-2 py-1 rounded border border-blue-800/40">
+                          <span className="font-semibold flex items-center gap-1">
+                            <Shield className="w-3 h-3 text-blue-400" />
+                            PAdES / ISO 32000-1
+                          </span>
+                          <span className="font-mono text-[9px] text-blue-200">
+                            ByteRange: [{res.padesInfo.byteRange.join(', ')}]
+                          </span>
+                        </div>
+                      )}
+
+                      {res.tsaInfo && (
+                        <div className="flex items-center justify-between text-amber-300 bg-amber-950/60 px-2 py-1 rounded border border-amber-800/40">
+                          <span className="font-semibold flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-amber-400" />
+                            TSA RFC 3161: {res.tsaInfo.tsaName.split(' ')[0]}
+                          </span>
+                          <span className="font-mono text-[9px] text-amber-200">
+                            {res.tsaInfo.timestampFormattedEcuador}
+                          </span>
+                        </div>
+                      )}
+
+                      {res.ocspInfo && (
+                        <div className="flex items-center justify-between text-emerald-300 bg-emerald-950/60 px-2 py-1 rounded border border-emerald-800/40">
+                          <span className="font-semibold flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                            OCSP ARCOTEL: {res.ocspInfo.status.toUpperCase()}
+                          </span>
+                          <span className="text-[9px] text-emerald-200 truncate max-w-[140px]">
+                            ECI: {res.ocspInfo.eciName}
+                          </span>
+                        </div>
+                      )}
+
+                      {res.previousSignaturesCount !== undefined && res.previousSignaturesCount > 0 && (
+                        <div className="flex items-center justify-between text-purple-300 bg-purple-950/60 px-2 py-1 rounded border border-purple-800/40">
+                          <span className="font-semibold flex items-center gap-1">
+                            <Layers className="w-3 h-3 text-purple-400" />
+                            Multi-Firma Preservada
+                          </span>
+                          <span className="font-bold text-[9px] text-purple-200">
+                            {res.previousSignaturesCount} firma(s) anterior(es) intacta(s)
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1429,6 +1618,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
           isOpen={showValidationGuide}
           onClose={() => setShowValidationGuide(false)}
         />
+      )}
+      </>
       )}
     </div>
   );

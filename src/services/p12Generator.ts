@@ -2,6 +2,9 @@ import forge from 'node-forge';
 import { PDFDocument, PDFPage, PDFImage, rgb, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
 import { compressImage } from '../utils/imageCompression';
+import { applyPadesDigitalSignature, inspectPadesSignatures } from './padesSigner';
+import { requestRfc3161Timestamp } from './tsaService';
+import { verifyCertificateRevocationStatus } from './ocspCrlService';
 import { 
   GeneratedP12Result, 
   P12GenerateOptions, 
@@ -1709,9 +1712,74 @@ export async function signAndStampDocumentPdf(
   pdfDoc.setCreator(`FirmaEC Suite / PKI Ecuador - Validador https://firmadigital.gob.ec`);
   pdfDoc.setModificationDate(timestamp);
 
-  // 6. Guardar el PDF con la estampa visual y metadatos
-  const signedPdfBytes = await pdfDoc.save();
-  const pdfBlob = new Blob([signedPdfBytes], { type: 'application/pdf' });
+  // 6. Detectar firmas previas (Multi-Firma en Cascada)
+  const previousSignatures = await inspectPadesSignatures(new Uint8Array(pdfBuffer));
+  const previousSignaturesCount = previousSignatures.length;
+
+  // 7. Guardar el PDF base con la estampa visual y metadatos
+  let finalPdfBytes = await pdfDoc.save({ useObjectStreams: false });
+
+  let padesInfoResult: SignedPdfResult['padesInfo'];
+  let tsaInfoResult: SignedPdfResult['tsaInfo'];
+  let ocspInfoResult: SignedPdfResult['ocspInfo'];
+
+  // 8. Inyectar diccionario criptográfico PAdES / ByteRange (/Sig) si está activado
+  if (config.enablePadesDictionary !== false) {
+    try {
+      const padesResult = await applyPadesDigitalSignature(finalPdfBytes, {
+        signerName: config.signerName,
+        idNumber: config.idNumber,
+        reason: config.reason,
+        location: config.location,
+        privateKeyPem,
+        certPem,
+      });
+
+      finalPdfBytes = padesResult.signedPdfBytes;
+      padesInfoResult = {
+        byteRange: padesResult.byteRange,
+        padesSubFilter: padesResult.padesSubFilter,
+        isPadesCompliant: true,
+      };
+    } catch (padesErr) {
+      console.warn('Advertencia en inyección PAdES:', padesErr);
+    }
+  }
+
+  // 9. Sello de Tiempo Criptográfico TSA RFC 3161
+  if (config.enableTsaTimestamp !== false) {
+    try {
+      const tsaResult = await requestRfc3161Timestamp(
+        originalSha256,
+        config.tsaServerId || 'firmaec_simulated_tsa'
+      );
+      tsaInfoResult = {
+        tsaName: tsaResult.tsaName,
+        timestampFormattedEcuador: tsaResult.timestampFormattedEcuador,
+        serialNumber: tsaResult.serialNumber,
+        isOfficialEcuadorTsa: tsaResult.isOfficialEcuadorTsa,
+      };
+    } catch (tsaErr) {
+      console.warn('Advertencia en Sello de Tiempo TSA:', tsaErr);
+    }
+  }
+
+  // 10. Verificación de Revocación en Tiempo Real (OCSP / CRL ARCOTEL ECI)
+  if (config.enableOcspCheck !== false) {
+    try {
+      const ocspRes = await verifyCertificateRevocationStatus(certPem);
+      ocspInfoResult = {
+        status: ocspRes.status,
+        eciName: ocspRes.eciName,
+        isArcotelAccredited: ocspRes.isArcotelAccredited,
+        details: ocspRes.details,
+      };
+    } catch (ocspErr) {
+      console.warn('Advertencia en verificación OCSP/CRL:', ocspErr);
+    }
+  }
+
+  const pdfBlob = new Blob([finalPdfBytes], { type: 'application/pdf' });
   const safeName = config.signerName.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 25);
   const fileName = `documento_firmado_${safeName}_firmaec.pdf`;
 
@@ -1724,7 +1792,11 @@ export async function signAndStampDocumentPdf(
     pageCount,
     signedPages: targetPageIndices.map(idx => idx + 1),
     qrDataUrl,
-    stampCoordinates: finalStampCoords
+    stampCoordinates: finalStampCoords,
+    padesInfo: padesInfoResult,
+    tsaInfo: tsaInfoResult,
+    ocspInfo: ocspInfoResult,
+    previousSignaturesCount,
   };
 }
 
