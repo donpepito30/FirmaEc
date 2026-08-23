@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import https from 'https';
 
-const imageUrl = 'https://i.ibb.co/gLHyRXGF/1787509151518.png';
+const imageUrl = 'https://i.ibb.co/RkZ2DM14/1787509151518.png';
 const publicDir = path.resolve('public');
 const sourceFile = path.join(publicDir, 'custom-source-icon.png');
 
@@ -92,6 +92,14 @@ async function processIcons() {
     .resize(512, 512, { fit: 'contain', background: { r: 15, g: 23, b: 42, alpha: 1 } })
     .jpeg({ quality: 95 })
     .toFile(path.join(publicDir, 'favicon.jpg'));
+
+  // 7. Generate favicon.svg containing base64 PNG
+  const pwa512Buffer = fs.readFileSync(path.join(publicDir, 'pwa-512x512.png'));
+  const base64Png = pwa512Buffer.toString('base64');
+  const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <image href="data:image/png;base64,${base64Png}" width="512" height="512" />
+</svg>`;
+  fs.writeFileSync(path.join(publicDir, 'favicon.svg'), svgContent);
 
   console.log('All PWA icons & favicons updated from user URL successfully!');
 }
