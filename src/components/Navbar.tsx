@@ -59,9 +59,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700/50 p-1 overflow-hidden shadow-sm group-hover:border-blue-500 transition-colors flex items-center justify-center">
               <img 
-                src="/favicon.svg" 
+                src="/pwa-192x192.png" 
                 alt="FirmaEC PRO Logo" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain rounded-lg"
                 onError={(e) => {
                   // Fallback to SVG asset or icon
                   (e.target as HTMLElement).style.display = 'none';
