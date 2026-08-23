@@ -54,6 +54,7 @@ import { handleFileError } from '../utils/errorHandler';
 import { validateDocumentWithGemini } from '../services/geminiProcessor';
 import { InteractiveStampPositioner } from './InteractiveStampPositioner';
 import { renderPdfPageToDataUrl } from '../utils/pdfRenderer';
+import { ExternalValidationGuide } from './ExternalValidationGuide';
 
 interface DocumentSignerDemoProps {
   initialResult?: GeneratedP12Result | null;
@@ -107,6 +108,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   const [signedResults, setSignedResults] = useState<SignedPdfResult[]>([]);
   const [signingError, setSigningError] = useState<string | null>(null);
   const [copiedQrText, setCopiedQrText] = useState(false);
+  const [showValidationGuide, setShowValidationGuide] = useState(false);
 
   // Live QR Preview State
   const [previewQrDataUrl, setPreviewQrDataUrl] = useState<string>('');
@@ -999,6 +1001,15 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   </button>
                 )}
 
+                <button
+                  type="button"
+                  onClick={() => setShowValidationGuide(true)}
+                  className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                >
+                  <ShieldCheck className="w-4 h-4 text-white" />
+                  <span>Instalar CA Raíz de Confianza (Adobe / FirmaEC)</span>
+                </button>
+
                 {onNavigateToValidator && (
                   <button
                     type="button"
@@ -1253,6 +1264,14 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
         </div>
 
       </div>
+
+      {/* External Validation Guide Modal */}
+      {showValidationGuide && (
+        <ExternalValidationGuide
+          isOpen={showValidationGuide}
+          onClose={() => setShowValidationGuide(false)}
+        />
+      )}
     </div>
   );
 };

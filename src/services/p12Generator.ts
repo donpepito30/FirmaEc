@@ -1646,7 +1646,23 @@ export async function signAndStampDocumentPdf(
     }
   }
 
-  // 5. Guardar el PDF con la estampa visual y metadatos
+  // 5. Establecer metadatos estandarizados ISO 32000-1 para lectura de propiedades en lectores PDF (Adobe, Foxit, Chrome)
+  pdfDoc.setTitle(`Documento Firmado Electrónicamente - ${config.signerName}`);
+  pdfDoc.setAuthor(config.signerName);
+  pdfDoc.setSubject(`Firma Digital Ecuador | CI/RUC: ${config.idNumber || 'N/A'} | Motivo: ${config.reason || 'Firma de Conformidad'}`);
+  pdfDoc.setKeywords([
+    'FIRMA_ELECTRONICA_ECUADOR',
+    `FIRMANTE:${config.signerName.replace(/\s+/g, '_')}`,
+    `IDENTIFICACION:${config.idNumber}`,
+    `HASH_SHA256:${originalSha256.substring(0, 32)}`,
+    'ESTANDAR_ISO_32000_1',
+    'FIRMAEC_MINTEL'
+  ]);
+  pdfDoc.setProducer(`Plataforma FirmaEC Ecuador (SHA256withRSA)`);
+  pdfDoc.setCreator(`FirmaEC Suite / PKI Ecuador - Validador https://firmadigital.gob.ec`);
+  pdfDoc.setModificationDate(timestamp);
+
+  // 6. Guardar el PDF con la estampa visual y metadatos
   const signedPdfBytes = await pdfDoc.save();
   const pdfBlob = new Blob([signedPdfBytes], { type: 'application/pdf' });
   const safeName = config.signerName.toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 25);

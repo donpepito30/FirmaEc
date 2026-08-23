@@ -7,6 +7,7 @@ import { OfficialEntitiesGuide } from './components/OfficialEntitiesGuide';
 import { FirmaEcGuideView } from './components/FirmaEcGuideView';
 import { Footer } from './components/Footer';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { ResilienceBanner } from './components/ResilienceBanner';
 import { GeneratedP12Result } from './types';
 
 export default function App() {
@@ -27,6 +28,9 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900 selection:bg-blue-600 selection:text-white">
+      {/* Resilience & System Status Banner */}
+      <ResilienceBanner />
+
       {/* Schema.org Structured Data */}
       <script
         type="application/ld+json"
@@ -68,7 +72,7 @@ export default function App() {
 
       {/* Main Content View Switcher */}
       <main className="flex-1">
-        <ErrorBoundary>
+        <ErrorBoundary key={activeTab}>
           {activeTab === 'signer' && (
             <DocumentSignerDemo 
               initialResult={loadedResultForSigner}
@@ -103,4 +107,5 @@ export default function App() {
     </div>
   );
 }
+
 

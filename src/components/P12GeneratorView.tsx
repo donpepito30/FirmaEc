@@ -31,6 +31,7 @@ import {
 } from '../services/p12Generator';
 import { SecurePasswordManager, usePasswordStrength } from '../utils/securePasswordManager';
 import { SecurePasswordDisplay } from './SecurePasswordDisplay';
+import { ExternalValidationGuide } from './ExternalValidationGuide';
 import { 
   validateP12FormData, 
   validateFullName, 
@@ -75,6 +76,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
   const [generatedResult, setGeneratedResult] = useState<GeneratedP12Result | null>(null);
   const [testResults, setTestResults] = useState<FirmaECTestCheck[]>([]);
   const [activeResultsTab, setActiveResultsTab] = useState<'info' | 'tests' | 'firmaec_guide'>('info');
+  const [showValidationGuide, setShowValidationGuide] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Validaciones en tiempo real
@@ -228,6 +230,13 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowValidationGuide(true)}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition-colors cursor-pointer gap-1.5"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>Guía de Validación Externa & CA Raíz</span>
+            </button>
             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
               <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" />
               100% Compatible con FirmaEC
@@ -859,6 +868,16 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* External Validation Guide Modal */}
+      {showValidationGuide && (
+        <ExternalValidationGuide
+          isOpen={showValidationGuide}
+          onClose={() => setShowValidationGuide(false)}
+          defaultCaProfile={form.caAuthority}
+          caCertPem={generatedResult?.caCertPem}
+        />
+      )}
     </div>
   );
 };
