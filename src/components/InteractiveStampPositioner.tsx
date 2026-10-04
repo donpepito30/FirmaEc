@@ -44,6 +44,8 @@ interface InteractiveStampPositionerProps {
   setStampWidth: (w: number) => void;
   stampHeight: number;
   setStampHeight: (h: number) => void;
+  transparentBg: boolean;
+  setTransparentBg: (val: boolean) => void;
 }
 
 export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProps> = ({
@@ -71,7 +73,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   stampWidth,
   setStampWidth,
   stampHeight,
-  setStampHeight
+  setStampHeight,
+  transparentBg,
+  setTransparentBg
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -408,9 +412,10 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     left: `${htmlLeft}%`,
                     top: `${htmlTop}%`,
                     width: `${stampWidth * scale}px`,
-                    height: `${stampHeight * scale}px`
+                    height: `${stampHeight * scale}px`,
+                    backgroundColor: transparentBg ? 'transparent' : (stampStyle === 'quipux-classic' ? '#fbfbfe' : stampStyle === 'sri-tax' ? '#f7fdf7' : stampStyle === 'legal-notary' ? '#fdfcf9' : '#ffffff')
                   }}
-                  className={`absolute transition-all duration-100 ease-out z-20 pointer-events-auto transform hover:scale-105 ${
+                  className={`absolute transition-all duration-100 ease-out z-20 pointer-events-auto transform hover:scale-105 border border-slate-200/50 rounded shadow-md overflow-hidden ${
                     isDragging ? 'scale-105 cursor-grabbing' : 'cursor-grab'
                   }`}
                 >
@@ -431,7 +436,12 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     className="absolute top-0 left-0"
                   >
                     {stampStyle === 'quipux-classic' ? (
-                      <div className="w-[255px] h-[78px] bg-[#fbfbfe] border-[1.5px] border-[#334c80] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded">
+                      <div 
+                        className="w-[255px] h-[78px] border-[1.5px] border-[#334c80] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded"
+                        style={{
+                          backgroundColor: transparentBg ? 'transparent' : '#fbfbfe'
+                        }}
+                      >
                         {/* Header banner */}
                         <div className="bg-[#264073] text-white text-[7.5px] font-bold px-2 py-0.5 truncate uppercase flex-shrink-0 tracking-wider flex items-center h-[15px]">
                           GESTION DOCUMENTAL QUIPUX - REPUBLICA DEL ECUADOR
@@ -451,7 +461,12 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         </div>
                       </div>
                     ) : stampStyle === 'sri-tax' ? (
-                      <div className="w-[255px] h-[78px] bg-[#f7fdf7] border-[1.5px] border-[#1a8040] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded">
+                      <div 
+                        className="w-[255px] h-[78px] border-[1.5px] border-[#1a8040] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded"
+                        style={{
+                          backgroundColor: transparentBg ? 'transparent' : '#f7fdf7'
+                        }}
+                      >
                         {/* Header banner */}
                         <div className="bg-[#147338] text-white text-[7.5px] font-bold px-2 py-0.5 truncate uppercase flex-shrink-0 tracking-wider flex items-center h-[15px]">
                           SRI - COMPROBANTE CON FIRMA ELECTRONICA VALIDA
@@ -471,7 +486,12 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         </div>
                       </div>
                     ) : stampStyle === 'legal-notary' ? (
-                      <div className="w-[255px] h-[78px] bg-[#fdfcf9] border-[1.5px] border-[#a67326] p-1 flex select-none pointer-events-none overflow-hidden relative font-sans rounded">
+                      <div 
+                        className="w-[255px] h-[78px] border-[1.5px] border-[#a67326] p-1 flex select-none pointer-events-none overflow-hidden relative font-sans rounded"
+                        style={{
+                          backgroundColor: transparentBg ? 'transparent' : '#fdfcf9'
+                        }}
+                      >
                         <div className="absolute inset-[2px] border border-[#ccaa73] rounded-sm pointer-events-none" />
                         <div className="flex-1 flex items-center z-10 relative gap-2 px-1.5">
                           <div className="flex-1 min-w-0">
@@ -491,10 +511,11 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     ) : (
                       /* firmaec-official / minimal-box (Estándar Courier) */
                       <div 
-                        className={`w-[245px] h-[68px] bg-white flex items-center px-1.5 py-1 gap-3 overflow-hidden rounded`} 
+                        className={`w-[245px] h-[68px] flex items-center px-1.5 py-1 gap-3 overflow-hidden rounded`} 
                         style={{ 
-                          fontFamily: 'Courier, monospace',
-                          border: stampStyle === 'minimal-box' ? '1px solid #cbd5e1' : '1px solid #2563eb'
+                          fontFamily: '"Courier New", Courier, monospace',
+                          border: stampStyle === 'minimal-box' ? '1px solid #cbd5e1' : '1px solid #2563eb',
+                          backgroundColor: transparentBg ? 'transparent' : '#ffffff'
                         }}
                       >
                         {includeQrCode && qrDataUrl && (
@@ -509,11 +530,11 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-[8.5px] text-slate-500 leading-none">Firmado electrónicamente por:</p>
-                          <p className="font-extrabold text-slate-950 truncate uppercase text-[11px] mt-1">
+                          <p className="font-extrabold text-slate-950 uppercase" style={{ fontSize: '11px', marginTop: '4px', fontFamily: '"Courier New", Courier, monospace', whiteSpace: 'nowrap' }}>
                             {signerNameLines[0]}
                           </p>
                           {signerNameLines[1] && (
-                            <p className="font-extrabold text-slate-950 truncate uppercase text-[11px] mt-0.5">
+                            <p className="font-extrabold text-slate-950 uppercase" style={{ fontSize: '11px', marginTop: '2px', fontFamily: '"Courier New", Courier, monospace', whiteSpace: 'nowrap' }}>
                               {signerNameLines[1]}
                             </p>
                           )}
@@ -877,15 +898,27 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
               </div>
             </div>
 
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 pt-1">
-              <input
-                type="checkbox"
-                checked={includeQrCode}
-                onChange={(e) => setIncludeQrCode(e.target.checked)}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-              />
-              <span>Incluir Código QR de verificación criptográfica</span>
-            </label>
+            <div className="space-y-1.5 pt-1">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={includeQrCode}
+                  onChange={(e) => setIncludeQrCode(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                />
+                <span>Incluir Código QR de verificación criptográfica</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={transparentBg}
+                  onChange={(e) => setTransparentBg(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                />
+                <span className="text-blue-700 font-bold">Fondo transparente (evita parches en tablas)</span>
+              </label>
+            </div>
           </div>
 
         </div>

@@ -82,7 +82,19 @@ export async function applyPadesDigitalSignature(
   });
 
   const widgetDictRef = pdfDoc.context.register(widgetDict);
-  targetPage.node.set(PDFName.of('Annots'), pdfDoc.context.obj([widgetDictRef]));
+  
+  // Safely lookup and preserve all existing annotations (such as previous digital signatures)
+  let annots = targetPage.node.get(PDFName.of('Annots'));
+  if (annots) {
+    const resolved = pdfDoc.context.lookup(annots);
+    if (resolved instanceof PDFArray) {
+      resolved.push(widgetDictRef);
+    } else {
+      targetPage.node.set(PDFName.of('Annots'), pdfDoc.context.obj([widgetDictRef]));
+    }
+  } else {
+    targetPage.node.set(PDFName.of('Annots'), pdfDoc.context.obj([widgetDictRef]));
+  }
 
   // Asegurar que el catálogo tenga el diccionario /AcroForm
   let acroForm = pdfDoc.catalog.get(PDFName.of('AcroForm'));

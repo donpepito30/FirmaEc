@@ -129,6 +129,7 @@ export interface DocumentSigningConfig {
   includeLegalRef: boolean;
   stampWidth: number;
   stampHeight: number;
+  transparentBg?: boolean;
   enablePadesDictionary?: boolean;
   enableTsaTimestamp?: boolean;
   tsaServerId?: string;

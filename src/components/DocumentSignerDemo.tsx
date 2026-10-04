@@ -123,6 +123,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   const [includeQrCode, setIncludeQrCode] = useState(true);
   const [stampWidth, setStampWidth] = useState(245);
   const [stampHeight, setStampHeight] = useState(68);
+  const [transparentBg, setTransparentBg] = useState(false);
 
   // Signing execution state for batch results
   const [isSigning, setIsSigning] = useState(false);
@@ -421,6 +422,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
         includeLegalRef: true,
         stampWidth,
         stampHeight,
+        transparentBg,
         enablePadesDictionary,
         enableTsaTimestamp,
         tsaServerId,
@@ -983,6 +985,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             setStampWidth={setStampWidth}
             stampHeight={stampHeight}
             setStampHeight={setStampHeight}
+            transparentBg={transparentBg}
+            setTransparentBg={setTransparentBg}
           />
 
           {/* ADVANCED CRYPTOGRAPHIC OPTIONS PANEL */}

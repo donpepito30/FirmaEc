@@ -1407,16 +1407,27 @@ export async function signAndStampDocumentPdf(
       
       const scaleRatio = Math.min(stampWidth / 245, stampHeight / 68);
 
-      // Fondo blanco sólido opaco para cubrir limpiamente el campo de firma
-      page.drawRectangle({
-        x: stampX,
-        y: stampY,
-        width: stampWidth,
-        height: stampHeight,
-        color: rgb(1, 1, 1),
-        borderColor: rgb(0.85, 0.85, 0.85),
-        borderWidth: config.stampStyle === 'minimal-box' ? 0.8 * scaleRatio : 0
-      });
+      // Fondo blanco sólido opaco para cubrir limpiamente el campo de firma (si no es transparente)
+      if (!config.transparentBg) {
+        page.drawRectangle({
+          x: stampX,
+          y: stampY,
+          width: stampWidth,
+          height: stampHeight,
+          color: rgb(1, 1, 1),
+          borderColor: config.stampStyle === 'minimal-box' ? rgb(0.85, 0.85, 0.85) : undefined,
+          borderWidth: config.stampStyle === 'minimal-box' ? 0.8 * scaleRatio : 0
+        });
+      } else if (config.stampStyle === 'minimal-box') {
+        page.drawRectangle({
+          x: stampX,
+          y: stampY,
+          width: stampWidth,
+          height: stampHeight,
+          borderColor: rgb(0.85, 0.85, 0.85),
+          borderWidth: 0.8 * scaleRatio
+        });
+      }
 
       // Código QR a la izquierda con alta fidelidad (0 antialiasing seams, 100% contraste)
       const qrSize = Math.min(60 * scaleRatio, stampHeight - 8 * scaleRatio);
@@ -1471,7 +1482,7 @@ export async function signAndStampDocumentPdf(
         y: stampY,
         width: stampWidth,
         height: stampHeight,
-        color: rgb(0.98, 0.98, 0.99),
+        color: config.transparentBg ? undefined : rgb(0.98, 0.98, 0.99),
         borderColor: rgb(0.2, 0.3, 0.5),
         borderWidth: 1.2 * scaleRatio
       });
@@ -1555,7 +1566,7 @@ export async function signAndStampDocumentPdf(
         y: stampY,
         width: stampWidth,
         height: stampHeight,
-        color: rgb(0.97, 0.99, 0.97),
+        color: config.transparentBg ? undefined : rgb(0.97, 0.99, 0.97),
         borderColor: rgb(0.1, 0.5, 0.25),
         borderWidth: 1.2 * scaleRatio
       });
@@ -1630,7 +1641,7 @@ export async function signAndStampDocumentPdf(
         y: stampY,
         width: stampWidth,
         height: stampHeight,
-        color: rgb(0.99, 0.98, 0.95),
+        color: config.transparentBg ? undefined : rgb(0.99, 0.98, 0.95),
         borderColor: rgb(0.65, 0.45, 0.15),
         borderWidth: 1.5 * scaleRatio
       });
