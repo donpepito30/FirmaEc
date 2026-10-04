@@ -226,7 +226,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
               Generador de Firma Electrónica (.p12)
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-3xl">
-              Generación criptográfica completa de contenedores PKCS#12 con par de llaves RSA 2048/4096-bit, Autoridad Raíz (CA) y certificados X.509 v3 100% compatibles con FirmaEC, SRI y Adobe Acrobat.
+              Generación criptográfica de firmas PKCS#12 con llaves RSA y certificados X.509 v3 compatibles con FirmaEC, SRI y Adobe Acrobat.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -235,10 +235,10 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
               className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition-colors cursor-pointer gap-1.5"
             >
               <ShieldCheck className="w-4 h-4" />
-              <span>Guía de Validación Externa & CA Raíz</span>
+              <span>CA Raíz & Guía</span>
             </button>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+            <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               100% Compatible con FirmaEC
             </span>
           </div>
@@ -275,7 +275,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                   Defina los atributos de identidad y perfil de Autoridad Certificadora (CA)
                 </p>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 uppercase tracking-wider">
+              <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider">
                 X.509 v3
               </span>
             </div>

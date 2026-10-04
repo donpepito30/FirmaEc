@@ -500,9 +500,9 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
       <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
-            <Stamp className="w-3.5 h-3.5 text-blue-400" />
-            <span>Suite de Firma Electrónica Ecuador • FirmaEC & SRI</span>
+          <div className="flex items-center gap-2 text-blue-400 text-xs font-bold tracking-wider uppercase">
+            <Stamp className="w-3.5 h-3.5" />
+            <span>Firma Electrónica Ecuador · FirmaEC & SRI</span>
           </div>
           
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
@@ -510,7 +510,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
           </h1>
           
           <p className="text-slate-300 text-xs sm:text-sm max-w-3xl leading-relaxed">
-            Soporte integral para firmado PAdES-BES en documentos PDF con sello de tiempo RFC 3161 y validación de revocación OCSP, más firmado XAdES-BES para comprobantes de facturación electrónica del SRI.
+            Firme y estampe sus documentos PDF de manera oficial con soporte PAdES-BES, sellos de tiempo (TSA) y validación de revocación OCSP en tiempo real.
           </p>
 
           {/* MODE SWITCHER TABS */}
@@ -635,12 +635,12 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 </p>
                 
                 <p className="text-[11px] text-slate-500 mt-1">
-                  Soporta archivos <strong>PDF, Imágenes (.png, .jpg) y Texto (.txt)</strong>. Puedes subir 1 o múltiples archivos a la vez.
+                  Formatos admitidos: <strong>PDF, Imágenes o Texto</strong> (soporta selección múltiple).
                 </p>
 
-                <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs group-hover:border-blue-300">
+                <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs group-hover:border-blue-300">
                   <Plus className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Seleccionar Archivos de mi Equipo</span>
+                  <span>Explorar Archivos</span>
                 </div>
               </label>
             </div>
@@ -861,7 +861,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                       <span>No hay un certificado generado en esta sesión aún</span>
                     </div>
                     <p className="text-amber-800">
-                      Usa la opción <strong>"Firma Rápida"</strong> para firmar inmediatamente con tus datos o genera tu certificado en la pestaña <strong>"Generar .p12"</strong>.
+                      Use la opción <strong>"Firma Rápida"</strong> o cree una firma digital en la sección <strong>"Generar .p12"</strong>.
                     </p>
                     {onNavigateToGenerator && (
                       <button
@@ -869,7 +869,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                         onClick={onNavigateToGenerator}
                         className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs transition-colors cursor-pointer"
                       >
-                        Ir al Generador .p12
+                        Generar Firma Digital .p12
                       </button>
                     )}
                   </div>
@@ -993,7 +993,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
           <div className="bg-slate-900 text-slate-100 rounded-2xl p-5 border border-slate-800 space-y-4 shadow-lg">
             <div className="flex items-center gap-2 pb-3 border-b border-slate-800 text-xs font-bold text-blue-400">
               <ShieldCheck className="w-4 h-4 text-blue-400" />
-              <span>Opciones Criptográficas e Integridad Legal (PAdES / TSA / OCSP)</span>
+              <span>Criptografía e Integridad Legal (PAdES / TSA / OCSP)</span>
             </div>
 
             <div className="space-y-3 text-xs">
@@ -1006,9 +1006,9 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
                 />
                 <div>
-                  <span className="font-bold text-slate-200 block">Inyectar Diccionario Criptográfico PAdES (/ByteRange & /Sig)</span>
+                  <span className="font-bold text-slate-200 block">Diccionario Criptográfico PAdES</span>
                   <span className="text-[11px] text-slate-400">
-                    Genera el contenedor PKCS#7 conforme a ISO 32000-1 para panel verde en Adobe Acrobat.
+                    Contenedor PKCS#7 conforme a ISO 32000-1 para Adobe Acrobat.
                   </span>
                 </div>
               </label>
@@ -1023,9 +1023,9 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
                   />
                   <div>
-                    <span className="font-bold text-slate-200 block">Sello de Tiempo Criptográfico TSA (RFC 3161)</span>
+                    <span className="font-bold text-slate-200 block">Sello de Tiempo Criptográfico (TSA)</span>
                     <span className="text-[11px] text-slate-400">
-                      Incrusta estampa de hora oficial e inalterable para validez PAdES-B-T.
+                      Incrustación de hora oficial e inalterable (PAdES-B-T).
                     </span>
                   </div>
                 </label>
@@ -1057,9 +1057,9 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
                   />
                   <div>
-                    <span className="font-bold text-slate-200 block">Verificación de Revocación en Tiempo Real (OCSP & CRL)</span>
+                    <span className="font-bold text-slate-200 block">Validación de Revocación (OCSP / CRL)</span>
                     <span className="text-[11px] text-slate-400">
-                      Valida la serie del certificado contra los responders autorizados por ARCOTEL.
+                      Verificación en tiempo real contra los servidores de ARCOTEL.
                     </span>
                   </div>
                 </label>
@@ -1116,7 +1116,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   <FileCheck2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500 text-slate-950 uppercase tracking-wider">
+                  <span className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider block">
                     Firma Válida e Íntegra
                   </span>
                   <h3 className="text-base font-bold text-white mt-0.5">
@@ -1260,8 +1260,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   Vista Previa del Sello Estampado
                 </span>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                ESTÁNDAR OFICIAL
+              <span className="text-[10px] font-extrabold text-emerald-600 uppercase tracking-wider">
+                Estándar Oficial
               </span>
             </div>
 

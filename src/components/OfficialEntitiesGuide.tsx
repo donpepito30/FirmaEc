@@ -44,8 +44,8 @@ export const OfficialEntitiesGuide: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+            <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               Ley de Comercio Electrónico EC
             </span>
           </div>
@@ -132,8 +132,8 @@ export const OfficialEntitiesGuide: React.FC = () => {
                   </h3>
                 </div>
                 {entity.badge && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 whitespace-nowrap">
-                    {entity.badge}
+                  <span className="text-[10px] font-extrabold text-amber-600 uppercase tracking-wider whitespace-nowrap">
+                    · {entity.badge}
                   </span>
                 )}
               </div>

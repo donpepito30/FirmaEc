@@ -74,86 +74,81 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-lg text-slate-900 font-display tracking-tight">
-                  FirmaEC <span className="text-blue-600">PRO</span>
+                  FirmaEC <span className="text-blue-600 font-extrabold">PRO</span>
                 </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 uppercase">
-                  Ecuador PKI
+                <span className="text-[10px] font-extrabold text-blue-600 tracking-wider uppercase">
+                  · Ecuador PKI
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500">Estampado PDF • .p12 • ARCOTEL • SRI</p>
+              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Estampado PDF · .p12 · ARCOTEL · SRI</p>
             </div>
           </div>
 
-          {/* Navigation Links with Status Dots */}
-          <nav className="flex items-center gap-1 overflow-x-auto py-1 scrollbar-none">
+          {/* Navigation Links with Clean Typography & Underlines */}
+          <nav className="flex items-center gap-1 overflow-x-auto py-1 scrollbar-none h-full">
             <button
               id="nav-signer-tab"
               onClick={() => setActiveTab('signer')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-5 text-xs font-bold whitespace-nowrap transition-all border-b-2 cursor-pointer h-full ${
                 activeTab === 'signer'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'border-blue-600 text-blue-600 font-extrabold'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${activeTab === 'signer' ? 'bg-blue-600' : 'bg-slate-300'}`} />
               <FileSignature className="w-3.5 h-3.5" />
-              Firmar Documentos PDF
+              <span>Firmar PDF</span>
             </button>
 
             <button
               id="nav-generator-tab"
               onClick={() => setActiveTab('generator')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-5 text-xs font-bold whitespace-nowrap transition-all border-b-2 cursor-pointer h-full ${
                 activeTab === 'generator'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'border-blue-600 text-blue-600 font-extrabold'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${activeTab === 'generator' ? 'bg-blue-600' : 'bg-slate-300'}`} />
               <KeyRound className="w-3.5 h-3.5" />
-              Generar .p12
+              <span>Generar .p12</span>
             </button>
 
             <button
               id="nav-validator-tab"
               onClick={() => setActiveTab('validator')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-5 text-xs font-bold whitespace-nowrap transition-all border-b-2 cursor-pointer h-full ${
                 activeTab === 'validator'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'border-blue-600 text-blue-600 font-extrabold'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${activeTab === 'validator' ? 'bg-blue-600' : 'bg-slate-300'}`} />
               <FileCheck2 className="w-3.5 h-3.5" />
-              Validar .p12 y Firmas
+              <span>Validar .p12</span>
             </button>
 
             <button
               id="nav-entities-tab"
               onClick={() => setActiveTab('entities')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-5 text-xs font-bold whitespace-nowrap transition-all border-b-2 cursor-pointer h-full ${
                 activeTab === 'entities'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'border-blue-600 text-blue-600 font-extrabold'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${activeTab === 'entities' ? 'bg-blue-600' : 'bg-slate-300'}`} />
               <Building2 className="w-3.5 h-3.5" />
-              Entidades Acreditadas
+              <span>Entidades</span>
             </button>
 
             <button
               id="nav-guide-tab"
               onClick={() => setActiveTab('guide')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-5 text-xs font-bold whitespace-nowrap transition-all border-b-2 cursor-pointer h-full ${
                 activeTab === 'guide'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  ? 'border-blue-600 text-blue-600 font-extrabold'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${activeTab === 'guide' ? 'bg-blue-600' : 'bg-slate-300'}`} />
               <BookOpen className="w-3.5 h-3.5" />
-              Guía FirmaEC & Ley
+              <span>Guía Técnica</span>
             </button>
           </nav>
 
