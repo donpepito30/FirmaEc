@@ -270,13 +270,6 @@ const analysisLimiter = rateLimit({
     // No limitar en desarrollo local
     return req.ip === "::1" || req.ip === "127.0.0.1";
   },
-  keyGenerator: (req) => {
-    // Usar IP real en Cloudflare o proxy
-    const cfIp = req.headers["cf-connecting-ip"];
-    if (typeof cfIp === "string") return cfIp;
-    if (Array.isArray(cfIp)) return cfIp[0];
-    return req.ip || "unknown";
-  },
   handler: (req, res) => {
     res.status(429).json({
       error: "Demasiados análisis",
@@ -291,6 +284,9 @@ const analysisLimiter = rateLimit({
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Habilitar trust proxy para extraer correctamente la IP real (ej. Cloudflare CF-Connecting-IP, X-Forwarded-For)
+  app.set("trust proxy", true);
 
   // Middleware
   app.use(express.json({ limit: "15mb" })); // Reducido de 50mb a 15mb (más seguro)
