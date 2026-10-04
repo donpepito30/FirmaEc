@@ -1,5 +1,5 @@
 // Service Worker for FirmaEC PRO PWA
-const CACHE_NAME = 'firmaec-pro-v1';
+const CACHE_NAME = 'firmaec-pro-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

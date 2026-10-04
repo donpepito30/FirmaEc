@@ -122,7 +122,7 @@ export async function generateP12Certificate(
   // 1. Generar Par de Claves para la Autoridad Certificadora Raíz (Root CA)
   onProgress?.('Creando Autoridad de Certificación Raíz (CA)...', 20);
   const caKeys = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
-    forge.pki.rsa.generateKeyPair({ bits: 2048, workers: -1 }, (err, keypair) => {
+    forge.pki.rsa.generateKeyPair({ bits: 2048, workers: 0 }, (err, keypair) => {
       if (err) reject(err);
       else resolve(keypair);
     });
@@ -174,7 +174,7 @@ export async function generateP12Certificate(
   // 2. Generar Par de Claves RSA para el Usuario Final
   onProgress?.(`Generando par de claves RSA (${options.keySize} bits) para el titular...`, 40);
   const userKeys = await new Promise<forge.pki.rsa.KeyPair>((resolve, reject) => {
-    forge.pki.rsa.generateKeyPair({ bits: options.keySize, workers: -1 }, (err, keypair) => {
+    forge.pki.rsa.generateKeyPair({ bits: options.keySize, workers: 0 }, (err, keypair) => {
       if (err) reject(err);
       else resolve(keypair);
     });
