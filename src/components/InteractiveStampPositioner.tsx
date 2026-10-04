@@ -76,6 +76,22 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
+  const [canvasWidth, setCanvasWidth] = useState(320);
+
+  // Measure and monitor canvas width for exact HTML/PDF preview scaling
+  useEffect(() => {
+    if (!containerRef.current) return;
+    setCanvasWidth(containerRef.current.clientWidth || 320);
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) {
+          setCanvasWidth(entry.contentRect.width);
+        }
+      }
+    });
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, [containerRef.current]);
 
   // Estados para renderizado dinámico de la página real del PDF
   const [renderedPageUrl, setRenderedPageUrl] = useState<string | null>(null);
@@ -146,6 +162,11 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   };
 
   const effective = getEffectivePct();
+  const scale = canvasWidth / 595;
+
+  const previewScaleRatio = stampStyle === 'firmaec-official' || stampStyle === 'minimal-box'
+    ? Math.min(stampWidth / 245, stampHeight / 68)
+    : Math.min(stampWidth / 255, stampHeight / 78);
 
   // Convertir porcentaje PDF (donde 0% es abajo/izquierda, 100% es arriba/derecha) a HTML de forma exacta basada en las medidas en pt de la página A4 (595x842)
   const stampWidthPercent = (stampWidth / 595) * 100;
@@ -380,8 +401,8 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   style={{
                     left: `${htmlLeft}%`,
                     top: `${htmlTop}%`,
-                    width: `${stampWidthPercent}%`,
-                    height: `${stampHeightPercent}%`
+                    width: `${stampWidth * scale}px`,
+                    height: `${stampHeight * scale}px`
                   }}
                   className={`absolute transition-all duration-100 ease-out z-20 pointer-events-auto transform hover:scale-105 ${
                     isDragging ? 'scale-105 cursor-grabbing' : 'cursor-grab'
@@ -393,31 +414,212 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     <span>X:{effective.x}% Y:{effective.y}%</span>
                   </div>
 
-                  {/* Renderizado de la estampa según el estilo */}
-                  <div className={`w-full h-full bg-white border border-blue-600 rounded shadow-lg font-mono select-none pointer-events-none flex items-center ${stampHeight < 55 ? 'p-1 gap-1 text-[6.5px]' : 'p-1.5 gap-1.5 text-[8px]'} leading-tight overflow-hidden`}>
-                    <div className="flex items-center gap-1.5 w-full h-full min-w-0">
-                      {includeQrCode && qrDataUrl && (
-                        <div className="h-full aspect-square bg-white p-0.5 rounded flex-shrink-0 flex items-center justify-center">
-                          <img 
-                            src={qrDataUrl} 
-                            alt="QR" 
-                            className="w-full h-full object-contain" 
-                            style={{ imageRendering: 'pixelated' }}
-                          />
+                  {/* Renderizado de la estampa con escalamiento vectorial perfecto basado en transform: scale(scale) */}
+                  <div 
+                    style={{
+                      width: `${stampWidth}px`,
+                      height: `${stampHeight}px`,
+                      transform: `scale(${scale})`,
+                      transformOrigin: 'top left'
+                    }}
+                    className="absolute top-0 left-0"
+                  >
+                    {stampStyle === 'quipux-classic' ? (
+                      <div 
+                        className="w-full h-full bg-[#fbfbfe] border-[#334c80] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded"
+                        style={{
+                          borderWidth: `${1.5 * previewScaleRatio}px`,
+                          borderRadius: `${4 * previewScaleRatio}px`
+                        }}
+                      >
+                        {/* Header banner */}
+                        <div 
+                          className="bg-[#264073] text-white font-bold truncate uppercase flex-shrink-0 tracking-wider flex items-center"
+                          style={{
+                            fontSize: `${6.5 * previewScaleRatio}px`,
+                            paddingLeft: `${8 * previewScaleRatio}px`,
+                            paddingRight: `${8 * previewScaleRatio}px`,
+                            height: `${15 * previewScaleRatio}px`
+                          }}
+                        >
+                          GESTION DOCUMENTAL QUIPUX - REPUBLICA DEL ECUADOR
                         </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className={`${stampHeight < 55 ? 'text-[5.5px]' : 'text-[7px]'} text-slate-500 leading-none`}>Firmado por:</p>
-                        <p className={`font-extrabold text-slate-900 truncate uppercase ${stampHeight < 55 ? 'text-[7px]' : 'text-[8.5px]'}`}>
-                          {signerNameLines[0]}
-                        </p>
-                        {signerNameLines[1] && (
-                          <p className={`font-extrabold text-slate-900 truncate uppercase ${stampHeight < 55 ? 'text-[7px]' : 'text-[8.5px]'}`}>
-                            {signerNameLines[1]}
-                          </p>
-                        )}
+                        <div 
+                          className="flex-1 flex items-center min-h-0"
+                          style={{
+                            paddingLeft: `${8 * previewScaleRatio}px`,
+                            paddingRight: `${8 * previewScaleRatio}px`,
+                            paddingTop: `${4 * previewScaleRatio}px`,
+                            paddingBottom: `${4 * previewScaleRatio}px`,
+                            gap: `${8 * previewScaleRatio}px`
+                          }}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-slate-500 leading-none" style={{ fontSize: `${6.5 * previewScaleRatio}px` }}>Firmado digitalmente por:</p>
+                            <p className="font-extrabold text-[#0d1a40] truncate uppercase" style={{ fontSize: `${7.5 * previewScaleRatio}px`, marginTop: `${3 * previewScaleRatio}px` }}>{signerName || 'TITULAR ECUADOR'}</p>
+                            <p className="text-slate-600 truncate" style={{ fontSize: `${6.5 * previewScaleRatio}px`, marginTop: `${3 * previewScaleRatio}px` }}>CI/RUC: {idNumber || '1715894320'}</p>
+                            <p className="text-slate-600 truncate" style={{ fontSize: `${6.5 * previewScaleRatio}px`, marginTop: `${2 * previewScaleRatio}px` }}>Fecha: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
+                          </div>
+                          {includeQrCode && qrDataUrl && (
+                            <div 
+                              className="bg-white rounded flex-shrink-0 flex items-center justify-center"
+                              style={{
+                                width: `${Math.min(58 * previewScaleRatio, stampHeight - 16 * previewScaleRatio)}px`,
+                                height: `${Math.min(58 * previewScaleRatio, stampHeight - 16 * previewScaleRatio)}px`,
+                                padding: `${2 * previewScaleRatio}px`,
+                                borderWidth: `${1 * previewScaleRatio}px`,
+                                borderColor: '#e2e8f0'
+                              }}
+                            >
+                              <img src={qrDataUrl} alt="QR" className="w-full h-full object-contain" />
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    ) : stampStyle === 'sri-tax' ? (
+                      <div 
+                        className="w-full h-full bg-[#f7fdf7] border-[#1a8040] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded"
+                        style={{
+                          borderWidth: `${1.5 * previewScaleRatio}px`,
+                          borderRadius: `${4 * previewScaleRatio}px`
+                        }}
+                      >
+                        {/* Header banner */}
+                        <div 
+                          className="bg-[#147338] text-white font-bold truncate uppercase flex-shrink-0 tracking-wider flex items-center"
+                          style={{
+                            fontSize: `${6.5 * previewScaleRatio}px`,
+                            paddingLeft: `${8 * previewScaleRatio}px`,
+                            paddingRight: `${8 * previewScaleRatio}px`,
+                            height: `${15 * previewScaleRatio}px`
+                          }}
+                        >
+                          SRI - COMPROBANTE CON FIRMA ELECTRONICA VALIDA
+                        </div>
+                        <div 
+                          className="flex-1 flex items-center min-h-0"
+                          style={{
+                            paddingLeft: `${8 * previewScaleRatio}px`,
+                            paddingRight: `${8 * previewScaleRatio}px`,
+                            paddingTop: `${4 * previewScaleRatio}px`,
+                            paddingBottom: `${4 * previewScaleRatio}px`,
+                            gap: `${8 * previewScaleRatio}px`
+                          }}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-extrabold text-[#0d401a] truncate uppercase" style={{ fontSize: `${7 * previewScaleRatio}px` }}>Emisor: {signerName || 'TITULAR ECUADOR'}</p>
+                            <p className="text-slate-600 truncate" style={{ fontSize: `${6.5 * previewScaleRatio}px`, marginTop: `${3 * previewScaleRatio}px` }}>RUC: {idNumber || '1715894320001'}</p>
+                            <p className="text-slate-600 truncate" style={{ fontSize: `${6.5 * previewScaleRatio}px`, marginTop: `${2 * previewScaleRatio}px` }}>Fecha Firma: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
+                            <p className="text-slate-400 font-mono truncate" style={{ fontSize: `${5.5 * previewScaleRatio}px`, marginTop: `${2 * previewScaleRatio}px` }}>SHA-256: d3b07384d113...</p>
+                          </div>
+                          {includeQrCode && qrDataUrl && (
+                            <div 
+                              className="bg-white rounded flex-shrink-0 flex items-center justify-center"
+                              style={{
+                                width: `${Math.min(58 * previewScaleRatio, stampHeight - 16 * previewScaleRatio)}px`,
+                                height: `${Math.min(58 * previewScaleRatio, stampHeight - 16 * previewScaleRatio)}px`,
+                                padding: `${2 * previewScaleRatio}px`,
+                                borderWidth: `${1 * previewScaleRatio}px`,
+                                borderColor: '#e2e8f0'
+                              }}
+                            >
+                              <img src={qrDataUrl} alt="QR" className="w-full h-full object-contain" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : stampStyle === 'legal-notary' ? (
+                      <div 
+                        className="w-full h-full bg-[#fdfcf9] border-[#a67326] flex select-none pointer-events-none overflow-hidden relative font-sans rounded"
+                        style={{
+                          borderWidth: `${1.5 * previewScaleRatio}px`,
+                          padding: `${5 * previewScaleRatio}px`,
+                          borderRadius: `${4 * previewScaleRatio}px`
+                        }}
+                      >
+                        <div 
+                          className="absolute border-[#ccaa73] rounded-xs pointer-events-none" 
+                          style={{
+                            inset: `${2 * previewScaleRatio}px`,
+                            borderWidth: `${0.5 * previewScaleRatio}px`
+                          }}
+                        />
+                        <div 
+                          className="flex-1 flex items-center z-10 relative"
+                          style={{
+                            gap: `${8 * previewScaleRatio}px`,
+                            paddingLeft: `${6 * previewScaleRatio}px`,
+                            paddingRight: `${6 * previewScaleRatio}px`
+                          }}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[#734d0d] font-extrabold uppercase tracking-wider leading-none" style={{ fontSize: `${6.5 * previewScaleRatio}px` }}>CERTIFICACION DIGITAL Y VALIDEZ PROBATORIA</p>
+                            <p className="font-extrabold text-slate-900 truncate uppercase" style={{ fontSize: `${7.5 * previewScaleRatio}px`, marginTop: `${4 * previewScaleRatio}px` }}>{signerName || 'TITULAR ECUADOR'}</p>
+                            <p className="text-slate-600 truncate" style={{ fontSize: `${6.5 * previewScaleRatio}px`, marginTop: `${3 * previewScaleRatio}px` }}>ID: {idNumber || '1715894320'}</p>
+                            <p className="text-slate-600 truncate" style={{ fontSize: `${6.5 * previewScaleRatio}px`, marginTop: `${2 * previewScaleRatio}px` }}>Fecha: {new Date().toLocaleDateString('es-EC')} | Ecuador</p>
+                            <p className="text-[#8c6622] truncate" style={{ fontSize: `${5.5 * previewScaleRatio}px`, marginTop: `${3 * previewScaleRatio}px` }}>Ley de Comercio Electrónico Art. 14</p>
+                          </div>
+                          {includeQrCode && qrDataUrl && (
+                            <div 
+                              className="bg-white rounded flex-shrink-0 flex items-center justify-center"
+                              style={{
+                                width: `${Math.min(56 * previewScaleRatio, stampHeight - 14 * previewScaleRatio)}px`,
+                                height: `${Math.min(56 * previewScaleRatio, stampHeight - 14 * previewScaleRatio)}px`,
+                                padding: `${2 * previewScaleRatio}px`,
+                                borderWidth: `${1 * previewScaleRatio}px`,
+                                borderColor: '#e2e8f0'
+                              }}
+                            >
+                              <img src={qrDataUrl} alt="QR" className="w-full h-full object-contain" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      /* firmaec-official / minimal-box (Estándar Courier) */
+                      <div 
+                        className={`w-full h-full bg-white flex items-center overflow-hidden rounded`} 
+                        style={{ 
+                          fontFamily: 'Courier, monospace',
+                          borderWidth: stampStyle === 'minimal-box' ? `${1 * previewScaleRatio}px` : '0px',
+                          borderColor: '#cbd5e1',
+                          paddingLeft: `${6 * previewScaleRatio}px`,
+                          paddingRight: `${6 * previewScaleRatio}px`,
+                          paddingTop: `${4 * previewScaleRatio}px`,
+                          paddingBottom: `${4 * previewScaleRatio}px`,
+                          gap: `${12 * previewScaleRatio}px`
+                        }}
+                      >
+                        {includeQrCode && qrDataUrl && (
+                          <div 
+                            className="bg-white rounded flex-shrink-0 flex items-center justify-center"
+                            style={{
+                              width: `${Math.min(60 * previewScaleRatio, stampHeight - 8 * previewScaleRatio)}px`,
+                              height: `${Math.min(60 * previewScaleRatio, stampHeight - 8 * previewScaleRatio)}px`,
+                              padding: `${1 * previewScaleRatio}px`
+                            }}
+                          >
+                            <img 
+                              src={qrDataUrl} 
+                              alt="QR" 
+                              className="w-full h-full object-contain" 
+                              style={{ imageRendering: 'pixelated' }}
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-slate-500 leading-none" style={{ fontSize: `${8.5 * previewScaleRatio}px` }}>Firmado electrónicamente por:</p>
+                          <p className="font-extrabold text-slate-950 truncate uppercase" style={{ fontSize: `${11 * previewScaleRatio}px`, marginTop: `${4 * previewScaleRatio}px` }}>
+                            {signerNameLines[0]}
+                          </p>
+                          {signerNameLines[1] && (
+                            <p className="font-extrabold text-slate-950 truncate uppercase" style={{ fontSize: `${11 * previewScaleRatio}px`, marginTop: `${2 * previewScaleRatio}px` }}>
+                              {signerNameLines[1]}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

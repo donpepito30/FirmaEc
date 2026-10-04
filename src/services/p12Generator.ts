@@ -1389,12 +1389,12 @@ export async function signAndStampDocumentPdf(
     if (pctY === undefined) pctY = 10;
 
     // Calcular coordenadas X, Y exactas en la página PDF real (puntos pt)
-    const margin = 15;
-    const availWidth = Math.max(1, width - stampWidth - margin * 2);
-    const availHeight = Math.max(1, height - stampHeight - margin * 2);
+    const margin = 0;
+    const availWidth = Math.max(1, width - stampWidth);
+    const availHeight = Math.max(1, height - stampHeight);
 
-    const stampX = margin + (pctX / 100) * availWidth;
-    const stampY = margin + (pctY / 100) * availHeight;
+    const stampX = (pctX / 100) * availWidth;
+    const stampY = (pctY / 100) * availHeight;
 
     finalStampCoords = { x: stampX, y: stampY, width: stampWidth, height: stampHeight };
 
