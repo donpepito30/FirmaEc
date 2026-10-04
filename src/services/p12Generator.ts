@@ -1405,7 +1405,7 @@ export async function signAndStampDocumentPdf(
       // Exactamente como en FirmaEC / Quipux / MINTEL estampado sobre el campo de firma
       // ═════════════════════════════════════════════════════════════════════════
       
-      const scaleRatio = stampHeight / 68;
+      const scaleRatio = Math.min(stampWidth / 245, stampHeight / 68);
 
       // Fondo blanco sólido opaco para cubrir limpiamente el campo de firma
       page.drawRectangle({
@@ -1465,7 +1465,7 @@ export async function signAndStampDocumentPdf(
 
     } else if (config.stampStyle === 'quipux-classic') {
       // Estilo Quipux / Gobierno
-      const scaleRatio = stampHeight / 78;
+      const scaleRatio = Math.min(stampWidth / 255, stampHeight / 78);
       page.drawRectangle({
         x: stampX,
         y: stampY,
@@ -1549,7 +1549,7 @@ export async function signAndStampDocumentPdf(
 
     } else if (config.stampStyle === 'sri-tax') {
       // Estilo SRI Facturación
-      const scaleRatio = stampHeight / 78;
+      const scaleRatio = Math.min(stampWidth / 255, stampHeight / 78);
       page.drawRectangle({
         x: stampX,
         y: stampY,
@@ -1624,7 +1624,7 @@ export async function signAndStampDocumentPdf(
 
     } else if (config.stampStyle === 'legal-notary') {
       // Estilo Legal / Notarial
-      const scaleRatio = stampHeight / 78;
+      const scaleRatio = Math.min(stampWidth / 255, stampHeight / 78);
       page.drawRectangle({
         x: stampX,
         y: stampY,
