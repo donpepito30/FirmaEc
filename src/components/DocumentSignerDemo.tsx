@@ -121,6 +121,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   const [customY, setCustomY] = useState(12); // % from bottom
   const [stampStyle, setStampStyle] = useState<StampStyleType>('firmaec-official');
   const [includeQrCode, setIncludeQrCode] = useState(true);
+  const [stampWidth, setStampWidth] = useState(245);
+  const [stampHeight, setStampHeight] = useState(68);
 
   // Signing execution state for batch results
   const [isSigning, setIsSigning] = useState(false);
@@ -417,8 +419,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
         entityName: 'FirmaEC - Autoridad de Certificación',
         includeQrCode,
         includeLegalRef: true,
-        stampWidth: 245,
-        stampHeight: 68,
+        stampWidth,
+        stampHeight,
         enablePadesDictionary,
         enableTsaTimestamp,
         tsaServerId,
@@ -977,6 +979,10 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             documentPreviewUrl={uploadedDocs[0]?.previewDataUrl}
             documentPageCount={uploadedDocs[0]?.pageCount || 1}
             documentName={uploadedDocs[0]?.name}
+            stampWidth={stampWidth}
+            setStampWidth={setStampWidth}
+            stampHeight={stampHeight}
+            setStampHeight={setStampHeight}
           />
 
           {/* ADVANCED CRYPTOGRAPHIC OPTIONS PANEL */}

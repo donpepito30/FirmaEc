@@ -1405,6 +1405,8 @@ export async function signAndStampDocumentPdf(
       // Exactamente como en FirmaEC / Quipux / MINTEL estampado sobre el campo de firma
       // ═════════════════════════════════════════════════════════════════════════
       
+      const scaleRatio = stampHeight / 68;
+
       // Fondo blanco sólido opaco para cubrir limpiamente el campo de firma
       page.drawRectangle({
         x: stampX,
@@ -1413,49 +1415,49 @@ export async function signAndStampDocumentPdf(
         height: stampHeight,
         color: rgb(1, 1, 1),
         borderColor: rgb(0.85, 0.85, 0.85),
-        borderWidth: config.stampStyle === 'minimal-box' ? 0.8 : 0
+        borderWidth: config.stampStyle === 'minimal-box' ? 0.8 * scaleRatio : 0
       });
 
       // Código QR a la izquierda con alta fidelidad (0 antialiasing seams, 100% contraste)
-      const qrSize = Math.min(60, stampHeight - 8);
+      const qrSize = Math.min(60 * scaleRatio, stampHeight - 8 * scaleRatio);
       if (config.includeQrCode && embeddedQrImage) {
         page.drawImage(embeddedQrImage, {
-          x: stampX + 4,
+          x: stampX + 4 * scaleRatio,
           y: stampY + (stampHeight - qrSize) / 2,
           width: qrSize,
           height: qrSize
         });
       }
 
-      const textLeftX = config.includeQrCode ? stampX + qrSize + 12 : stampX + 8;
+      const textLeftX = config.includeQrCode ? stampX + qrSize + 12 * scaleRatio : stampX + 8 * scaleRatio;
       const nameLines = splitSignerNameForStamp(config.signerName);
 
       // Línea 1: "Firmado electrónicamente por:" (Courier Regular)
-      let lineY = stampY + stampHeight - 16;
+      let lineY = stampY + stampHeight - 16 * scaleRatio;
       page.drawText('Firmado electrónicamente por:', {
         x: textLeftX,
         y: lineY,
-        size: 8.5,
+        size: 8.5 * scaleRatio,
         font: courier,
         color: rgb(0.1, 0.1, 0.1)
       });
 
       // Línea 2 y 3: Nombre en Courier-Bold Mayúsculas
-      lineY -= 14;
+      lineY -= 14 * scaleRatio;
       page.drawText(nameLines[0], {
         x: textLeftX,
         y: lineY,
-        size: 11,
+        size: 11 * scaleRatio,
         font: courierBold,
         color: rgb(0, 0, 0)
       });
 
       if (nameLines.length > 1) {
-        lineY -= 14;
+        lineY -= 14 * scaleRatio;
         page.drawText(nameLines[1], {
           x: textLeftX,
           y: lineY,
-          size: 11,
+          size: 11 * scaleRatio,
           font: courierBold,
           color: rgb(0, 0, 0)
         });
@@ -1463,6 +1465,7 @@ export async function signAndStampDocumentPdf(
 
     } else if (config.stampStyle === 'quipux-classic') {
       // Estilo Quipux / Gobierno
+      const scaleRatio = stampHeight / 78;
       page.drawRectangle({
         x: stampX,
         y: stampY,
@@ -1470,82 +1473,83 @@ export async function signAndStampDocumentPdf(
         height: stampHeight,
         color: rgb(0.98, 0.98, 0.99),
         borderColor: rgb(0.2, 0.3, 0.5),
-        borderWidth: 1.2
+        borderWidth: 1.2 * scaleRatio
       });
 
       page.drawRectangle({
         x: stampX,
-        y: stampY + stampHeight - 15,
+        y: stampY + stampHeight - 15 * scaleRatio,
         width: stampWidth,
-        height: 15,
+        height: 15 * scaleRatio,
         color: rgb(0.15, 0.25, 0.45)
       });
 
       page.drawText('GESTION DOCUMENTAL QUIPUX - REPUBLICA DEL ECUADOR', {
-        x: stampX + 8,
-        y: stampY + stampHeight - 11,
-        size: 6.5,
+        x: stampX + 8 * scaleRatio,
+        y: stampY + stampHeight - 11 * scaleRatio,
+        size: 6.5 * scaleRatio,
         font: helveticaBold,
         color: rgb(1, 1, 1)
       });
 
       if (config.includeQrCode && embeddedQrImage) {
-        const qrSize = Math.min(58, stampHeight - 16);
+        const qrSize = Math.min(58 * scaleRatio, stampHeight - 16 * scaleRatio);
         page.drawImage(embeddedQrImage, {
-          x: stampX + stampWidth - qrSize - 6,
-          y: stampY + 6,
+          x: stampX + stampWidth - qrSize - 6 * scaleRatio,
+          y: stampY + 6 * scaleRatio,
           width: qrSize,
           height: qrSize
         });
       }
 
-      let lineY = stampY + stampHeight - 26;
+      let lineY = stampY + stampHeight - 26 * scaleRatio;
       page.drawText(`Firmado digitalmente por:`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6.5,
+        size: 6.5 * scaleRatio,
         font: helvetica,
         color: rgb(0.3, 0.35, 0.4)
       });
 
-      lineY -= 9;
+      lineY -= 9 * scaleRatio;
       page.drawText(config.signerName.toUpperCase(), {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 7.5,
+        size: 7.5 * scaleRatio,
         font: helveticaBold,
         color: rgb(0.05, 0.1, 0.25)
       });
 
-      lineY -= 9;
+      lineY -= 9 * scaleRatio;
       page.drawText(`CI/RUC: ${config.idNumber || 'Registrado en Certificado'}`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6.5,
+        size: 6.5 * scaleRatio,
         font: helvetica,
         color: rgb(0.2, 0.25, 0.3)
       });
 
-      lineY -= 9;
+      lineY -= 9 * scaleRatio;
       page.drawText(`Fecha: ${dateFormatted} GMT-5`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6.5,
+        size: 6.5 * scaleRatio,
         font: helvetica,
         color: rgb(0.2, 0.25, 0.3)
       });
 
-      lineY -= 8;
+      lineY -= 8 * scaleRatio;
       page.drawText(`Razón: ${config.reason}`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6,
+        size: 6 * scaleRatio,
         font: helvetica,
         color: rgb(0.2, 0.25, 0.3)
       });
 
     } else if (config.stampStyle === 'sri-tax') {
       // Estilo SRI Facturación
+      const scaleRatio = stampHeight / 78;
       page.drawRectangle({
         x: stampX,
         y: stampY,
@@ -1553,73 +1557,74 @@ export async function signAndStampDocumentPdf(
         height: stampHeight,
         color: rgb(0.97, 0.99, 0.97),
         borderColor: rgb(0.1, 0.5, 0.25),
-        borderWidth: 1.2
+        borderWidth: 1.2 * scaleRatio
       });
 
       page.drawRectangle({
         x: stampX,
-        y: stampY + stampHeight - 15,
+        y: stampY + stampHeight - 15 * scaleRatio,
         width: stampWidth,
-        height: 15,
+        height: 15 * scaleRatio,
         color: rgb(0.08, 0.45, 0.22)
       });
 
       page.drawText('SRI - COMPROBANTE CON FIRMA ELECTRONICA VALIDA', {
-        x: stampX + 8,
-        y: stampY + stampHeight - 11,
-        size: 6.5,
+        x: stampX + 8 * scaleRatio,
+        y: stampY + stampHeight - 11 * scaleRatio,
+        size: 6.5 * scaleRatio,
         font: helveticaBold,
         color: rgb(1, 1, 1)
       });
 
       if (config.includeQrCode && embeddedQrImage) {
-        const qrSize = Math.min(58, stampHeight - 16);
+        const qrSize = Math.min(58 * scaleRatio, stampHeight - 16 * scaleRatio);
         page.drawImage(embeddedQrImage, {
-          x: stampX + stampWidth - qrSize - 6,
-          y: stampY + 6,
+          x: stampX + stampWidth - qrSize - 6 * scaleRatio,
+          y: stampY + 6 * scaleRatio,
           width: qrSize,
           height: qrSize
         });
       }
 
-      let lineY = stampY + stampHeight - 26;
+      let lineY = stampY + stampHeight - 26 * scaleRatio;
       page.drawText(`Emisor: ${config.signerName.toUpperCase()}`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 7,
+        size: 7 * scaleRatio,
         font: helveticaBold,
         color: rgb(0.05, 0.25, 0.1)
       });
 
-      lineY -= 9;
+      lineY -= 9 * scaleRatio;
       page.drawText(`RUC: ${config.idNumber || '0802778749001'}`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6.5,
+        size: 6.5 * scaleRatio,
         font: helvetica,
         color: rgb(0.2, 0.25, 0.3)
       });
 
-      lineY -= 9;
+      lineY -= 9 * scaleRatio;
       page.drawText(`Fecha Firma: ${dateFormatted} GMT-5`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6.5,
+        size: 6.5 * scaleRatio,
         font: helvetica,
         color: rgb(0.2, 0.25, 0.3)
       });
 
-      lineY -= 9;
+      lineY -= 9 * scaleRatio;
       page.drawText(`SHA-256: ${originalSha256.substring(0, 22)}...`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 5.5,
+        size: 5.5 * scaleRatio,
         font: courier,
         color: rgb(0.3, 0.4, 0.5)
       });
 
     } else if (config.stampStyle === 'legal-notary') {
       // Estilo Legal / Notarial
+      const scaleRatio = stampHeight / 78;
       page.drawRectangle({
         x: stampX,
         y: stampY,
@@ -1627,69 +1632,69 @@ export async function signAndStampDocumentPdf(
         height: stampHeight,
         color: rgb(0.99, 0.98, 0.95),
         borderColor: rgb(0.65, 0.45, 0.15),
-        borderWidth: 1.5
+        borderWidth: 1.5 * scaleRatio
       });
 
       page.drawRectangle({
-        x: stampX + 3,
-        y: stampY + 3,
-        width: stampWidth - 6,
-        height: stampHeight - 6,
+        x: stampX + 3 * scaleRatio,
+        y: stampY + 3 * scaleRatio,
+        width: stampWidth - 6 * scaleRatio,
+        height: stampHeight - 6 * scaleRatio,
         borderColor: rgb(0.8, 0.65, 0.35),
-        borderWidth: 0.5
+        borderWidth: 0.5 * scaleRatio
       });
 
       if (config.includeQrCode && embeddedQrImage) {
-        const qrSize = Math.min(56, stampHeight - 14);
+        const qrSize = Math.min(56 * scaleRatio, stampHeight - 14 * scaleRatio);
         page.drawImage(embeddedQrImage, {
-          x: stampX + stampWidth - qrSize - 6,
-          y: stampY + 7,
+          x: stampX + stampWidth - qrSize - 6 * scaleRatio,
+          y: stampY + 7 * scaleRatio,
           width: qrSize,
           height: qrSize
         });
       }
 
-      let lineY = stampY + stampHeight - 16;
+      let lineY = stampY + stampHeight - 16 * scaleRatio;
       page.drawText('CERTIFICACION DIGITAL Y VALIDEZ PROBATORIA', {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6.5,
+        size: 6.5 * scaleRatio,
         font: helveticaBold,
         color: rgb(0.45, 0.3, 0.05)
       });
 
-      lineY -= 11;
+      lineY -= 11 * scaleRatio;
       page.drawText(config.signerName.toUpperCase(), {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 7.5,
+        size: 7.5 * scaleRatio,
         font: helveticaBold,
         color: rgb(0.1, 0.1, 0.1)
       });
 
-      lineY -= 9;
+      lineY -= 9 * scaleRatio;
       page.drawText(`Identificación: ${config.idNumber || 'CI/RUC Ecuatoriano'}`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6.5,
+        size: 6.5 * scaleRatio,
         font: helvetica,
         color: rgb(0.25, 0.25, 0.25)
       });
 
-      lineY -= 9;
+      lineY -= 9 * scaleRatio;
       page.drawText(`Fecha: ${dateFormatted} | ${config.location}`, {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 6.5,
+        size: 6.5 * scaleRatio,
         font: helvetica,
         color: rgb(0.25, 0.25, 0.25)
       });
 
-      lineY -= 8;
+      lineY -= 8 * scaleRatio;
       page.drawText('Ley de Comercio Electrónico Art. 14', {
-        x: stampX + 8,
+        x: stampX + 8 * scaleRatio,
         y: lineY,
-        size: 5.5,
+        size: 5.5 * scaleRatio,
         font: helvetica,
         color: rgb(0.5, 0.4, 0.2)
       });

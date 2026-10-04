@@ -40,6 +40,10 @@ interface InteractiveStampPositionerProps {
   documentPreviewUrl?: string;
   documentPageCount: number;
   documentName?: string;
+  stampWidth: number;
+  setStampWidth: (w: number) => void;
+  stampHeight: number;
+  setStampHeight: (h: number) => void;
 }
 
 export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProps> = ({
@@ -63,7 +67,11 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   pdfBuffer,
   documentPreviewUrl,
   documentPageCount,
-  documentName
+  documentName,
+  stampWidth,
+  setStampWidth,
+  stampHeight,
+  setStampHeight
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -139,9 +147,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
 
   const effective = getEffectivePct();
 
-  // Convertir porcentaje PDF (donde 0% es abajo/izquierda, 100% es arriba/derecha) a HTML
-  const stampWidthPercent = 48; // El sello en HTML ocupa el ~48% del ancho del lienzo
-  const stampHeightPercent = 14; // El sello en HTML ocupa el ~14% del alto del lienzo
+  // Convertir porcentaje PDF (donde 0% es abajo/izquierda, 100% es arriba/derecha) a HTML de forma exacta basada en las medidas en pt de la página A4 (595x842)
+  const stampWidthPercent = (stampWidth / 595) * 100;
+  const stampHeightPercent = (stampHeight / 842) * 100;
 
   const htmlLeft = Math.max(0, Math.min(100 - stampWidthPercent, (effective.x / 100) * (100 - stampWidthPercent)));
   const htmlTop = Math.max(0, Math.min(100 - stampHeightPercent, ((100 - effective.y) / 100) * (100 - stampHeightPercent)));
@@ -152,9 +160,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
     const rect = containerRef.current.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
 
-    // Asumir que el elemento sello mide ~160px x 52px en pantalla
-    const stampW = 160;
-    const stampH = 52;
+    // Calcular el ancho y alto del sello en pantalla de forma proporcional al tamaño del contenedor
+    const stampW = (stampWidth / 595) * rect.width;
+    const stampH = (stampHeight / 842) * rect.height;
     const availW = Math.max(1, rect.width - stampW);
     const availH = Math.max(1, rect.height - stampH);
 
@@ -372,6 +380,8 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   style={{
                     left: `${htmlLeft}%`,
                     top: `${htmlTop}%`,
+                    width: `${stampWidthPercent}%`,
+                    height: `${stampHeightPercent}%`
                   }}
                   className={`absolute transition-all duration-100 ease-out z-20 pointer-events-auto transform hover:scale-105 ${
                     isDragging ? 'scale-105 cursor-grabbing' : 'cursor-grab'
@@ -384,10 +394,10 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   </div>
 
                   {/* Renderizado de la estampa según el estilo */}
-                  <div className="p-1.5 bg-white border-2 border-blue-600 rounded shadow-lg max-w-[170px] sm:max-w-[190px] font-mono text-[8px] leading-tight select-none pointer-events-none">
-                    <div className="flex items-center gap-1.5">
+                  <div className={`w-full h-full bg-white border border-blue-600 rounded shadow-lg font-mono select-none pointer-events-none flex items-center ${stampHeight < 55 ? 'p-1 gap-1 text-[6.5px]' : 'p-1.5 gap-1.5 text-[8px]'} leading-tight overflow-hidden`}>
+                    <div className="flex items-center gap-1.5 w-full h-full min-w-0">
                       {includeQrCode && qrDataUrl && (
-                        <div className="w-8 h-8 bg-white p-0.5 rounded flex-shrink-0 flex items-center justify-center">
+                        <div className="h-full aspect-square bg-white p-0.5 rounded flex-shrink-0 flex items-center justify-center">
                           <img 
                             src={qrDataUrl} 
                             alt="QR" 
@@ -397,12 +407,12 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-[7px] text-slate-500 leading-none">Firmado por:</p>
-                        <p className="font-extrabold text-slate-900 truncate uppercase text-[8.5px]">
+                        <p className={`${stampHeight < 55 ? 'text-[5.5px]' : 'text-[7px]'} text-slate-500 leading-none`}>Firmado por:</p>
+                        <p className={`font-extrabold text-slate-900 truncate uppercase ${stampHeight < 55 ? 'text-[7px]' : 'text-[8.5px]'}`}>
                           {signerNameLines[0]}
                         </p>
                         {signerNameLines[1] && (
-                          <p className="font-extrabold text-slate-900 truncate uppercase text-[8.5px]">
+                          <p className={`font-extrabold text-slate-900 truncate uppercase ${stampHeight < 55 ? 'text-[7px]' : 'text-[8.5px]'}`}>
                             {signerNameLines[1]}
                           </p>
                         )}
@@ -623,6 +633,114 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs"
                 >
                   +1%
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. AJUSTE DEL TAMAÑO DEL SELLO (Para encajar en el casillero) */}
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3 pt-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-slate-800">
+                Tamaño del Sello (Dimensiones en pt):
+              </p>
+              <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">
+                Para Casilleros
+              </span>
+            </div>
+
+            {/* Ajustes rápidos de tamaño */}
+            <div className="space-y-1">
+              <span className="text-[11px] text-slate-500 font-medium block">Preajustes de Tamaño:</span>
+              <div className="grid grid-cols-2 gap-1.5">
+                {[
+                  { label: 'U. Compacto (140x40)', w: 140, h: 40 },
+                  { label: 'Compacto / Peq (180x50)', w: 180, h: 50 },
+                  { label: 'Estándar (245x68)', w: 245, h: 68 },
+                  { label: 'Grande (300x85)', w: 300, h: 85 }
+                ].map((sz) => {
+                  const isSelected = stampWidth === sz.w && stampHeight === sz.h;
+                  return (
+                    <button
+                      key={sz.label}
+                      type="button"
+                      onClick={() => {
+                        setStampWidth(sz.w);
+                        setStampHeight(sz.h);
+                      }}
+                      className={`py-1 px-1.5 rounded-md text-[10.5px] font-semibold border text-center transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-blue-600 border-blue-600 text-white font-bold shadow-xs'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      {sz.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Slider Ancho (Width) */}
+            <div className="space-y-1 pt-1 border-t border-slate-200/50">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-medium">Ancho (Width):</span>
+                <span className="font-mono font-bold text-slate-900">{stampWidth} pt</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setStampWidth(Math.max(100, stampWidth - 5))}
+                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-[10px] font-bold"
+                >
+                  -5pt
+                </button>
+                <input
+                  type="range"
+                  min={100}
+                  max={350}
+                  value={stampWidth}
+                  onChange={(e) => setStampWidth(parseInt(e.target.value))}
+                  className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => setStampWidth(Math.min(350, stampWidth + 5))}
+                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-[10px] font-bold"
+                >
+                  +5pt
+                </button>
+              </div>
+            </div>
+
+            {/* Slider Alto (Height) */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-medium">Alto (Height):</span>
+                <span className="font-mono font-bold text-slate-900">{stampHeight} pt</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setStampHeight(Math.max(30, stampHeight - 3))}
+                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-[10px] font-bold"
+                >
+                  -3pt
+                </button>
+                <input
+                  type="range"
+                  min={30}
+                  max={120}
+                  value={stampHeight}
+                  onChange={(e) => setStampHeight(parseInt(e.target.value))}
+                  className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => setStampHeight(Math.min(120, stampHeight + 3))}
+                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-[10px] font-bold"
+                >
+                  +3pt
                 </button>
               </div>
             </div>
