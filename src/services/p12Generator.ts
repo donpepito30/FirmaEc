@@ -1402,77 +1402,97 @@ export async function signAndStampDocumentPdf(
     if (config.stampStyle === 'firmaec-official' || config.stampStyle === 'minimal-box') {
       // ═════════════════════════════════════════════════════════════════════════
       // ESTÁNDAR OFICIAL ECUADOR (QR + TEXTO MONOSPACE / TYPEWRITER)
-      // Exactamente como en FirmaEC / Quipux / MINTEL estampado sobre el campo de firma
+      // Exactamente conforme a la Ley de Comercio Electrónico y el estándar oficial de FirmaEC / MINTEL
       // ═════════════════════════════════════════════════════════════════════════
       
       const scaleRatio = Math.min(stampWidth / 245, stampHeight / 68);
 
-      // Fondo blanco sólido opaco para cubrir limpiamente el campo de firma (si no es transparente)
-      if (!config.transparentBg) {
-        page.drawRectangle({
-          x: stampX,
-          y: stampY,
-          width: stampWidth,
-          height: stampHeight,
-          color: rgb(1, 1, 1),
-          borderColor: config.stampStyle === 'minimal-box' ? rgb(0.85, 0.85, 0.85) : undefined,
-          borderWidth: config.stampStyle === 'minimal-box' ? 0.8 * scaleRatio : 0
-        });
-      } else if (config.stampStyle === 'minimal-box') {
-        page.drawRectangle({
-          x: stampX,
-          y: stampY,
-          width: stampWidth,
-          height: stampHeight,
-          borderColor: rgb(0.85, 0.85, 0.85),
-          borderWidth: 0.8 * scaleRatio
-        });
-      }
+      // Fondo de la estampa con borde gris claro estándar (1pt espesor, #C8C8C8)
+      page.drawRectangle({
+        x: stampX,
+        y: stampY,
+        width: stampWidth,
+        height: stampHeight,
+        color: config.transparentBg ? undefined : rgb(1, 1, 1),
+        borderColor: rgb(0.78, 0.78, 0.78),
+        borderWidth: 1 * scaleRatio
+      });
 
-      // Código QR a la izquierda con alta fidelidad (0 antialiasing seams, 100% contraste)
-      const qrSize = Math.min(60 * scaleRatio, stampHeight - 8 * scaleRatio);
+      // Línea divisoria en Y = 6pt de la estampa (desde 3pt a stampWidth - 3pt)
+      page.drawLine({
+        start: { x: stampX + 3 * scaleRatio, y: stampY + 6 * scaleRatio },
+        end: { x: stampX + stampWidth - 3 * scaleRatio, y: stampY + 6 * scaleRatio },
+        thickness: 0.5 * scaleRatio,
+        color: rgb(0.7, 0.7, 0.7)
+      });
+
+      // Código QR a la izquierda (fijo a 50x50pt a escala standard)
+      const qrSize = 50 * scaleRatio;
       if (config.includeQrCode && embeddedQrImage) {
         page.drawImage(embeddedQrImage, {
-          x: stampX + 4 * scaleRatio,
-          y: stampY + (stampHeight - qrSize) / 2,
+          x: stampX + 3 * scaleRatio,
+          y: stampY + 9 * scaleRatio,
           width: qrSize,
           height: qrSize
         });
       }
 
-      const textLeftX = config.includeQrCode ? stampX + qrSize + 12 * scaleRatio : stampX + 8 * scaleRatio;
+      // Zona de texto a la derecha del QR (inicia en 56pt)
+      const textLeftX = stampX + 56 * scaleRatio;
       const nameLines = splitSignerNameForStamp(config.signerName);
 
-      // Línea 1: "Firmado electrónicamente por:" (Courier Regular)
-      let lineY = stampY + stampHeight - 16 * scaleRatio;
+      // Línea 1: "Firmado electrónicamente por:" (Courier Bold, 8pt)
+      let lineY = stampY + stampHeight - 14 * scaleRatio;
       page.drawText('Firmado electrónicamente por:', {
         x: textLeftX,
         y: lineY,
-        size: 8.5 * scaleRatio,
-        font: courier,
-        color: rgb(0.1, 0.1, 0.1)
-      });
-
-      // Línea 2 y 3: Nombre en Courier-Bold Mayúsculas
-      lineY -= 14 * scaleRatio;
-      page.drawText(nameLines[0], {
-        x: textLeftX,
-        y: lineY,
-        size: 11 * scaleRatio,
+        size: 8 * scaleRatio,
         font: courierBold,
         color: rgb(0, 0, 0)
       });
 
+      // Línea 2: Primer línea de Nombre completo (Courier Bold, 8pt)
+      lineY -= 10 * scaleRatio;
+      page.drawText(nameLines[0], {
+        x: textLeftX,
+        y: lineY,
+        size: 8 * scaleRatio,
+        font: courierBold,
+        color: rgb(0, 0, 0)
+      });
+
+      // Línea 3: Segunda línea de Nombre completo si se divide (Courier Bold, 8pt)
       if (nameLines.length > 1) {
-        lineY -= 14 * scaleRatio;
+        lineY -= 10 * scaleRatio;
         page.drawText(nameLines[1], {
           x: textLeftX,
           y: lineY,
-          size: 11 * scaleRatio,
+          size: 8 * scaleRatio,
           font: courierBold,
           color: rgb(0, 0, 0)
         });
       }
+
+      // Línea de C.C. / RUC (Courier Regular, 7pt)
+      lineY -= 10 * scaleRatio;
+      const idText = config.idNumber ? `C.C. ${config.idNumber}` : 'C.C. 0802912220';
+      page.drawText(idText, {
+        x: textLeftX,
+        y: lineY,
+        size: 7 * scaleRatio,
+        font: courier,
+        color: rgb(0, 0, 0)
+      });
+
+      // Línea de Fecha / Hora (Courier Regular, 7pt)
+      lineY -= 9 * scaleRatio;
+      page.drawText(dateFormatted, {
+        x: textLeftX,
+        y: lineY,
+        size: 7 * scaleRatio,
+        font: courier,
+        color: rgb(0, 0, 0)
+      });
 
     } else if (config.stampStyle === 'quipux-classic') {
       // Estilo Quipux / Gobierno

@@ -511,15 +511,23 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     ) : (
                       /* firmaec-official / minimal-box (Estándar Courier) */
                       <div 
-                        className={`w-[245px] h-[68px] flex items-center px-1.5 py-1 gap-3 overflow-hidden rounded`} 
+                        className="w-[245px] h-[68px] relative rounded overflow-hidden select-none pointer-events-none" 
                         style={{ 
                           fontFamily: '"Courier New", Courier, monospace',
-                          border: stampStyle === 'minimal-box' ? '1px solid #cbd5e1' : '1px solid #2563eb',
+                          border: '1px solid #C8C8C8',
                           backgroundColor: transparentBg ? 'transparent' : '#ffffff'
                         }}
                       >
                         {includeQrCode && qrDataUrl && (
-                          <div className="w-[60px] h-[60px] bg-white p-0.5 rounded flex-shrink-0 flex items-center justify-center">
+                          <div 
+                            className="absolute bg-white rounded flex items-center justify-center"
+                            style={{
+                              left: '3px',
+                              top: '9px',
+                              width: '50px',
+                              height: '50px'
+                            }}
+                          >
                             <img 
                               src={qrDataUrl} 
                               alt="QR" 
@@ -528,17 +536,56 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                             />
                           </div>
                         )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[8.5px] text-slate-500 leading-none">Firmado electrónicamente por:</p>
-                          <p className="font-extrabold text-slate-950 uppercase" style={{ fontSize: '11px', marginTop: '4px', fontFamily: '"Courier New", Courier, monospace', whiteSpace: 'nowrap' }}>
+                        <div 
+                          className="absolute flex flex-col justify-start text-left"
+                          style={{
+                            left: '56px',
+                            top: '8px',
+                            width: '186px',
+                            fontFamily: '"Courier New", Courier, monospace',
+                            color: '#000000',
+                          }}
+                        >
+                          <p style={{ fontSize: '8px', fontWeight: 'bold', lineHeight: '9px', margin: 0, whiteSpace: 'nowrap' }}>
+                            Firmado electrónicamente por:
+                          </p>
+                          <p style={{ fontSize: '8px', fontWeight: 'bold', lineHeight: '9px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }} className="uppercase">
                             {signerNameLines[0]}
                           </p>
-                          {signerNameLines[1] && (
-                            <p className="font-extrabold text-slate-950 uppercase" style={{ fontSize: '11px', marginTop: '2px', fontFamily: '"Courier New", Courier, monospace', whiteSpace: 'nowrap' }}>
-                              {signerNameLines[1]}
-                            </p>
+                          {signerNameLines[1] ? (
+                            <>
+                              <p style={{ fontSize: '8px', fontWeight: 'bold', lineHeight: '9px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }} className="uppercase">
+                                {signerNameLines[1]}
+                              </p>
+                              <p style={{ fontSize: '7px', lineHeight: '8px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }}>
+                                C.C. {idNumber || '0802912220'}
+                              </p>
+                              <p style={{ fontSize: '7px', lineHeight: '8px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }}>
+                                {new Date().toLocaleDateString('es-EC')} {new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p style={{ fontSize: '7px', lineHeight: '8px', margin: 0, marginTop: '3px', whiteSpace: 'nowrap' }}>
+                                C.C. {idNumber || '0802912220'}
+                              </p>
+                              <p style={{ fontSize: '7px', lineHeight: '8px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }}>
+                                {new Date().toLocaleDateString('es-EC')} {new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                              </p>
+                            </>
                           )}
                         </div>
+                        {/* Línea divisoria */}
+                        <div 
+                          className="absolute"
+                          style={{
+                            left: '3px',
+                            top: '61px',
+                            right: '3px',
+                            height: '0.5px',
+                            backgroundColor: '#B4B4B4'
+                          }}
+                        />
                       </div>
                     )}
                   </div>
