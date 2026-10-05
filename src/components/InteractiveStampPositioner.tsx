@@ -269,19 +269,11 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
-            <Sparkles className="w-3 h-3" />
+          <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-blue-500" />
             <span>Previsualización en Tiempo Real</span>
           </span>
         </div>
-      </div>
-
-      {/* EXPLICACIÓN BREVE */}
-      <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-        <p className="leading-relaxed text-[11.5px]">
-          Arrastre o haga clic sobre el documento para ubicar el sello de la <strong>FirmaEC</strong> exactamente sobre la casilla o línea requerida.
-        </p>
       </div>
 
       {/* GRID PRINCIPAL: CANVAS INTERACTIVO + CONTROLES */}

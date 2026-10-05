@@ -502,18 +502,13 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
       {/* HEADER HERO */}
       <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl border border-slate-800 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 space-y-3">
-          <div className="flex items-center gap-2 text-blue-400 text-xs font-bold tracking-wider uppercase">
-            <Stamp className="w-3.5 h-3.5" />
-            <span>Firma Electrónica Ecuador · FirmaEC & SRI</span>
-          </div>
-          
+        <div className="relative z-10 space-y-2">
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            Firmado Digital PAdES (PDF) & XAdES (XML SRI)
+            Firma Electrónica
           </h1>
           
-          <p className="text-slate-300 text-xs sm:text-sm max-w-3xl leading-relaxed">
-            Firme y estampe sus documentos PDF de manera oficial con soporte PAdES-BES, sellos de tiempo (TSA) y validación de revocación OCSP en tiempo real.
+          <p className="text-slate-300 text-xs sm:text-sm max-w-xl leading-relaxed">
+            Firme y estampe sus documentos oficiales de manera segura con validez jurídica.
           </p>
 
           {/* MODE SWITCHER TABS */}
@@ -647,10 +642,6 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 
                 <p className="text-xs font-bold text-slate-800 sm:text-sm">
                   Arrastra y suelta aquí tus documentos o haz clic para explorar
-                </p>
-                
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Formatos admitidos: <strong>PDF, Imágenes o Texto</strong> (soporta selección múltiple).
                 </p>
 
                 <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs group-hover:border-blue-300">

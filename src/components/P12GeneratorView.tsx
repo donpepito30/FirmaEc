@@ -249,21 +249,6 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Form (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
-          {/* Identity Validation Banner */}
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 flex items-start space-x-4">
-            <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center shrink-0 shadow-xs">
-              <Award className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="font-bold text-emerald-950 text-sm">
-                Configuración Criptográfica Avanzada para Ecuador
-              </h3>
-              <p className="text-emerald-800 text-xs mt-1 leading-relaxed">
-                El contenedor se genera con estructura <strong>PKCS#12 v1.1</strong>, cifrado PBE con 3DES/AES y extensiones X.509 v3 (<code>Digital Signature</code>, <code>Non-Repudiation</code> y <code>Document Signing</code>) para apertura directa en la aplicación de escritorio <strong>FirmaEC</strong>.
-              </p>
-            </div>
-          </div>
-
           {/* Form Container */}
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
             <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
