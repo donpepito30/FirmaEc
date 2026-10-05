@@ -639,60 +639,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
             )}
           </div>
 
-          {/* 2. PREAJUSTES RÁPIDOS DE UBICACIÓN EN EL CAMPO DE FIRMA */}
-          <div className="pt-3 border-t border-slate-100">
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Stamp className="w-3.5 h-3.5 text-blue-600" />
-                <span>Ubicación Predefinida</span>
-              </label>
 
-              {positionPreset === 'custom' && (
-                <button
-                  type="button"
-                  onClick={handleResetPosition}
-                  className="text-[11px] text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1 cursor-pointer"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  <span>Restablecer</span>
-                </button>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              {[
-                { id: 'bottom-right', label: 'Sobre Campo Firma (Inf. Derecha - Oficial)' },
-                { id: 'bottom-center', label: 'Sobre Campo Firma (Inf. Centro)' },
-                { id: 'bottom-left', label: 'Sobre Campo Firma (Inf. Izquierda)' },
-                { id: 'top-right', label: 'Superior Derecha' },
-                { id: 'top-left', label: 'Superior Izquierda' },
-                { id: 'custom', label: 'Personalizado (Arrastrar o usar deslizadores)' }
-              ].map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => {
-                    setPositionPreset(preset.id as any);
-                    if (preset.id === 'bottom-right') { setCustomX(88); setCustomY(10); }
-                    if (preset.id === 'bottom-center') { setCustomX(50); setCustomY(10); }
-                    if (preset.id === 'bottom-left') { setCustomX(5); setCustomY(10); }
-                    if (preset.id === 'top-right') { setCustomX(88); setCustomY(90); }
-                    if (preset.id === 'top-left') { setCustomX(5); setCustomY(90); }
-                  }}
-                  className={`w-full py-2 px-3 rounded-xl text-left text-xs font-medium border transition-all flex items-center justify-between cursor-pointer ${
-                    positionPreset === preset.id
-                      ? 'bg-blue-50 border-blue-500 text-blue-900 font-bold shadow-xs'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <span>{preset.label}</span>
-                  {positionPreset === preset.id && (
-                    <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* 3. DESLIZADORES DE AJUSTE FINO */}
           <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3 pt-3">
