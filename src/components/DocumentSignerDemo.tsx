@@ -123,7 +123,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   const [includeQrCode, setIncludeQrCode] = useState(true);
   const [stampWidth, setStampWidth] = useState(245);
   const [stampHeight, setStampHeight] = useState(68);
-  const [transparentBg, setTransparentBg] = useState(false);
+  const [transparentBg, setTransparentBg] = useState(true);
   const [enableGeminiAnalysis, setEnableGeminiAnalysis] = useState(false);
 
   // Signing execution state for batch results

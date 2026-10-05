@@ -1200,7 +1200,7 @@ export async function drawVectorQrCodeToPdfPage(
  */
 export async function generateHighReadabilityQrSvg(
   payloadText: string,
-  options?: { margin?: number; errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H' }
+  options?: { margin?: number; errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H'; transparentBg?: boolean }
 ): Promise<string> {
   const ecLevel = options?.errorCorrectionLevel || 'M';
   const margin = options?.margin ?? 4;
@@ -1211,7 +1211,7 @@ export async function generateHighReadabilityQrSvg(
     errorCorrectionLevel: ecLevel,
     color: {
       dark: '#000000',
-      light: '#ffffff'
+      light: options?.transparentBg ? '#00000000' : '#ffffff'
     }
   });
 
@@ -1229,7 +1229,7 @@ export async function generateHighReadabilityQrSvg(
  */
 export async function generateHighReadabilityQrPng(
   payloadText: string,
-  options?: { width?: number; margin?: number; errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H' }
+  options?: { width?: number; margin?: number; errorCorrectionLevel?: 'L' | 'M' | 'Q' | 'H'; transparentBg?: boolean }
 ): Promise<string> {
   return await QRCode.toDataURL(payloadText, {
     margin: options?.margin ?? 4,
@@ -1237,7 +1237,7 @@ export async function generateHighReadabilityQrPng(
     errorCorrectionLevel: options?.errorCorrectionLevel ?? 'M',
     color: {
       dark: '#000000',
-      light: '#ffffff'
+      light: options?.transparentBg ? '#00000000' : '#ffffff'
     }
   });
 }
@@ -1322,7 +1322,8 @@ export async function signAndStampDocumentPdf(
     const qrPngUrl = await generateHighReadabilityQrPng(qrVerificationText, {
       width: 2048,
       margin: 4,
-      errorCorrectionLevel: 'M'
+      errorCorrectionLevel: 'M',
+      transparentBg: config.transparentBg
     });
     const base64Png = qrPngUrl.replace(/^data:image\/png;base64,/, '');
     const pngBytes = Uint8Array.from(atob(base64Png), c => c.charCodeAt(0));
@@ -1506,34 +1507,36 @@ export async function signAndStampDocumentPdf(
     } else if (config.stampStyle === 'quipux-classic') {
       // Estilo Quipux / Gobierno
       const scaleRatio = Math.min(stampWidth / 255, stampHeight / 78);
-      page.drawRectangle({
-        x: stampX,
-        y: stampY,
-        width: stampWidth,
-        height: stampHeight,
-        color: config.transparentBg ? undefined : rgb(0.98, 0.98, 0.99),
-        borderColor: rgb(0.2, 0.3, 0.5),
-        borderWidth: 1.2 * scaleRatio
-      });
+      if (!config.transparentBg) {
+        page.drawRectangle({
+          x: stampX,
+          y: stampY,
+          width: stampWidth,
+          height: stampHeight,
+          color: rgb(0.98, 0.98, 0.99),
+          borderColor: rgb(0.2, 0.3, 0.5),
+          borderWidth: 1.2 * scaleRatio
+        });
 
-      page.drawRectangle({
-        x: stampX,
-        y: stampY + stampHeight - 15 * scaleRatio,
-        width: stampWidth,
-        height: 15 * scaleRatio,
-        color: rgb(0.15, 0.25, 0.45)
-      });
+        page.drawRectangle({
+          x: stampX,
+          y: stampY + stampHeight - 15 * scaleRatio,
+          width: stampWidth,
+          height: 15 * scaleRatio,
+          color: rgb(0.15, 0.25, 0.45)
+        });
 
-      page.drawText('GESTION DOCUMENTAL QUIPUX - REPUBLICA DEL ECUADOR', {
-        x: stampX + 8 * scaleRatio,
-        y: stampY + stampHeight - 11 * scaleRatio,
-        size: 6.5 * scaleRatio,
-        font: helveticaBold,
-        color: rgb(1, 1, 1)
-      });
+        page.drawText('GESTION DOCUMENTAL QUIPUX - REPUBLICA DEL ECUADOR', {
+          x: stampX + 8 * scaleRatio,
+          y: stampY + stampHeight - 11 * scaleRatio,
+          size: 6.5 * scaleRatio,
+          font: helveticaBold,
+          color: rgb(1, 1, 1)
+        });
+      }
 
       if (config.includeQrCode && embeddedQrImage) {
-        const qrSize = Math.min(58 * scaleRatio, stampHeight - 16 * scaleRatio);
+        const qrSize = Math.min(58 * scaleRatio, stampHeight - (config.transparentBg ? 0 : 16) * scaleRatio);
         page.drawImage(embeddedQrImage, {
           x: stampX + stampWidth - qrSize - 6 * scaleRatio,
           y: stampY + 6 * scaleRatio,
@@ -1581,34 +1584,36 @@ export async function signAndStampDocumentPdf(
     } else if (config.stampStyle === 'sri-tax') {
       // Estilo SRI Facturación
       const scaleRatio = Math.min(stampWidth / 255, stampHeight / 78);
-      page.drawRectangle({
-        x: stampX,
-        y: stampY,
-        width: stampWidth,
-        height: stampHeight,
-        color: config.transparentBg ? undefined : rgb(0.97, 0.99, 0.97),
-        borderColor: rgb(0.1, 0.5, 0.25),
-        borderWidth: 1.2 * scaleRatio
-      });
+      if (!config.transparentBg) {
+        page.drawRectangle({
+          x: stampX,
+          y: stampY,
+          width: stampWidth,
+          height: stampHeight,
+          color: rgb(0.97, 0.99, 0.97),
+          borderColor: rgb(0.1, 0.5, 0.25),
+          borderWidth: 1.2 * scaleRatio
+        });
 
-      page.drawRectangle({
-        x: stampX,
-        y: stampY + stampHeight - 15 * scaleRatio,
-        width: stampWidth,
-        height: 15 * scaleRatio,
-        color: rgb(0.08, 0.45, 0.22)
-      });
+        page.drawRectangle({
+          x: stampX,
+          y: stampY + stampHeight - 15 * scaleRatio,
+          width: stampWidth,
+          height: 15 * scaleRatio,
+          color: rgb(0.08, 0.45, 0.22)
+        });
 
-      page.drawText('SRI - COMPROBANTE CON FIRMA ELECTRONICA VALIDA', {
-        x: stampX + 8 * scaleRatio,
-        y: stampY + stampHeight - 11 * scaleRatio,
-        size: 6.5 * scaleRatio,
-        font: helveticaBold,
-        color: rgb(1, 1, 1)
-      });
+        page.drawText('SRI - COMPROBANTE CON FIRMA ELECTRONICA VALIDA', {
+          x: stampX + 8 * scaleRatio,
+          y: stampY + stampHeight - 11 * scaleRatio,
+          size: 6.5 * scaleRatio,
+          font: helveticaBold,
+          color: rgb(1, 1, 1)
+        });
+      }
 
       if (config.includeQrCode && embeddedQrImage) {
-        const qrSize = Math.min(58 * scaleRatio, stampHeight - 16 * scaleRatio);
+        const qrSize = Math.min(58 * scaleRatio, stampHeight - (config.transparentBg ? 0 : 16) * scaleRatio);
         page.drawImage(embeddedQrImage, {
           x: stampX + stampWidth - qrSize - 6 * scaleRatio,
           y: stampY + 6 * scaleRatio,
@@ -1647,24 +1652,26 @@ export async function signAndStampDocumentPdf(
     } else if (config.stampStyle === 'legal-notary') {
       // Estilo Legal / Notarial
       const scaleRatio = Math.min(stampWidth / 255, stampHeight / 78);
-      page.drawRectangle({
-        x: stampX,
-        y: stampY,
-        width: stampWidth,
-        height: stampHeight,
-        color: config.transparentBg ? undefined : rgb(0.99, 0.98, 0.95),
-        borderColor: rgb(0.65, 0.45, 0.15),
-        borderWidth: 1.5 * scaleRatio
-      });
+      if (!config.transparentBg) {
+        page.drawRectangle({
+          x: stampX,
+          y: stampY,
+          width: stampWidth,
+          height: stampHeight,
+          color: rgb(0.99, 0.98, 0.95),
+          borderColor: rgb(0.65, 0.45, 0.15),
+          borderWidth: 1.5 * scaleRatio
+        });
 
-      page.drawRectangle({
-        x: stampX + 3 * scaleRatio,
-        y: stampY + 3 * scaleRatio,
-        width: stampWidth - 6 * scaleRatio,
-        height: stampHeight - 6 * scaleRatio,
-        borderColor: rgb(0.8, 0.65, 0.35),
-        borderWidth: 0.5 * scaleRatio
-      });
+        page.drawRectangle({
+          x: stampX + 3 * scaleRatio,
+          y: stampY + 3 * scaleRatio,
+          width: stampWidth - 6 * scaleRatio,
+          height: stampHeight - 6 * scaleRatio,
+          borderColor: rgb(0.8, 0.65, 0.35),
+          borderWidth: 0.5 * scaleRatio
+        });
+      }
 
       if (config.includeQrCode && embeddedQrImage) {
         const qrSize = Math.min(56 * scaleRatio, stampHeight - 14 * scaleRatio);

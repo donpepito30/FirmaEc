@@ -407,12 +407,12 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     height: `${stampHeight * scale}px`,
                     backgroundColor: transparentBg ? 'transparent' : (stampStyle === 'quipux-classic' ? '#fbfbfe' : stampStyle === 'sri-tax' ? '#f7fdf7' : stampStyle === 'legal-notary' ? '#fdfcf9' : '#ffffff')
                   }}
-                  className={`absolute transition-all duration-100 ease-out z-20 pointer-events-auto transform hover:scale-105 rounded shadow-md overflow-hidden ${
-                    stampStyle === 'firmaec-official'
+                  className={`absolute transition-all duration-100 ease-out z-20 pointer-events-auto transform hover:scale-105 rounded overflow-hidden ${
+                    stampStyle === 'firmaec-official' || transparentBg
                       ? ''
-                      : 'border border-slate-200/50'
+                      : 'border border-slate-200/50 shadow-md'
                   } ${
-                    isDragging ? 'scale-105 cursor-grabbing' : 'cursor-grab'
+                    isDragging ? 'scale-105 cursor-grabbing ring-2 ring-blue-500/50' : 'cursor-grab'
                   }`}
                 >
                   {/* Etiqueta flotante con coordenadas en vivo */}
@@ -433,15 +433,18 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   >
                     {stampStyle === 'quipux-classic' ? (
                       <div 
-                        className="w-[255px] h-[78px] border-[1.5px] border-[#334c80] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded"
+                        className="w-[255px] h-[78px] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded"
                         style={{
-                          backgroundColor: transparentBg ? 'transparent' : '#fbfbfe'
+                          backgroundColor: transparentBg ? 'transparent' : '#fbfbfe',
+                          border: transparentBg ? 'none' : '1.5px solid #334c80'
                         }}
                       >
                         {/* Header banner */}
-                        <div className="bg-[#264073] text-white text-[7.5px] font-bold px-2 py-0.5 truncate uppercase flex-shrink-0 tracking-wider flex items-center h-[15px]">
-                          GESTION DOCUMENTAL QUIPUX - REPUBLICA DEL ECUADOR
-                        </div>
+                        {!transparentBg && (
+                          <div className="bg-[#264073] text-white text-[7.5px] font-bold px-2 py-0.5 truncate uppercase flex-shrink-0 tracking-wider flex items-center h-[15px]">
+                            GESTION DOCUMENTAL QUIPUX - REPUBLICA DEL ECUADOR
+                          </div>
+                        )}
                         <div className="flex-1 flex items-center px-2 py-1 gap-2 min-h-0">
                           <div className="flex-1 min-w-0">
                             <p className="text-[8px] text-slate-500 leading-none">Firmado digitalmente por:</p>
@@ -457,15 +460,18 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                       </div>
                     ) : stampStyle === 'sri-tax' ? (
                       <div 
-                        className="w-[255px] h-[78px] border-[1.5px] border-[#1a8040] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded"
+                        className="w-[255px] h-[78px] flex flex-col font-sans select-none pointer-events-none overflow-hidden relative rounded"
                         style={{
-                          backgroundColor: transparentBg ? 'transparent' : '#f7fdf7'
+                          backgroundColor: transparentBg ? 'transparent' : '#f7fdf7',
+                          border: transparentBg ? 'none' : '1.5px solid #1a8040'
                         }}
                       >
                         {/* Header banner */}
-                        <div className="bg-[#147338] text-white text-[7.5px] font-bold px-2 py-0.5 truncate uppercase flex-shrink-0 tracking-wider flex items-center h-[15px]">
-                          SRI - COMPROBANTE CON FIRMA ELECTRONICA VALIDA
-                        </div>
+                        {!transparentBg && (
+                          <div className="bg-[#147338] text-white text-[7.5px] font-bold px-2 py-0.5 truncate uppercase flex-shrink-0 tracking-wider flex items-center h-[15px]">
+                            SRI - COMPROBANTE CON FIRMA ELECTRONICA VALIDA
+                          </div>
+                        )}
                         <div className="flex-1 flex items-center px-2 py-1 gap-2 min-h-0">
                           <div className="flex-1 min-w-0">
                             <p className="font-extrabold text-[#0d401a] truncate uppercase text-[10.5px]">{signerName || 'TITULAR ECUADOR'}</p>
@@ -473,7 +479,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                             <p className="text-[7.5px] text-slate-400 font-mono truncate">SHA-256: d3b07384d113...</p>
                           </div>
                           {includeQrCode && qrDataUrl && (
-                            <div className="w-[58px] h-[58px] bg-white p-0.5 border border-slate-200 rounded flex-shrink-0 flex items-center justify-center">
+                            <div className={`w-[58px] h-[58px] p-0.5 rounded flex-shrink-0 flex items-center justify-center ${transparentBg ? 'bg-transparent border-none' : 'bg-white border border-slate-200'}`}>
                               <img src={qrDataUrl} alt="QR" className="w-full h-full object-contain" />
                             </div>
                           )}
@@ -481,12 +487,15 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                       </div>
                     ) : stampStyle === 'legal-notary' ? (
                       <div 
-                        className="w-[255px] h-[78px] border-[1.5px] border-[#a67326] p-1 flex select-none pointer-events-none overflow-hidden relative font-sans rounded"
+                        className="w-[255px] h-[78px] p-1 flex select-none pointer-events-none overflow-hidden relative font-sans rounded"
                         style={{
-                          backgroundColor: transparentBg ? 'transparent' : '#fdfcf9'
+                          backgroundColor: transparentBg ? 'transparent' : '#fdfcf9',
+                          border: transparentBg ? 'none' : '1.5px solid #a67326'
                         }}
                       >
-                        <div className="absolute inset-[2px] border border-[#ccaa73] rounded-sm pointer-events-none" />
+                        {!transparentBg && (
+                          <div className="absolute inset-[2px] border border-[#ccaa73] rounded-sm pointer-events-none" />
+                        )}
                         <div className="flex-1 flex items-center z-10 relative gap-2 px-1.5">
                           <div className="flex-1 min-w-0">
                             <p className="text-[#734d0d] font-extrabold text-[7px] uppercase tracking-wider leading-none">CERTIFICACION DIGITAL Y VALIDEZ PROBATORIA</p>
@@ -495,7 +504,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                             <p className="text-[7px] text-[#8c6622] truncate mt-0.5">Ley de Comercio Electrónico Art. 14</p>
                           </div>
                           {includeQrCode && qrDataUrl && (
-                            <div className="w-[56px] h-[56px] bg-white p-0.5 border border-slate-200 rounded flex-shrink-0 flex items-center justify-center">
+                            <div className={`w-[56px] h-[56px] p-0.5 rounded flex-shrink-0 flex items-center justify-center ${transparentBg ? 'bg-transparent border-none' : 'bg-white border border-slate-200'}`}>
                               <img src={qrDataUrl} alt="QR" className="w-full h-full object-contain" />
                             </div>
                           )}
@@ -507,13 +516,13 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         className="w-[245px] h-[68px] relative rounded overflow-hidden select-none pointer-events-none" 
                         style={{ 
                           fontFamily: '"Courier New", Courier, monospace',
-                          border: stampStyle === 'minimal-box' ? '1px solid #cbd5e1' : 'none',
+                          border: stampStyle === 'minimal-box' && !transparentBg ? '1px solid #cbd5e1' : 'none',
                           backgroundColor: transparentBg ? 'transparent' : '#ffffff'
                         }}
                       >
                         {includeQrCode && qrDataUrl && (
                           <div 
-                            className="absolute bg-white rounded flex items-center justify-center"
+                            className={`absolute rounded flex items-center justify-center ${transparentBg ? 'bg-transparent' : 'bg-white'}`}
                             style={{
                               left: '3px',
                               top: '9px',
