@@ -415,10 +415,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     isDragging ? 'scale-105 cursor-grabbing ring-2 ring-blue-500/50' : 'cursor-grab'
                   }`}
                 >
-                  {/* Etiqueta flotante con coordenadas en vivo */}
-                  <div className="absolute -top-6 left-0 bg-blue-600 text-white font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap flex items-center gap-1 z-30">
-                    <Move className="w-2.5 h-2.5" />
-                    <span>X:{effective.x}% Y:{effective.y}%</span>
+                  {/* Tirador flotante para arrastre táctil */}
+                  <div className="absolute -top-5 left-1.5 bg-blue-600 text-white p-1 rounded-full shadow-md z-30 transition-transform hover:scale-110 active:scale-95 flex items-center justify-center">
+                    <Move className="w-3.5 h-3.5" />
                   </div>
 
                   {/* Renderizado de la estampa con escalamiento vectorial perfecto basado en transform: scale(finalScale) */}
@@ -590,21 +589,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
 
           </div>
 
-          {/* INDICADOR DE COORDENADAS OFICIALES EN PUNTOS PDF (PT) Y MILÍMETROS (MM) */}
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono text-slate-700">
-            <div className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-blue-600" />
-              <span>Línea de Sello (A4 210x297 mm):</span>
-            </div>
-            <div className="flex items-center gap-2 font-bold text-slate-900">
-              <span className="bg-white px-2 py-0.5 border border-slate-300 rounded" title="Horizontal">
-                X: {Math.round((effective.x / 100) * 595)} pt ({Math.round((effective.x / 100) * 210)} mm)
-              </span>
-              <span className="bg-white px-2 py-0.5 border border-slate-300 rounded" title="Vertical (desde abajo)">
-                Y: {Math.round((effective.y / 100) * 842)} pt ({Math.round((effective.y / 100) * 297)} mm)
-              </span>
-            </div>
-          </div>
+
         </div>
 
         {/* COLUMNA DERECHA: SELECCIONADORES DE PREAJUSTES Y AJUSTES (5 cols) */}
@@ -709,32 +694,16 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
             </div>
           </div>
 
-          {/* 3. DESLIZADORES DE AJUSTE FINO (X% e Y%) */}
+          {/* 3. DESLIZADORES DE AJUSTE FINO */}
           <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3 pt-3">
             <p className="text-xs font-bold text-slate-800">
-              Ajuste Fino Manual (Porcentajes %):
+              Ajuste Fino Manual Táctil:
             </p>
 
             {/* Slider X */}
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 font-medium">Horizontal (X):</span>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="number"
-                    min={0}
-                    max={95}
-                    step={0.1}
-                    value={effective.x}
-                    onChange={(e) => {
-                      const val = Math.max(0, Math.min(95, parseFloat(e.target.value) || 0));
-                      setCustomX(val);
-                      if (positionPreset !== 'custom') setPositionPreset('custom');
-                    }}
-                    className="w-16 px-1.5 py-0.5 bg-white border border-slate-300 rounded text-center text-xs font-mono font-bold"
-                  />
-                  <span className="font-mono text-slate-500">%</span>
-                </div>
+                <span className="text-slate-600 font-medium">Posición Horizontal (Deslizar):</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -743,9 +712,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     setCustomX(Math.max(0, Math.round((effective.x - 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
-                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs animate-duration-150"
+                  className="p-1 px-2.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer text-xs font-bold active:scale-95"
                 >
-                  -1%
+                  Izquierda (-1)
                 </button>
                 <input
                   type="range"
@@ -765,9 +734,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     setCustomX(Math.min(90, Math.round((effective.x + 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
-                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs animate-duration-150"
+                  className="p-1 px-2.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer text-xs font-bold active:scale-95"
                 >
-                  +1%
+                  Derecha (+1)
                 </button>
               </div>
             </div>
@@ -775,23 +744,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
             {/* Slider Y */}
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 font-medium">Vertical (Y desde abajo):</span>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="number"
-                    min={0}
-                    max={95}
-                    step={0.1}
-                    value={effective.y}
-                    onChange={(e) => {
-                      const val = Math.max(0, Math.min(95, parseFloat(e.target.value) || 0));
-                      setCustomY(val);
-                      if (positionPreset !== 'custom') setPositionPreset('custom');
-                    }}
-                    className="w-16 px-1.5 py-0.5 bg-white border border-slate-300 rounded text-center text-xs font-mono font-bold"
-                  />
-                  <span className="font-mono text-slate-500">%</span>
-                </div>
+                <span className="text-slate-600 font-medium">Posición Vertical (Deslizar):</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -800,9 +753,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     setCustomY(Math.max(0, Math.round((effective.y - 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
-                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs animate-duration-150"
+                  className="p-1 px-2.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer text-xs font-bold active:scale-95"
                 >
-                  -1%
+                  Abajo (-1)
                 </button>
                 <input
                   type="range"
@@ -822,9 +775,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     setCustomY(Math.min(90, Math.round((effective.y + 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
-                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs animate-duration-150"
+                  className="p-1 px-2.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer text-xs font-bold active:scale-95"
                 >
-                  +1%
+                  Arriba (+1)
                 </button>
               </div>
             </div>
