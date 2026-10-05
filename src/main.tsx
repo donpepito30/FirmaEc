@@ -20,15 +20,14 @@ try {
   console.warn('[PWA] ServiceWorker not supported or blocked by iframe sandbox:', e);
 }
 
-const isPreviewEnv = 
-  typeof window !== 'undefined' && (
-    window.location.hostname.includes('ais-') || 
-    window.location.hostname.includes('localhost') || 
-    window.location.hostname.includes('127.0.0.1') || 
-    (window.self !== window.top)
-  );
+const isInsideIframe = typeof window !== 'undefined' && window.self !== window.top;
+const isLocalhost = typeof window !== 'undefined' && (
+  window.location.hostname === 'localhost' || 
+  window.location.hostname === '127.0.0.1'
+);
 
-if ('serviceWorker' in navigator && !isPreviewEnv && import.meta.env.PROD) {
+// Register service worker if supported, not in iframe, and running under HTTPS or localhost
+if ('serviceWorker' in navigator && !isInsideIframe) {
   try {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js').then(
