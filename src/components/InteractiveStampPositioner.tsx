@@ -514,7 +514,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         className="w-[245px] h-[68px] relative rounded overflow-hidden select-none pointer-events-none" 
                         style={{ 
                           fontFamily: '"Courier New", Courier, monospace',
-                          border: '1px solid #C8C8C8',
+                          border: stampStyle === 'minimal-box' ? '1px solid #cbd5e1' : 'none',
                           backgroundColor: transparentBg ? 'transparent' : '#ffffff'
                         }}
                       >
@@ -540,52 +540,40 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                           className="absolute flex flex-col justify-start text-left"
                           style={{
                             left: '56px',
-                            top: '8px',
+                            top: signerNameLines.length > 1 ? '14px' : '19px',
                             width: '186px',
                             fontFamily: '"Courier New", Courier, monospace',
                             color: '#000000',
                           }}
                         >
-                          <p style={{ fontSize: '8px', fontWeight: 'bold', lineHeight: '9px', margin: 0, whiteSpace: 'nowrap' }}>
+                          <p style={{ fontSize: '6px', lineHeight: '7px', margin: 0, whiteSpace: 'nowrap' }}>
+                            Validar únicamente en FirmaEC
+                          </p>
+                          <p style={{ fontSize: '6px', lineHeight: '7px', margin: 0, marginTop: '1.5px', whiteSpace: 'nowrap' }}>
                             Firmado electrónicamente por:
                           </p>
-                          <p style={{ fontSize: '8px', fontWeight: 'bold', lineHeight: '9px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }} className="uppercase">
+                          <p style={{ fontSize: '8.5px', fontWeight: 'bold', lineHeight: '10px', margin: 0, marginTop: '3px', whiteSpace: 'nowrap' }} className="uppercase font-bold">
                             {signerNameLines[0]}
                           </p>
-                          {signerNameLines[1] ? (
-                            <>
-                              <p style={{ fontSize: '8px', fontWeight: 'bold', lineHeight: '9px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }} className="uppercase">
-                                {signerNameLines[1]}
-                              </p>
-                              <p style={{ fontSize: '7px', lineHeight: '8px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }}>
-                                C.C. {idNumber || '0802912220'}
-                              </p>
-                              <p style={{ fontSize: '7px', lineHeight: '8px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }}>
-                                {new Date().toLocaleDateString('es-EC')} {new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
-                              </p>
-                            </>
-                          ) : (
-                            <>
-                              <p style={{ fontSize: '7px', lineHeight: '8px', margin: 0, marginTop: '3px', whiteSpace: 'nowrap' }}>
-                                C.C. {idNumber || '0802912220'}
-                              </p>
-                              <p style={{ fontSize: '7px', lineHeight: '8px', margin: 0, marginTop: '1px', whiteSpace: 'nowrap' }}>
-                                {new Date().toLocaleDateString('es-EC')} {new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
-                              </p>
-                            </>
+                          {signerNameLines[1] && (
+                            <p style={{ fontSize: '8.5px', fontWeight: 'bold', lineHeight: '10px', margin: 0, marginTop: '1.5px', whiteSpace: 'nowrap' }} className="uppercase font-bold">
+                              {signerNameLines[1]}
+                            </p>
                           )}
                         </div>
-                        {/* Línea divisoria */}
-                        <div 
-                          className="absolute"
-                          style={{
-                            left: '3px',
-                            top: '61px',
-                            right: '3px',
-                            height: '0.5px',
-                            backgroundColor: '#B4B4B4'
-                          }}
-                        />
+                        {/* Línea divisoria solo en minimal-box */}
+                        {stampStyle === 'minimal-box' && (
+                          <div 
+                            className="absolute"
+                            style={{
+                              left: '3px',
+                              top: '61px',
+                              right: '3px',
+                              height: '0.5px',
+                              backgroundColor: '#B4B4B4'
+                            }}
+                          />
+                        )}
                       </div>
                     )}
                   </div>
