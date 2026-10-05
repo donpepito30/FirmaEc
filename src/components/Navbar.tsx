@@ -11,6 +11,7 @@ import {
   Lock
 } from 'lucide-react';
 import headerLogo from '../assets/logo.png';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface NavbarProps {
   activeTab: string;
@@ -31,9 +32,10 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="bg-slate-900 py-1.5 px-4 text-xs font-medium text-slate-300 border-b border-slate-800">
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white uppercase tracking-wider">
+            <span className="text-[11px] font-extrabold text-blue-400 uppercase tracking-wider">
               ECUADOR 🇪🇨
             </span>
+            <span className="text-[11px] text-slate-500">·</span>
             <span className="text-[11px] text-slate-300">
               Infraestructura de Llave Pública (PKI) • FirmaEC, PAdES & Certificados .p12
             </span>
@@ -154,6 +156,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* User Badge Profile */}
           <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-slate-200 flex-shrink-0">
+            <PWAInstallButton inline />
+            <div className="h-4 w-px bg-slate-200" />
             <div className="text-right">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Módulo Seguro</p>
               <p className="text-xs font-bold text-slate-800 truncate max-w-[130px]">Firma Digital EC</p>

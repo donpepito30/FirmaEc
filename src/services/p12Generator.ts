@@ -847,7 +847,7 @@ export async function convertFileToPdfBuffer(file: File): Promise<{
       const cleanArrayBuffer = pdfBytes.buffer.slice(
         pdfBytes.byteOffset,
         pdfBytes.byteOffset + pdfBytes.byteLength
-      );
+      ) as ArrayBuffer;
 
       return {
         buffer: cleanArrayBuffer,
@@ -873,7 +873,7 @@ export async function convertFileToPdfBuffer(file: File): Promise<{
     const cleanArrayBuffer = pdfBytes.buffer.slice(
       pdfBytes.byteOffset,
       pdfBytes.byteOffset + pdfBytes.byteLength
-    );
+    ) as ArrayBuffer;
 
     return {
       buffer: cleanArrayBuffer,
@@ -1561,15 +1561,6 @@ export async function signAndStampDocumentPdf(
       });
 
       lineY -= 9 * scaleRatio;
-      page.drawText(`CI/RUC: ${config.idNumber || 'Registrado en Certificado'}`, {
-        x: stampX + 8 * scaleRatio,
-        y: lineY,
-        size: 6.5 * scaleRatio,
-        font: helvetica,
-        color: rgb(0.2, 0.25, 0.3)
-      });
-
-      lineY -= 9 * scaleRatio;
       page.drawText(`Fecha: ${dateFormatted} GMT-5`, {
         x: stampX + 8 * scaleRatio,
         y: lineY,
@@ -1633,15 +1624,6 @@ export async function signAndStampDocumentPdf(
         size: 7 * scaleRatio,
         font: helveticaBold,
         color: rgb(0.05, 0.25, 0.1)
-      });
-
-      lineY -= 9 * scaleRatio;
-      page.drawText(`RUC: ${config.idNumber || '0802778749001'}`, {
-        x: stampX + 8 * scaleRatio,
-        y: lineY,
-        size: 6.5 * scaleRatio,
-        font: helvetica,
-        color: rgb(0.2, 0.25, 0.3)
       });
 
       lineY -= 9 * scaleRatio;
@@ -1710,15 +1692,6 @@ export async function signAndStampDocumentPdf(
         size: 7.5 * scaleRatio,
         font: helveticaBold,
         color: rgb(0.1, 0.1, 0.1)
-      });
-
-      lineY -= 9 * scaleRatio;
-      page.drawText(`Identificación: ${config.idNumber || 'CI/RUC Ecuatoriano'}`, {
-        x: stampX + 8 * scaleRatio,
-        y: lineY,
-        size: 6.5 * scaleRatio,
-        font: helvetica,
-        color: rgb(0.25, 0.25, 0.25)
       });
 
       lineY -= 9 * scaleRatio;

@@ -415,7 +415,11 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     height: `${stampHeight * scale}px`,
                     backgroundColor: transparentBg ? 'transparent' : (stampStyle === 'quipux-classic' ? '#fbfbfe' : stampStyle === 'sri-tax' ? '#f7fdf7' : stampStyle === 'legal-notary' ? '#fdfcf9' : '#ffffff')
                   }}
-                  className={`absolute transition-all duration-100 ease-out z-20 pointer-events-auto transform hover:scale-105 border border-slate-200/50 rounded shadow-md overflow-hidden ${
+                  className={`absolute transition-all duration-100 ease-out z-20 pointer-events-auto transform hover:scale-105 rounded shadow-md overflow-hidden ${
+                    stampStyle === 'firmaec-official'
+                      ? ''
+                      : 'border border-slate-200/50'
+                  } ${
                     isDragging ? 'scale-105 cursor-grabbing' : 'cursor-grab'
                   }`}
                 >
@@ -450,8 +454,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                           <div className="flex-1 min-w-0">
                             <p className="text-[8px] text-slate-500 leading-none">Firmado digitalmente por:</p>
                             <p className="font-extrabold text-[#0d1a40] truncate uppercase text-[10.5px] mt-0.5">{signerName || 'TITULAR ECUADOR'}</p>
-                            <p className="text-[8px] text-slate-600 truncate mt-0.5">CI/RUC: {idNumber || '1715894320'}</p>
-                            <p className="text-[8px] text-slate-600 truncate">Fecha: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
+                            <p className="text-[8px] text-slate-600 truncate mt-0.5">Fecha: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
                           </div>
                           {includeQrCode && qrDataUrl && (
                             <div className="w-[58px] h-[58px] bg-white p-0.5 border border-slate-200 rounded flex-shrink-0 flex items-center justify-center">
@@ -474,8 +477,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         <div className="flex-1 flex items-center px-2 py-1 gap-2 min-h-0">
                           <div className="flex-1 min-w-0">
                             <p className="font-extrabold text-[#0d401a] truncate uppercase text-[10.5px]">{signerName || 'TITULAR ECUADOR'}</p>
-                            <p className="text-[8px] text-slate-600 truncate mt-0.5">RUC: {idNumber || '1715894320001'}</p>
-                            <p className="text-[8px] text-slate-600 truncate">Fecha Firma: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
+                            <p className="text-[8px] text-slate-600 truncate mt-0.5">Fecha Firma: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
                             <p className="text-[7.5px] text-slate-400 font-mono truncate">SHA-256: d3b07384d113...</p>
                           </div>
                           {includeQrCode && qrDataUrl && (
@@ -497,8 +499,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                           <div className="flex-1 min-w-0">
                             <p className="text-[#734d0d] font-extrabold text-[7px] uppercase tracking-wider leading-none">CERTIFICACION DIGITAL Y VALIDEZ PROBATORIA</p>
                             <p className="font-extrabold text-slate-900 truncate uppercase text-[10.5px] mt-1">{signerName || 'TITULAR ECUADOR'}</p>
-                            <p className="text-[8px] text-slate-600 truncate mt-0.5">ID: {idNumber || '1715894320'}</p>
-                            <p className="text-[8px] text-slate-600 truncate">Fecha: {new Date().toLocaleDateString('es-EC')} | Ecuador</p>
+                            <p className="text-[8px] text-slate-600 truncate mt-0.5">Fecha: {new Date().toLocaleDateString('es-EC')} | Ecuador</p>
                             <p className="text-[7px] text-[#8c6622] truncate mt-0.5">Ley de Comercio Electrónico Art. 14</p>
                           </div>
                           {includeQrCode && qrDataUrl && (
@@ -588,18 +589,18 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
 
           </div>
 
-          {/* INDICADOR DE COORDENADAS OFICIALES EN PUNTOS PDF (PT) */}
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs font-mono text-slate-700">
+          {/* INDICADOR DE COORDENADAS OFICIALES EN PUNTOS PDF (PT) Y MILÍMETROS (MM) */}
+          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono text-slate-700">
             <div className="flex items-center gap-2">
               <Target className="w-4 h-4 text-blue-600" />
-              <span>Coordenadas PDF (A4 595x842 pt):</span>
+              <span>Línea de Sello (A4 210x297 mm):</span>
             </div>
-            <div className="flex items-center gap-3 font-bold text-slate-900">
-              <span className="bg-white px-2 py-0.5 border border-slate-300 rounded">
-                X: {Math.round((effective.x / 100) * 595)} pt ({effective.x}%)
+            <div className="flex items-center gap-2 font-bold text-slate-900">
+              <span className="bg-white px-2 py-0.5 border border-slate-300 rounded" title="Horizontal">
+                X: {Math.round((effective.x / 100) * 595)} pt ({Math.round((effective.x / 100) * 210)} mm)
               </span>
-              <span className="bg-white px-2 py-0.5 border border-slate-300 rounded">
-                Y: {Math.round((effective.y / 100) * 842)} pt ({effective.y}%)
+              <span className="bg-white px-2 py-0.5 border border-slate-300 rounded" title="Vertical (desde abajo)">
+                Y: {Math.round((effective.y / 100) * 842)} pt ({Math.round((effective.y / 100) * 297)} mm)
               </span>
             </div>
           </div>
@@ -717,16 +718,31 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-600 font-medium">Horizontal (X):</span>
-                <span className="font-mono font-bold text-slate-900">{effective.x}%</span>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min={0}
+                    max={95}
+                    step={0.1}
+                    value={effective.x}
+                    onChange={(e) => {
+                      const val = Math.max(0, Math.min(95, parseFloat(e.target.value) || 0));
+                      setCustomX(val);
+                      if (positionPreset !== 'custom') setPositionPreset('custom');
+                    }}
+                    className="w-16 px-1.5 py-0.5 bg-white border border-slate-300 rounded text-center text-xs font-mono font-bold"
+                  />
+                  <span className="font-mono text-slate-500">%</span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => {
-                    setCustomX(Math.max(0, effective.x - 1));
+                    setCustomX(Math.max(0, Math.round((effective.x - 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
-                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs"
+                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs animate-duration-150"
                 >
                   -1%
                 </button>
@@ -734,9 +750,10 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   type="range"
                   min={0}
                   max={90}
+                  step={0.1}
                   value={effective.x}
                   onChange={(e) => {
-                    setCustomX(parseInt(e.target.value));
+                    setCustomX(parseFloat(e.target.value));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
                   className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
@@ -744,10 +761,10 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                 <button
                   type="button"
                   onClick={() => {
-                    setCustomX(Math.min(90, effective.x + 1));
+                    setCustomX(Math.min(90, Math.round((effective.x + 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
-                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs"
+                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs animate-duration-150"
                 >
                   +1%
                 </button>
@@ -758,16 +775,31 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-600 font-medium">Vertical (Y desde abajo):</span>
-                <span className="font-mono font-bold text-slate-900">{effective.y}%</span>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    min={0}
+                    max={95}
+                    step={0.1}
+                    value={effective.y}
+                    onChange={(e) => {
+                      const val = Math.max(0, Math.min(95, parseFloat(e.target.value) || 0));
+                      setCustomY(val);
+                      if (positionPreset !== 'custom') setPositionPreset('custom');
+                    }}
+                    className="w-16 px-1.5 py-0.5 bg-white border border-slate-300 rounded text-center text-xs font-mono font-bold"
+                  />
+                  <span className="font-mono text-slate-500">%</span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => {
-                    setCustomY(Math.max(0, effective.y - 1));
+                    setCustomY(Math.max(0, Math.round((effective.y - 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
-                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs"
+                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs animate-duration-150"
                 >
                   -1%
                 </button>
@@ -775,9 +807,10 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   type="range"
                   min={0}
                   max={90}
+                  step={0.1}
                   value={effective.y}
                   onChange={(e) => {
-                    setCustomY(parseInt(e.target.value));
+                    setCustomY(parseFloat(e.target.value));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
                   className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
@@ -785,10 +818,10 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                 <button
                   type="button"
                   onClick={() => {
-                    setCustomY(Math.min(90, effective.y + 1));
+                    setCustomY(Math.min(90, Math.round((effective.y + 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
-                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs"
+                  className="p-1 bg-white border border-slate-300 rounded text-slate-700 hover:bg-slate-100 cursor-pointer text-xs animate-duration-150"
                 >
                   +1%
                 </button>

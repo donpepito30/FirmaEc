@@ -15,7 +15,7 @@ export const ResilienceBanner: React.FC = () => {
         <div className="flex items-center space-x-3">
           {/* Offline Mode Indicator */}
           {!isOnline && (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+            <div className="flex items-center gap-1.5 text-amber-400 font-bold">
               <WifiOff className="w-3.5 h-3.5" />
               <span>Modo Sin Conexión (Offline) Activo</span>
             </div>
@@ -23,15 +23,15 @@ export const ResilienceBanner: React.FC = () => {
 
           {/* Web Crypto Status */}
           {!cryptoHardwareAvailable && (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 font-semibold">
+            <div className="flex items-center gap-1.5 text-orange-400 font-medium">
               <Cpu className="w-3.5 h-3.5" />
-              <span>Criptografía ejecutándose en modo software seguro (Forge JS)</span>
+              <span>Criptografía en modo software seguro (Forge JS)</span>
             </div>
           )}
 
           {/* Global Uncaught Error Alert */}
           {lastGlobalError && (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-medium">
+            <div className="flex items-center gap-1.5 text-rose-400 font-medium">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" />
               <span className="truncate max-w-md">{lastGlobalError}</span>
             </div>

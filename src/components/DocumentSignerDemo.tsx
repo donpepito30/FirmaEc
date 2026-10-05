@@ -124,6 +124,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   const [stampWidth, setStampWidth] = useState(245);
   const [stampHeight, setStampHeight] = useState(68);
   const [transparentBg, setTransparentBg] = useState(false);
+  const [enableGeminiAnalysis, setEnableGeminiAnalysis] = useState(false);
 
   // Signing execution state for batch results
   const [isSigning, setIsSigning] = useState(false);
@@ -252,16 +253,18 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             }
           }
 
-          // Ejecutar análisis Gemini AI con un clon aislado
+          // Ejecutar análisis Gemini AI con un clon aislado (si está habilitado)
           let geminiInfo;
-          try {
-            geminiInfo = await validateDocumentWithGemini(
-              converted.buffer.slice(0),
-              file.name,
-              converted.fileType
-            );
-          } catch (gErr) {
-            console.warn('Gemini evaluation skipped:', gErr);
+          if (enableGeminiAnalysis) {
+            try {
+              geminiInfo = await validateDocumentWithGemini(
+                converted.buffer.slice(0),
+                file.name,
+                converted.fileType
+              );
+            } catch (gErr) {
+              console.warn('Gemini evaluation skipped:', gErr);
+            }
           }
 
           newDocsList.push({
@@ -566,26 +569,38 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
 
           {/* SECTION 1: DOCUMENT UPLOAD HUB */}
           <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-3">
               <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</span>
                 <span>Documentos a Firmar</span>
               </h2>
               
-              {uploadedDocs.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
-                    {uploadedDocs.length} {uploadedDocs.length === 1 ? 'documento' : 'documentos'}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleClearAllDocs}
-                    className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold cursor-pointer underline"
-                  >
-                    Limpiar lista
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center gap-3.5 flex-wrap">
+                <label className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-600 hover:text-slate-900 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={enableGeminiAnalysis}
+                    onChange={(e) => setEnableGeminiAnalysis(e.target.checked)}
+                    className="rounded text-blue-600 focus:ring-blue-500 w-3.5 h-3.5 cursor-pointer"
+                  />
+                  <span>Analizar con IA (Gemini)</span>
+                </label>
+
+                {uploadedDocs.length > 0 && (
+                  <div className="flex items-center gap-2 border-l border-slate-200 pl-3">
+                    <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-mono">
+                      {uploadedDocs.length}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleClearAllDocs}
+                      className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold cursor-pointer underline"
+                    >
+                      Limpiar
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* DRAG & DROP UPLOAD ZONE */}
@@ -1278,7 +1293,6 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     <div className="flex-1 space-y-1 text-[11px]">
                       <p className="text-slate-500 text-[10px]">Firmado digitalmente por:</p>
                       <p className="font-bold text-slate-950 uppercase">{effectiveSignerName}</p>
-                      <p className="text-slate-600 text-[10px]">CI/RUC: {effectiveIdNumber}</p>
                       <p className="text-slate-600 text-[10px]">Fecha: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
                       <p className="text-slate-500 text-[10px]">Razón: {quickReason}</p>
                     </div>
@@ -1303,7 +1317,6 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   <div className="flex items-center gap-3 pt-1">
                     <div className="flex-1 space-y-1 text-[11px]">
                       <p className="text-emerald-950 font-bold uppercase">{effectiveSignerName}</p>
-                      <p className="text-slate-700 text-[10px]">RUC: {effectiveIdNumber}</p>
                       <p className="text-slate-700 text-[10px]">Fecha Emisión: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
                       <p className="text-emerald-800 text-[9px] font-mono">SHA-256: 4a8f9c2d1b... (Verificable)</p>
                     </div>
@@ -1327,7 +1340,6 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   <div className="flex items-center gap-3 pt-1">
                     <div className="flex-1 space-y-1 text-[11px]">
                       <p className="font-bold text-slate-950 uppercase">{effectiveSignerName}</p>
-                      <p className="text-slate-700 text-[10px]">Identificación: {effectiveIdNumber}</p>
                       <p className="text-slate-700 text-[10px]">Fecha: {new Date().toLocaleDateString('es-EC')} | {quickCity}</p>
                       <p className="text-amber-900 text-[9px] font-semibold">Art. 14 Ley de Comercio Electrónico</p>
                     </div>

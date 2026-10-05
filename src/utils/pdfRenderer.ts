@@ -19,7 +19,7 @@ export function cloneArrayBuffer(buffer: ArrayBuffer | Uint8Array): ArrayBuffer 
   if (!buffer) return new ArrayBuffer(0);
   if (buffer instanceof Uint8Array) {
     if (buffer.byteLength === 0 || buffer.buffer.byteLength === 0) return new ArrayBuffer(0);
-    return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+    return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
   }
   if (buffer.byteLength === 0) return new ArrayBuffer(0);
   return buffer.slice(0);
@@ -42,7 +42,7 @@ function getSafePdfBytes(pdfBuffer: Uint8Array | ArrayBuffer): Uint8Array {
     if (pdfBuffer.byteLength === 0 || pdfBuffer.buffer.byteLength === 0) {
       throw new Error('El buffer del PDF está desasociado (detached).');
     }
-    rawBuffer = pdfBuffer.buffer;
+    rawBuffer = pdfBuffer.buffer as ArrayBuffer;
     byteOffset = pdfBuffer.byteOffset;
     byteLength = pdfBuffer.byteLength;
   } else if (pdfBuffer instanceof ArrayBuffer) {
