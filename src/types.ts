@@ -131,6 +131,7 @@ export interface DocumentSigningConfig {
   stampHeight: number;
   transparentBg?: boolean;
   textColor?: 'black' | 'blue' | string;
+  stampTextOption?: 'name-only' | 'with-date' | 'with-validation';
   enablePadesDictionary?: boolean;
   enableTsaTimestamp?: boolean;
   tsaServerId?: string;

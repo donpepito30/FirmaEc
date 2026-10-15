@@ -48,6 +48,8 @@ interface InteractiveStampPositionerProps {
   setTransparentBg: (val: boolean) => void;
   textColor?: string;
   setTextColor?: (color: string) => void;
+  stampTextOption?: 'name-only' | 'with-date' | 'with-validation';
+  setStampTextOption?: (opt: 'name-only' | 'with-date' | 'with-validation') => void;
 }
 
 export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProps> = ({
@@ -79,7 +81,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   transparentBg,
   setTransparentBg,
   textColor = 'black',
-  setTextColor
+  setTextColor,
+  stampTextOption = 'name-only',
+  setStampTextOption
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -155,13 +159,13 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   const getEffectivePct = () => {
     switch (positionPreset) {
       case 'bottom-right':
-        return { x: 88, y: 10 };
+        return { x: 96, y: 10 };
       case 'bottom-center':
         return { x: 50, y: 10 };
       case 'bottom-left':
         return { x: 5, y: 10 };
       case 'top-right':
-        return { x: 88, y: 90 };
+        return { x: 96, y: 90 };
       case 'top-left':
         return { x: 5, y: 90 };
       case 'custom':
@@ -174,13 +178,13 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   const scale = canvasWidth / 595;
 
   const isOfficialMono = stampStyle === 'firmaec-official' || stampStyle === 'minimal-box';
-  const refWidth = isOfficialMono ? 245 : 255;
-  const refHeight = isOfficialMono ? 68 : 78;
+  const refWidth = isOfficialMono ? 190 : 255;
+  const refHeight = isOfficialMono ? 56 : 78;
   const stampScale = Math.min(stampWidth / refWidth, stampHeight / refHeight);
   const finalScale = scale * stampScale;
 
-  const previewScaleRatio = stampStyle === 'firmaec-official' || stampStyle === 'minimal-box'
-    ? Math.min(stampWidth / 245, stampHeight / 68)
+  const previewScaleRatio = isOfficialMono
+    ? Math.min(stampWidth / 190, stampHeight / 56)
     : Math.min(stampWidth / 255, stampHeight / 78);
 
   // Convertir porcentaje PDF (donde 0% es abajo/izquierda, 100% es arriba/derecha) a HTML de forma exacta basada en las medidas en pt de la página A4 (595x842)
@@ -505,9 +509,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         </div>
                       </div>
                     ) : (
-                      /* firmaec-official / minimal-box (Estándar Courier) */
+                      /* firmaec-official / minimal-box (Estándar Courier Ajustado) */
                       <div 
-                        className="w-[245px] h-[68px] relative rounded overflow-hidden select-none pointer-events-none" 
+                        className="w-[190px] h-[56px] relative rounded overflow-hidden select-none pointer-events-none" 
                         style={{ 
                           fontFamily: '"Courier New", Courier, monospace',
                           border: stampStyle === 'minimal-box' && !transparentBg ? '1px solid #cbd5e1' : 'none',
@@ -519,7 +523,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                             className={`absolute rounded flex items-center justify-center ${transparentBg ? 'bg-transparent' : 'bg-white'}`}
                             style={{
                               left: '3px',
-                              top: '8px',
+                              top: '3px',
                               width: '50px',
                               height: '50px'
                             }}
@@ -536,8 +540,8 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                           className="absolute flex flex-col justify-start text-left"
                           style={{
                             left: '57px',
-                            top: '8px',
-                            width: '184px',
+                            top: '3px',
+                            width: '130px',
                             fontFamily: '"Courier New", Courier, monospace',
                             color: effectiveTextColor,
                           }}
@@ -553,6 +557,16 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                               {signerNameLines[1]}
                             </p>
                           )}
+                          {stampTextOption === 'with-validation' && (
+                            <p style={{ fontSize: '6px', lineHeight: '8px', margin: 0, marginTop: '2px', padding: 0, whiteSpace: 'nowrap', color: effectiveTextColor }}>
+                              Validar únicamente con FirmaEC
+                            </p>
+                          )}
+                          {stampTextOption === 'with-date' && (
+                            <p style={{ fontSize: '6px', lineHeight: '8px', margin: 0, marginTop: '2px', padding: 0, whiteSpace: 'nowrap', color: effectiveTextColor }}>
+                              Fecha: {new Date().toLocaleDateString('es-EC')} -05:00
+                            </p>
+                          )}
                         </div>
                         {/* Línea divisoria solo en minimal-box */}
                         {stampStyle === 'minimal-box' && (
@@ -560,7 +574,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                             className="absolute"
                             style={{
                               left: '3px',
-                              top: '61px',
+                              top: '52px',
                               right: '3px',
                               height: '0.5px',
                               backgroundColor: '#B4B4B4'
@@ -643,6 +657,16 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-600 font-medium">Posición Horizontal (Deslizar):</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCustomX(100);
+                    if (positionPreset !== 'custom') setPositionPreset('custom');
+                  }}
+                  className="text-[10px] text-blue-600 hover:text-blue-800 font-bold underline cursor-pointer"
+                >
+                  Pegar al Borde Derecho (100%)
+                </button>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -658,7 +682,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                 <input
                   type="range"
                   min={0}
-                  max={90}
+                  max={100}
                   step={0.1}
                   value={effective.x}
                   onChange={(e) => {
@@ -670,7 +694,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                 <button
                   type="button"
                   onClick={() => {
-                    setCustomX(Math.min(90, Math.round((effective.x + 1) * 10) / 10));
+                    setCustomX(Math.min(100, Math.round((effective.x + 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
                   className="p-1 px-2.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer text-xs font-bold active:scale-95"
@@ -699,7 +723,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                 <input
                   type="range"
                   min={0}
-                  max={90}
+                  max={98}
                   step={0.1}
                   value={effective.y}
                   onChange={(e) => {
@@ -711,7 +735,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                 <button
                   type="button"
                   onClick={() => {
-                    setCustomY(Math.min(90, Math.round((effective.y + 1) * 10) / 10));
+                    setCustomY(Math.min(98, Math.round((effective.y + 1) * 10) / 10));
                     if (positionPreset !== 'custom') setPositionPreset('custom');
                   }}
                   className="p-1 px-2.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer text-xs font-bold active:scale-95"
@@ -738,10 +762,10 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
               <span className="text-[11px] text-slate-500 font-medium block">Preajustes de Tamaño:</span>
               <div className="grid grid-cols-2 gap-1.5">
                 {[
-                  { label: 'U. Compacto (140x40)', w: 140, h: 40 },
-                  { label: 'Compacto / Peq (180x50)', w: 180, h: 50 },
-                  { label: 'Estándar (245x68)', w: 245, h: 68 },
-                  { label: 'Grande (300x85)', w: 300, h: 85 }
+                  { label: 'Oficial Ajustado (190x56)', w: 190, h: 56 },
+                  { label: 'Compacto (165x48)', w: 165, h: 48 },
+                  { label: 'Ultra Compacto (140x40)', w: 140, h: 40 },
+                  { label: 'Extendido (245x68)', w: 245, h: 68 }
                 ].map((sz) => {
                   const isSelected = stampWidth === sz.w && stampHeight === sz.h;
                   return (
@@ -830,7 +854,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
             </div>
           </div>
 
-          {/* ESTILO DEL SELLO Y CHECKBOX DE CÓDIGO QR */}
+          {/* ESTILO DEL SELLO Y OPCIONES */}
           <div className="pt-2 border-t border-slate-100 space-y-3">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
@@ -887,6 +911,51 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                 >
                   <span className="w-2.5 h-2.5 rounded-full bg-[#003366] inline-block border border-white" />
                   <span>Azul FirmaEC</span>
+                </button>
+              </div>
+            </div>
+
+            {/* OPCIONES DE COMPLEMENTO DE TEXTO (FIRMAEC) */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Texto de la Firma (Líneas complementarias)
+              </label>
+              <div className="grid grid-cols-3 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setStampTextOption?.('name-only')}
+                  className={`py-1.5 px-1.5 rounded-lg text-[11px] font-semibold border text-center transition-all cursor-pointer ${
+                    (!stampTextOption || stampTextOption === 'name-only')
+                      ? 'bg-blue-600 border-blue-600 text-white font-bold shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
+                  title="Firmado electrónicamente por + Nombre"
+                >
+                  Solo Nombre
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStampTextOption?.('with-validation')}
+                  className={`py-1.5 px-1.5 rounded-lg text-[11px] font-semibold border text-center transition-all cursor-pointer ${
+                    stampTextOption === 'with-validation'
+                      ? 'bg-blue-600 border-blue-600 text-white font-bold shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
+                  title="+ Validar únicamente con FirmaEC"
+                >
+                  + Validar FirmaEC
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStampTextOption?.('with-date')}
+                  className={`py-1.5 px-1.5 rounded-lg text-[11px] font-semibold border text-center transition-all cursor-pointer ${
+                    stampTextOption === 'with-date'
+                      ? 'bg-blue-600 border-blue-600 text-white font-bold shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
+                  title="+ Fecha y hora"
+                >
+                  + Fecha y Hora
                 </button>
               </div>
             </div>

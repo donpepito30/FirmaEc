@@ -1336,10 +1336,10 @@ export async function signAndStampDocumentPdf(
   const courier = await pdfDoc.embedFont(StandardFonts.Courier);
   const courierBold = await pdfDoc.embedFont(StandardFonts.CourierBold);
 
-  // Dimensiones del sello visual
+  // Dimensiones del sello visual (ajustadas al contenido oficial sin margen muerto derecho)
   const isOfficialMono = config.stampStyle === 'firmaec-official' || config.stampStyle === 'minimal-box';
-  const stampWidth = config.stampWidth || (isOfficialMono ? 245 : 255);
-  const stampHeight = config.stampHeight || (isOfficialMono ? 68 : 78);
+  const stampWidth = config.stampWidth || (isOfficialMono ? 190 : 255);
+  const stampHeight = config.stampHeight || (isOfficialMono ? 56 : 78);
 
   // Determinar páginas a estampar
   let targetPageIndices: number[] = [];
@@ -1407,7 +1407,7 @@ export async function signAndStampDocumentPdf(
       // con texto de validación y C.C. en tamaño destacado Courier Bold.
       // ═════════════════════════════════════════════════════════════════════════
       
-      const scaleRatio = Math.min(stampWidth / 245, stampHeight / 68);
+      const scaleRatio = Math.min(stampWidth / 190, stampHeight / 56);
 
       // Fondo de la estampa con borde gris claro estándar (SÓLO si es minimal-box)
       if (config.stampStyle === 'minimal-box') {
@@ -1423,8 +1423,8 @@ export async function signAndStampDocumentPdf(
 
         // Línea divisoria sólo en minimal-box
         page.drawLine({
-          start: { x: stampX + 3 * scaleRatio, y: stampY + 6 * scaleRatio },
-          end: { x: stampX + stampWidth - 3 * scaleRatio, y: stampY + 6 * scaleRatio },
+          start: { x: stampX + 3 * scaleRatio, y: stampY + 4 * scaleRatio },
+          end: { x: stampX + stampWidth - 3 * scaleRatio, y: stampY + 4 * scaleRatio },
           thickness: 0.5 * scaleRatio,
           color: rgb(0.7, 0.7, 0.7)
         });
@@ -1443,9 +1443,9 @@ export async function signAndStampDocumentPdf(
         }
       }
 
-      // Código QR a la izquierda (fijo a 50x50pt a escala standard)
+      // Código QR a la izquierda (50x50pt centrado verticalmente a escala standard)
       const qrSize = 50 * scaleRatio;
-      const qrY = stampY + 9 * scaleRatio;
+      const qrY = stampY + 3 * scaleRatio;
       const qrTop = qrY + qrSize; // Borde superior del QR
 
       if (config.includeQrCode && embeddedQrImage) {
@@ -1471,6 +1471,7 @@ export async function signAndStampDocumentPdf(
       // el borde superior de las letras mayúsculas se alinea exactamente con el borde superior del QR.
       const headerFontSize = 7.5 * scaleRatio;
       const nameFontSize = 10 * scaleRatio;
+      const metaFontSize = 6 * scaleRatio;
 
       let lineY = qrTop - (headerFontSize * 0.78);
 
@@ -1501,6 +1502,28 @@ export async function signAndStampDocumentPdf(
           y: lineY,
           size: nameFontSize,
           font: courierBold,
+          color: textColorPdf
+        });
+      }
+
+      // Línea opcional según opción de texto elegida
+      if (config.stampTextOption === 'with-validation') {
+        lineY -= (metaFontSize + 2 * scaleRatio);
+        page.drawText('Validar únicamente con FirmaEC', {
+          x: textLeftX,
+          y: lineY,
+          size: metaFontSize,
+          font: courier,
+          color: textColorPdf
+        });
+      } else if (config.stampTextOption === 'with-date') {
+        const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+        lineY -= (metaFontSize + 2 * scaleRatio);
+        page.drawText(`Fecha: ${nowStr} -05:00`, {
+          x: textLeftX,
+          y: lineY,
+          size: metaFontSize,
+          font: courier,
           color: textColorPdf
         });
       }

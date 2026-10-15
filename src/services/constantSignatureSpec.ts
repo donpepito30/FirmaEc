@@ -3,9 +3,10 @@
  * Especificación exacta para dimensiones, fuentes, colores y posicionamiento.
  */
 export const STANDARD_SIGNATURE_SPEC = {
-  // DIMENSIONES OFICIALES INMUTABLES (puntos PDF)
-  STAMP_WIDTH_PT: 245,      // Ancho estándar oficial
-  STAMP_HEIGHT_PT: 68,      // Alto estándar oficial
+  // DIMENSIONES OFICIALES FIRMAEC AJUSTADAS AL CONTENIDO (puntos PDF)
+  // Sin margen muerto a la derecha para permitir firmar pegado al borde derecho de la hoja
+  STAMP_WIDTH_PT: 190,      // Ancho ajustado a QR (50pt) + Espacio (7pt) + Texto Courier (~130pt)
+  STAMP_HEIGHT_PT: 56,      // Alto estándar oficial para QR (50pt) + márgenes mínimos
   QR_SIZE_PT: 50,           // Código QR fijo (nunca escalar)
   MARGIN_PT: 3,             // Espaciado interno mínimo
   
