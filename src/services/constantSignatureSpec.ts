@@ -13,6 +13,7 @@ export const STANDARD_SIGNATURE_SPEC = {
   COLOR_BACKGROUND: { r: 255, g: 255, b: 255 }, // Blanco puro
   COLOR_BORDER: { r: 200, g: 200, b: 200 },     // Gris claro #C8C8C8
   COLOR_TEXT: { r: 0, g: 0, b: 0 },             // Negro puro
+  COLOR_TEXT_BLUE: { r: 0, g: 51, b: 102 },     // Azul oficial FirmaEC #003366
   COLOR_LINE: { r: 180, g: 180, b: 180 },       // Gris línea divisoria #B4B4B4
   
   // ESPESORES DE LÍNEA
@@ -21,8 +22,8 @@ export const STANDARD_SIGNATURE_SPEC = {
   
   // TIPOGRAFÍAS DE ALTA COMPATIBILIDAD (Courier / Helvetica)
   FONT_FAMILY: '"Courier New", Courier, monospace',
-  FONT_SIZE_HEADER: 8,      // "Firmado electrónicamente por:" (Bold)
-  FONT_SIZE_NAME: 8,        // Nombre del firmante (Bold, máx legible)
+  FONT_SIZE_HEADER: 7.5,    // "Firmado electrónicamente por:" (Courier Regular, alineado al borde superior del QR)
+  FONT_SIZE_NAME: 10,       // Nombre del firmante (Courier Bold destacado)
   FONT_SIZE_ID: 7,          // Cédula o RUC
   FONT_SIZE_DATE: 7,        // Fecha y hora
   

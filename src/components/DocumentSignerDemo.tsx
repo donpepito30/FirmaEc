@@ -124,6 +124,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   const [stampWidth, setStampWidth] = useState(245);
   const [stampHeight, setStampHeight] = useState(68);
   const [transparentBg, setTransparentBg] = useState(true);
+  const [textColor, setTextColor] = useState<'black' | 'blue' | string>('black');
   const [enableGeminiAnalysis, setEnableGeminiAnalysis] = useState(false);
 
   // Signing execution state for batch results
@@ -426,6 +427,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
         stampWidth,
         stampHeight,
         transparentBg,
+        textColor,
         enablePadesDictionary,
         enableTsaTimestamp,
         tsaServerId,
@@ -993,6 +995,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             setStampHeight={setStampHeight}
             transparentBg={transparentBg}
             setTransparentBg={setTransparentBg}
+            textColor={textColor}
+            setTextColor={setTextColor}
           />
 
           {/* ADVANCED CRYPTOGRAPHIC OPTIONS PANEL */}

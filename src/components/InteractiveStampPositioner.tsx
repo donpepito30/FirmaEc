@@ -46,6 +46,8 @@ interface InteractiveStampPositionerProps {
   setStampHeight: (h: number) => void;
   transparentBg: boolean;
   setTransparentBg: (val: boolean) => void;
+  textColor?: string;
+  setTextColor?: (color: string) => void;
 }
 
 export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProps> = ({
@@ -75,7 +77,9 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
   stampHeight,
   setStampHeight,
   transparentBg,
-  setTransparentBg
+  setTransparentBg,
+  textColor = 'black',
+  setTextColor
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -145,6 +149,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
 
   // Divide el nombre del firmante para el sello
   const signerNameLines = splitSignerNameForStamp(signerName || 'TITULAR ECUADOR');
+  const effectiveTextColor = textColor === 'blue' || textColor === '#003366' ? '#003366' : '#000000';
 
   // Calcular las coordenadas porcentuales efectivas para la vista visual
   const getEffectivePct = () => {
@@ -388,16 +393,6 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                   </div>
                 )}
 
-                {/* 2. LÍNEAS GUÍA DE ALINEACIÓN (CROSSHAIRS) */}
-                <div 
-                  className="absolute left-0 right-0 border-b border-dashed border-blue-400/40 pointer-events-none transition-all duration-75"
-                  style={{ top: `${htmlTop}%` }}
-                />
-                <div 
-                  className="absolute top-0 bottom-0 border-r border-dashed border-blue-400/40 pointer-events-none transition-all duration-75"
-                  style={{ left: `${htmlLeft}%` }}
-                />
-
                 {/* 3. CAJA INTERACTIVA DEL SELLO FIRMAEC SOBREPUESTA */}
                 <div
                   style={{
@@ -524,7 +519,7 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                             className={`absolute rounded flex items-center justify-center ${transparentBg ? 'bg-transparent' : 'bg-white'}`}
                             style={{
                               left: '3px',
-                              top: '9px',
+                              top: '8px',
                               width: '50px',
                               height: '50px'
                             }}
@@ -540,24 +535,21 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                         <div 
                           className="absolute flex flex-col justify-start text-left"
                           style={{
-                            left: '56px',
-                            top: signerNameLines.length > 1 ? '14px' : '19px',
-                            width: '186px',
+                            left: '57px',
+                            top: '8px',
+                            width: '184px',
                             fontFamily: '"Courier New", Courier, monospace',
-                            color: '#000000',
+                            color: effectiveTextColor,
                           }}
                         >
-                          <p style={{ fontSize: '6px', lineHeight: '7px', margin: 0, whiteSpace: 'nowrap' }}>
-                            Validar únicamente en FirmaEC
-                          </p>
-                          <p style={{ fontSize: '6px', lineHeight: '7px', margin: 0, marginTop: '1.5px', whiteSpace: 'nowrap' }}>
+                          <p style={{ fontSize: '7.5px', lineHeight: '9px', margin: 0, padding: 0, whiteSpace: 'nowrap', color: effectiveTextColor }}>
                             Firmado electrónicamente por:
                           </p>
-                          <p style={{ fontSize: '8.5px', fontWeight: 'bold', lineHeight: '10px', margin: 0, marginTop: '3px', whiteSpace: 'nowrap' }} className="uppercase font-bold">
+                          <p style={{ fontSize: '10px', fontWeight: 'bold', lineHeight: '12px', margin: 0, marginTop: '2.5px', padding: 0, whiteSpace: 'nowrap', color: effectiveTextColor }} className="uppercase font-bold">
                             {signerNameLines[0]}
                           </p>
                           {signerNameLines[1] && (
-                            <p style={{ fontSize: '8.5px', fontWeight: 'bold', lineHeight: '10px', margin: 0, marginTop: '1.5px', whiteSpace: 'nowrap' }} className="uppercase font-bold">
+                            <p style={{ fontSize: '10px', fontWeight: 'bold', lineHeight: '12px', margin: 0, marginTop: '1.5px', padding: 0, whiteSpace: 'nowrap', color: effectiveTextColor }} className="uppercase font-bold">
                               {signerNameLines[1]}
                             </p>
                           )}
@@ -864,6 +856,38 @@ export const InteractiveStampPositioner: React.FC<InteractiveStampPositionerProp
                     <span className="truncate block">{st.name}</span>
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Color del Texto
+              </label>
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setTextColor?.('black')}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    effectiveTextColor === '#000000'
+                      ? 'bg-slate-900 border-slate-900 text-white font-bold shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-black inline-block border border-white" />
+                  <span>Negro Oficial</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTextColor?.('blue')}
+                  className={`py-1.5 px-2 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    effectiveTextColor === '#003366'
+                      ? 'bg-blue-700 border-blue-700 text-white font-bold shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#003366] inline-block border border-white" />
+                  <span>Azul FirmaEC</span>
+                </button>
               </div>
             </div>
 

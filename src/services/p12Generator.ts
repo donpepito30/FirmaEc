@@ -1445,62 +1445,63 @@ export async function signAndStampDocumentPdf(
 
       // Código QR a la izquierda (fijo a 50x50pt a escala standard)
       const qrSize = 50 * scaleRatio;
+      const qrY = stampY + 9 * scaleRatio;
+      const qrTop = qrY + qrSize; // Borde superior del QR
+
       if (config.includeQrCode && embeddedQrImage) {
         page.drawImage(embeddedQrImage, {
           x: stampX + 3 * scaleRatio,
-          y: stampY + 9 * scaleRatio,
+          y: qrY,
           width: qrSize,
           height: qrSize
         });
       }
 
-      // Zona de texto a la derecha del QR (inicia en 56pt)
-      const textLeftX = stampX + 56 * scaleRatio;
+      // Zona de texto a la derecha del QR
+      const textLeftX = stampX + 57 * scaleRatio;
       const nameLines = splitSignerNameForStamp(config.signerName);
 
-      // Calcular Y inicial para centrar verticalmente según la cantidad de líneas del nombre
-      let lineY = nameLines.length > 1 
-        ? stampY + stampHeight - 14 * scaleRatio 
-        : stampY + stampHeight - 19 * scaleRatio;
+      // Color del texto (Negro oficial por defecto o Azul FirmaEC #003366)
+      const isBlue = config.textColor === 'blue' || config.textColor === '#003366' || config.textColor === '#002855';
+      const textColorPdf = isBlue ? rgb(0, 0.2, 0.4) : rgb(0, 0, 0);
 
-      // Línea 1: "Validar únicamente en FirmaEC" (Courier Regular, 6pt)
-      page.drawText('Validar únicamente en FirmaEC', {
-        x: textLeftX,
-        y: lineY,
-        size: 6 * scaleRatio,
-        font: courier,
-        color: rgb(0, 0, 0)
-      });
+      // ALINEACIÓN EXACTA CON EL BORDE SUPERIOR DEL QR:
+      // En PDF, drawText ubica la coordenada Y en la línea base (baseline).
+      // Restando ~78% del tamaño de fuente (cap-height de Courier),
+      // el borde superior de las letras mayúsculas se alinea exactamente con el borde superior del QR.
+      const headerFontSize = 7.5 * scaleRatio;
+      const nameFontSize = 10 * scaleRatio;
 
-      // Línea 2: "Firmado electrónicamente por:" (Courier Regular, 6pt)
-      lineY -= 8 * scaleRatio;
+      let lineY = qrTop - (headerFontSize * 0.78);
+
+      // Línea 1: "Firmado electrónicamente por:" (Courier Regular, 7.5pt)
       page.drawText('Firmado electrónicamente por:', {
         x: textLeftX,
         y: lineY,
-        size: 6 * scaleRatio,
+        size: headerFontSize,
         font: courier,
-        color: rgb(0, 0, 0)
+        color: textColorPdf
       });
 
-      // Línea 3: Primer línea de Nombre completo (Courier Bold, 8.5pt)
-      lineY -= 10 * scaleRatio;
+      // Línea 2: Primer línea de Nombre completo (Courier Bold, 10pt)
+      lineY -= (nameFontSize + 2 * scaleRatio);
       page.drawText(nameLines[0], {
         x: textLeftX,
         y: lineY,
-        size: 8.5 * scaleRatio,
+        size: nameFontSize,
         font: courierBold,
-        color: rgb(0, 0, 0)
+        color: textColorPdf
       });
 
-      // Línea 4: Segunda línea de Nombre completo si se divide (Courier Bold, 8.5pt)
+      // Línea 3: Segunda línea de Nombre completo si se divide (Courier Bold, 10pt)
       if (nameLines.length > 1) {
-        lineY -= 10 * scaleRatio;
+        lineY -= (nameFontSize + 1.5 * scaleRatio);
         page.drawText(nameLines[1], {
           x: textLeftX,
           y: lineY,
-          size: 8.5 * scaleRatio,
+          size: nameFontSize,
           font: courierBold,
-          color: rgb(0, 0, 0)
+          color: textColorPdf
         });
       }
 

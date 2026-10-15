@@ -130,6 +130,7 @@ export interface DocumentSigningConfig {
   stampWidth: number;
   stampHeight: number;
   transparentBg?: boolean;
+  textColor?: 'black' | 'blue' | string;
   enablePadesDictionary?: boolean;
   enableTsaTimestamp?: boolean;
   tsaServerId?: string;
