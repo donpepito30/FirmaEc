@@ -48,7 +48,7 @@ export function SecurePasswordDisplay({
       <div className="flex items-center justify-between">
         <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-wider">
           <KeyRound className="w-3.5 h-3.5 text-blue-400" />
-          <span>Contraseña P12 protegida</span>
+          <span>Contraseña de tu firma</span>
         </label>
         <span className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${strength.color}`}>
           {strength.label}
@@ -69,7 +69,7 @@ export function SecurePasswordDisplay({
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors cursor-pointer"
-            title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            title={showPassword ? "Ocultar" : "Mostrar"}
           >
             {showPassword ? (
               <EyeOff className="w-4 h-4" />
@@ -108,7 +108,7 @@ export function SecurePasswordDisplay({
           />
         </div>
         <div className="flex justify-between text-[10px] text-slate-400 font-medium">
-          <span>Fortaleza de clave</span>
+          <span>Seguridad</span>
           <span>{strength.score}/100 ({strength.label})</span>
         </div>
       </div>
@@ -118,9 +118,9 @@ export function SecurePasswordDisplay({
         <div className="p-2.5 bg-emerald-950/60 border border-emerald-500/40 rounded-lg text-xs text-emerald-300 flex items-start gap-2">
           <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
           <div>
-            <strong>✓ Contraseña copiada al portapapeles.</strong>
+            <strong>✓ Contraseña copiada.</strong>
             <p className="text-[11px] text-emerald-400/80 mt-0.5">
-              Por seguridad, se limpiará automáticamente en {autoCleanSeconds} segundos.
+              Se borrará automáticamente en {autoCleanSeconds} segundos.
             </p>
           </div>
         </div>
@@ -130,12 +130,12 @@ export function SecurePasswordDisplay({
       <div className="p-2.5 bg-amber-950/40 border border-amber-500/30 rounded-lg text-[11px] text-amber-200 space-y-1">
         <div className="flex items-center gap-1.5 font-bold text-amber-400">
           <ShieldAlert className="w-3.5 h-3.5" />
-          <span>Seguridad Criptográfica</span>
+          <span>Aviso de seguridad</span>
         </div>
         <ul className="list-disc list-inside text-amber-300/80 space-y-0.5 pl-0.5">
-          <li>No comparta ni envíe esta clave por correo o mensajería abierta.</li>
-          <li>Guárdela en un gestor seguro de contraseñas (e.g. Bitwarden, 1Password).</li>
-          <li>Evite capturas de pantalla para prevenir filtraciones involuntarias.</li>
+          <li>No compartas tu contraseña con nadie.</li>
+          <li>Guárdala en un lugar seguro.</li>
+          <li>Evita capturas de pantalla.</li>
         </ul>
       </div>
     </div>

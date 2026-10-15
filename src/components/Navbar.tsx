@@ -37,16 +37,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
             <span className="text-[11px] text-slate-500">·</span>
             <span className="text-[11px] text-slate-300">
-              Infraestructura de Llave Pública (PKI) • FirmaEC, PAdES & Certificados .p12
+              Firma electrónica
             </span>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-[11px] text-slate-400">
             <span className="flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              Estándar PKCS#12 / RSA 2048-4096 bit
+              Firma en tu navegador
             </span>
             <span>•</span>
-            <span>Ley de Comercio Electrónico (Art. 13-14)</span>
+            <span>Ley de Comercio Electrónico</span>
           </div>
         </div>
       </div>
@@ -79,10 +79,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   FirmaEC <span className="text-blue-600 font-extrabold">PRO</span>
                 </span>
                 <span className="text-[10px] font-extrabold text-blue-600 tracking-wider uppercase">
-                  · Ecuador PKI
+                  · Ecuador
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Estampado PDF · .p12 · ARCOTEL · SRI</p>
+              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mt-0.5">Firma de documentos</p>
             </div>
           </div>
 
@@ -150,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
-              <span>Guía Técnica</span>
+              <span>Guía</span>
             </button>
           </nav>
 
@@ -159,8 +159,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <PWAInstallButton inline />
             <div className="h-4 w-px bg-slate-200" />
             <div className="text-right">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Módulo Seguro</p>
-              <p className="text-xs font-bold text-slate-800 truncate max-w-[130px]">Firma Digital EC</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Seguro</p>
+              <p className="text-xs font-bold text-slate-800 truncate max-w-[130px]">Firma EC</p>
             </div>
             <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700 font-bold text-xs shadow-2xs">
               <Lock className="w-4 h-4 text-blue-600" />

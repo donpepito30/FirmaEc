@@ -93,21 +93,21 @@ export const P12ValidatorView: React.FC = () => {
         <div className="flex items-center space-x-2 text-xs font-medium text-slate-400 mb-2">
           <span className="hover:text-slate-600 transition-colors">Certificados</span>
           <span>/</span>
-          <span className="text-slate-700 font-semibold">Validador e Inspector (.p12 / .pfx)</span>
+          <span className="text-slate-700 font-semibold">Validador de firma</span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold font-display text-slate-900 tracking-tight">
-              Validador de Firma Electrónica
+              Validador de firma
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-3xl">
-              Inspeccione la vigencia, titular, emisor ARCOTEL, algoritmos criptográficos y huella SHA-256 de cualquier archivo <strong className="text-slate-800">.p12</strong> o <strong className="text-slate-800">.pfx</strong>.
+              Verifica la vigencia y titular de cualquier archivo de firma (.p12).
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Inspección en Memoria Segura
+              Verificación segura
             </span>
           </div>
         </div>
@@ -120,10 +120,10 @@ export const P12ValidatorView: React.FC = () => {
             <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <UploadCloud className="w-4 h-4 text-blue-600" />
-                Cargar Archivo .p12 para Inspección
+                Cargar archivo de firma
               </h2>
               <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider">
-                PKCS#12
+                Archivo .p12
               </span>
             </div>
 
@@ -154,7 +154,7 @@ export const P12ValidatorView: React.FC = () => {
                           {file.name}
                         </span>
                         <span className="text-[11px] text-slate-500">
-                          {(file.size / 1024).toFixed(1)} KB • Clic para cambiar archivo
+                          {(file.size / 1024).toFixed(1)} KB • Clic para cambiar
                         </span>
                       </div>
                     ) : (
@@ -163,7 +163,7 @@ export const P12ValidatorView: React.FC = () => {
                           Haz clic para seleccionar o arrastra tu archivo .p12
                         </span>
                         <span className="text-[11px] text-slate-500 block mt-1">
-                          Formatos soportados: .p12, .pfx
+                          Formatos admitidos: .p12, .pfx
                         </span>
                       </div>
                     )}
@@ -173,7 +173,7 @@ export const P12ValidatorView: React.FC = () => {
                 {/* Password */}
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Contraseña del Archivo .p12
+                    Contraseña del archivo
                   </label>
                   <div className="relative">
                     <input
@@ -181,7 +181,7 @@ export const P12ValidatorView: React.FC = () => {
                       type={showPassword ? 'text' : 'password'}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Ingrese la clave del certificado..."
+                      placeholder="Escribe tu contraseña..."
                       className="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm font-mono-code focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     />
                     <button
@@ -193,7 +193,7 @@ export const P12ValidatorView: React.FC = () => {
                     </button>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-1">
-                    Requerida para abrir el contenedor criptográfico y extraer los metadatos.
+                    Necesaria para abrir el archivo.
                   </p>
                 </div>
 
@@ -215,12 +215,12 @@ export const P12ValidatorView: React.FC = () => {
                   {isInspecting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>Desencriptando e Inspeccionando...</span>
+                      <span>Consultando el certificado…</span>
                     </>
                   ) : (
                     <>
                       <FileCheck2 className="w-4 h-4" />
-                      <span>Validar y Extraer Metadatos</span>
+                      <span>Verificar certificado</span>
                     </>
                   )}
                 </button>
@@ -232,7 +232,7 @@ export const P12ValidatorView: React.FC = () => {
           <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 text-xs text-slate-600 flex items-start gap-2.5">
             <Lock className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
             <div>
-              <strong className="text-slate-800">Privacidad Criptográfica Total:</strong> Tu archivo y contraseña son analizados 100% en la memoria de tu navegador mediante Web Cryptography. Ningún archivo ni clave es enviado a servidores externos.
+              <strong className="text-slate-800">Privacidad:</strong> Tus archivos no salen de tu equipo.
             </div>
           </div>
         </div>
@@ -244,18 +244,18 @@ export const P12ValidatorView: React.FC = () => {
               <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                    Estado del Certificado
+                    Estado
                   </span>
                   <div className="flex items-center gap-2 mt-1">
                     {result.isExpired ? (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
                         <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
-                        Certificado Caducado
+                        Caducado
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        Certificado Vigente ({result.daysRemaining} días restantes)
+                        Vigente ({result.daysRemaining} días)
                       </span>
                     )}
                   </div>
@@ -263,11 +263,11 @@ export const P12ValidatorView: React.FC = () => {
 
                 {result.isAuthorizedEntity ? (
                   <span className="text-right text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">
-                    🏛️ Entidad Acreditada ARCOTEL
+                    Entidad Acreditada
                   </span>
                 ) : (
                   <span className="text-right text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
-                    🛠️ Certificado de Pruebas / Sandbox
+                    Pruebas / Sandbox
                   </span>
                 )}
               </div>
@@ -275,7 +275,7 @@ export const P12ValidatorView: React.FC = () => {
               {/* Key Details Grid */}
               <div className="p-6 space-y-3.5 text-xs">
                 <div>
-                  <span className="text-slate-500 font-medium block">Titular (Common Name):</span>
+                  <span className="text-slate-500 font-medium block">Titular:</span>
                   <span className="text-sm font-bold text-slate-900 block mt-0.5">
                     {result.commonName}
                   </span>
@@ -283,7 +283,7 @@ export const P12ValidatorView: React.FC = () => {
 
                 {result.identification && (
                   <div>
-                    <span className="text-slate-500 font-medium block">Identificación / RUC:</span>
+                    <span className="text-slate-500 font-medium block">Cédula / RUC:</span>
                     <span className="font-mono-code font-bold text-slate-800">
                       {result.identification}
                     </span>
@@ -291,7 +291,7 @@ export const P12ValidatorView: React.FC = () => {
                 )}
 
                 <div>
-                  <span className="text-slate-500 font-medium block">Autoridad Emisora (Issuer):</span>
+                  <span className="text-slate-500 font-medium block">Emisor:</span>
                   <span className="font-semibold text-slate-800">
                     {result.issuerCommonName}
                   </span>
@@ -299,14 +299,14 @@ export const P12ValidatorView: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4 py-2 border-y border-slate-100">
                   <div>
-                    <span className="text-slate-500 font-medium block">Válido Desde:</span>
+                    <span className="text-slate-500 font-medium block">Desde:</span>
                     <span className="font-semibold text-slate-800 flex items-center gap-1 mt-0.5">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       {result.validFrom.toLocaleDateString('es-EC')}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-500 font-medium block">Válido Hasta:</span>
+                    <span className="text-slate-500 font-medium block">Hasta:</span>
                     <span className="font-semibold text-slate-800 flex items-center gap-1 mt-0.5">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       {result.validTo.toLocaleDateString('es-EC')}
@@ -315,14 +315,7 @@ export const P12ValidatorView: React.FC = () => {
                 </div>
 
                 <div>
-                  <span className="text-slate-500 font-medium block">Algoritmo y Tamaño de Clave:</span>
-                  <span className="font-semibold text-slate-800">
-                    {result.keyAlgorithm} ({result.keySize} bits)
-                  </span>
-                </div>
-
-                <div>
-                  <span className="text-slate-500 font-medium block mb-1">Usos de Clave Permitidos:</span>
+                  <span className="text-slate-500 font-medium block mb-1">Usos permitidos:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {result.keyUsages.map((usage, idx) => (
                       <span
@@ -332,13 +325,6 @@ export const P12ValidatorView: React.FC = () => {
                         {usage}
                       </span>
                     ))}
-                  </div>
-                </div>
-
-                <div>
-                  <span className="text-slate-500 font-medium block mb-1">Huella Digital SHA-256:</span>
-                  <div className="p-2 bg-slate-50 rounded-lg text-[10px] font-mono-code text-slate-700 break-all border border-slate-200">
-                    {result.sha256Fingerprint}
                   </div>
                 </div>
 
@@ -353,12 +339,12 @@ export const P12ValidatorView: React.FC = () => {
                     {isCheckingOcsp ? (
                       <>
                         <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Consultando Responder OCSP ARCOTEL...</span>
+                        <span>Verificando vigencia…</span>
                       </>
                     ) : (
                       <>
                         <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                        <span>Verificar Revocación en Tiempo Real (OCSP & CRL)</span>
+                        <span>Verificar vigencia en línea</span>
                       </>
                     )}
                   </button>
@@ -368,16 +354,10 @@ export const P12ValidatorView: React.FC = () => {
                       <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
                         <span className="font-bold text-emerald-400 flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
-                          OCSP Status: {ocspResult.status.toUpperCase()}
+                          Estado: {ocspResult.status.toUpperCase()}
                         </span>
-                        <span className="text-[10px] text-slate-400">{ocspResult.checkType}</span>
                       </div>
-                      <p className="text-[10.5px] text-slate-300">ECI: {ocspResult.eciName}</p>
-                      <div className="space-y-1 text-[10px] text-slate-400">
-                        {ocspResult.details.map((d, i) => (
-                          <p key={i}>{d}</p>
-                        ))}
-                      </div>
+                      <p className="text-[10.5px] text-slate-300">Entidad: {ocspResult.eciName}</p>
                     </div>
                   )}
                 </div>

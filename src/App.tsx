@@ -40,7 +40,7 @@ export default function App() {
             "@graph": [
               {
                 "@type": "SoftwareApplication",
-                "name": "FirmaEC Pro - Firmador y Estampador de PDF Ecuador",
+                "name": "FirmaEC Pro - Firma de PDF Ecuador",
                 "operatingSystem": "All",
                 "applicationCategory": "SecurityApplication",
                 "offers": {
@@ -48,14 +48,14 @@ export default function App() {
                   "price": "0.00",
                   "priceCurrency": "USD"
                 },
-                "description": "Herramienta para firmar digitalmente y estampar documentos PDF con estándares FirmaEC, SRI y Quipux en Ecuador."
+                "description": "Firma y estampa documentos PDF de forma segura en Ecuador."
               },
               {
                 "@type": "WebSite",
                 "name": "FirmaEC Pro Ecuador",
                 "url": "https://firmaec.pro",
                 "inLanguage": "es-EC",
-                "description": "Firma electrónica, estampado visual de sellos QR en documentos PDF y certificados .p12 para Ecuador."
+                "description": "Firma electrónica y sellos QR en documentos PDF para Ecuador."
               }
             ]
           })

@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
         {/* Right Side: Plain, non-technical Security Statement */}
         <div className="flex items-center gap-2 text-slate-400 font-medium text-center sm:text-right">
           <Lock className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-          <span>Firma segura: Sus documentos se procesan de forma 100% privada y local en su equipo.</span>
+          <span>Tus archivos no salen de tu equipo.</span>
         </div>
 
       </div>

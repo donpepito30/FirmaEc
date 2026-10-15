@@ -17,7 +17,7 @@ export const ResilienceBanner: React.FC = () => {
           {!isOnline && (
             <div className="flex items-center gap-1.5 text-amber-400 font-bold">
               <WifiOff className="w-3.5 h-3.5" />
-              <span>Modo Sin Conexión (Offline) Activo</span>
+              <span>Modo sin conexión</span>
             </div>
           )}
 
@@ -25,7 +25,7 @@ export const ResilienceBanner: React.FC = () => {
           {!cryptoHardwareAvailable && (
             <div className="flex items-center gap-1.5 text-orange-400 font-medium">
               <Cpu className="w-3.5 h-3.5" />
-              <span>Criptografía en modo software seguro (Forge JS)</span>
+              <span>Modo seguro activo</span>
             </div>
           )}
 
@@ -41,14 +41,14 @@ export const ResilienceBanner: React.FC = () => {
         <div className="flex items-center space-x-3">
           <span className="text-[11px] text-slate-400 hidden sm:inline-flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Las operaciones criptográficas y firmas ocurren 100% en tu navegador</span>
+            <span>Tus archivos no salen de tu equipo</span>
           </span>
 
           {lastGlobalError && (
             <button
               onClick={clearError}
               className="p-1 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors cursor-pointer"
-              title="Desestimar aviso"
+              title="Cerrar"
             >
               <X className="w-3.5 h-3.5" />
             </button>

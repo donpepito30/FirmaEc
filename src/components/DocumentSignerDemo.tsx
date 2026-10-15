@@ -294,7 +294,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
         setSigningError(errorMessages.join('\n'));
       }
     } catch (err: any) {
-      setSigningError(`Inconveniente al procesar los archivos: ${err.message || err}`);
+      setSigningError(`No pudimos procesar los archivos: ${err.message || err}`);
     } finally {
       setIsProcessingFiles(false);
     }
@@ -336,7 +336,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
 
       setUploadedDocs([sampleDoc]);
     } catch (err: any) {
-      setSigningError(`Error al cargar el documento de ejemplo: ${err.message || err}`);
+      setSigningError(`No se pudo cargar el ejemplo: ${err.message || err}`);
     } finally {
       setIsProcessingFiles(false);
     }
@@ -345,11 +345,11 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   // Handle .p12 File Upload & Decryption
   const handleUnlockCustomP12 = async () => {
     if (!uploadedP12File) {
-      setP12UnlockError('Seleccione un archivo .p12 o .pfx primero.');
+      setP12UnlockError('Elige primero tu archivo de firma.');
       return;
     }
     if (!p12Password) {
-      setP12UnlockError('Ingrese la contraseña para desbloquear el archivo .p12.');
+      setP12UnlockError('Escribe tu contraseña.');
       return;
     }
 
@@ -362,7 +362,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
       setQuickName(extracted.subjectCn);
       if (extracted.subjectId) setQuickId(extracted.subjectId);
     } catch (err: any) {
-      setP12UnlockError(err.message || 'Contraseña incorrecta o formato .p12 inválido.');
+      setP12UnlockError(err.message || 'Contraseña incorrecta o archivo dañado.');
       setUnlockedP12Data(null);
     } finally {
       setIsUnlockingP12(false);
@@ -372,7 +372,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
   // Main Batch PDF Signing & Stamping Action
   const handleExecuteSigning = async () => {
     if (uploadedDocs.length === 0) {
-      setSigningError('Por favor suba al menos un documento para firmar.');
+      setSigningError('Sube un documento para firmar.');
       return;
     }
 
@@ -471,7 +471,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
       } catch (e) {}
 
     } catch (err: any) {
-      setSigningError(`Error al firmar y estampar los documentos: ${err.message || err}`);
+      setSigningError(`No se pudo firmar: ${err.message || err}`);
     } finally {
       setIsSigning(false);
     }
@@ -512,7 +512,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
           </h1>
           
           <p className="text-slate-300 text-xs sm:text-sm max-w-xl leading-relaxed">
-            Firme y estampe sus documentos oficiales de manera segura con validez jurídica.
+            Firma tus documentos de forma rápida y segura.
           </p>
 
           {/* MODE SWITCHER TABS */}
@@ -527,7 +527,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>Firmador PDF (PAdES / FirmaEC)</span>
+              <span>Firmar PDF</span>
             </button>
 
             <button
@@ -540,7 +540,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
               }`}
             >
               <FileCode className="w-4 h-4" />
-              <span>Firmador XML Comprobantes SRI (XAdES-BES)</span>
+              <span>Firmar XML SRI</span>
             </button>
           </div>
         </div>
@@ -571,7 +571,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-3">
               <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</span>
-                <span>Documentos a Firmar</span>
+                <span>Documentos</span>
               </h2>
               
               <div className="flex items-center gap-3.5 flex-wrap">
@@ -582,7 +582,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     onChange={(e) => setEnableGeminiAnalysis(e.target.checked)}
                     className="rounded text-blue-600 focus:ring-blue-500 w-3.5 h-3.5 cursor-pointer"
                   />
-                  <span>Analizar con IA (Gemini)</span>
+                  <span>Revisar con IA</span>
                 </label>
 
                 {uploadedDocs.length > 0 && (
@@ -595,7 +595,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                       onClick={handleClearAllDocs}
                       className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold cursor-pointer underline"
                     >
-                      Limpiar
+                      Borrar todos
                     </button>
                   </div>
                 )}
@@ -645,12 +645,12 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 </div>
                 
                 <p className="text-xs font-bold text-slate-800 sm:text-sm">
-                  Arrastra y suelta aquí tus documentos o haz clic para explorar
+                  Arrastra tus documentos aquí o haz clic para elegirlos
                 </p>
 
                 <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 text-xs font-semibold shadow-2xs group-hover:border-blue-300">
                   <Plus className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Explorar Archivos</span>
+                  <span>Elegir archivos</span>
                 </div>
               </label>
             </div>
@@ -661,7 +661,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-blue-600 flex-shrink-0" />
                   <span className="text-xs text-blue-900 font-medium">
-                    ¿No tienes un archivo PDF a la mano?
+                    ¿Quieres probar?
                   </span>
                 </div>
                 <button
@@ -670,7 +670,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   disabled={isProcessingFiles}
                   className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-xs transition-colors cursor-pointer shadow-xs"
                 >
-                  Cargar Documento de Prueba
+                  Cargar ejemplo
                 </button>
               </div>
             )}
@@ -679,7 +679,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             {uploadedDocs.length > 0 && (
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <p className="text-xs font-bold text-slate-700">
-                  Archivos en cola para firmado ({uploadedDocs.length}):
+                  Tus documentos ({uploadedDocs.length}):
                 </p>
                 <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
                   {uploadedDocs.map((doc, idx) => (
@@ -697,7 +697,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                             <span>{doc?.pageCount || 1} página(s) • {((doc?.size || 0) / 1024).toFixed(1)} KB</span>
                             {doc?.isConvertedToPdf && (
                               <span className="text-emerald-600 font-semibold">
-                                • Convertido a PDF
+                                • Convertido
                               </span>
                             )}
                             {doc?.geminiAnalysis && (
@@ -714,8 +714,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                                 <Sparkles className="w-3 h-3 text-current" />
                                 <span>
                                   {doc.geminiAnalysis.isValid === true && `IA: ${doc.geminiAnalysis.documentType}`}
-                                  {doc.geminiAnalysis.isValid === false && `IA Rechazado (${doc.geminiAnalysis.rejectionReason || 'No válido'})`}
-                                  {doc.geminiAnalysis.isValid === null && `IA: Sin validar (${doc.geminiAnalysis.validationMode || 'offline'})`}
+                                  {doc.geminiAnalysis.isValid === false && `No admitido`}
+                                  {doc.geminiAnalysis.isValid === null && `Sin revisar`}
                                 </span>
                               </span>
                             )}
@@ -731,7 +731,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                           type="button"
                           onClick={() => handleRemoveDoc(idx)}
                           className="p-1 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
-                          title="Eliminar documento"
+                          title="Quitar"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -748,7 +748,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">2</span>
-                <span>Datos del Firmante y Certificado Digital</span>
+                <span>Tus datos</span>
               </h2>
               
               <div className="flex items-center gap-1 text-[11px] font-semibold bg-slate-100 p-1 rounded-lg">
@@ -759,7 +759,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     keySource === 'quick_generate' ? 'bg-white text-blue-700 font-bold shadow-xs' : 'text-slate-600'
                   }`}
                 >
-                  Firma Rápida
+                  Firma rápida
                 </button>
                 <button
                   type="button"
@@ -768,7 +768,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     keySource === 'session' ? 'bg-white text-blue-700 font-bold shadow-xs' : 'text-slate-600'
                   }`}
                 >
-                  Certificado Sesión
+                  Firma guardada
                 </button>
                 <button
                   type="button"
@@ -777,7 +777,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     keySource === 'custom_p12' ? 'bg-white text-blue-700 font-bold shadow-xs' : 'text-slate-600'
                   }`}
                 >
-                  Cargar mi .p12
+                  Subir mi firma
                 </button>
               </div>
             </div>
@@ -788,20 +788,20 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Nombre Completo del Firmante (Titular)
+                      Nombre completo
                     </label>
                     <input
                       type="text"
                       value={quickName}
                       onChange={(e) => setQuickName(e.target.value)}
-                      placeholder="Ej: MISAEL VLADIMIR FERNANDEZ CORREA"
+                      placeholder="Ej. JUAN PEREZ"
                       className="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold text-slate-900 uppercase focus:bg-white focus:ring-2 focus:ring-blue-500 font-mono"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Cédula de Identidad o RUC (Ecuador)
+                      Cédula o RUC
                     </label>
                     <input
                       type="text"
@@ -816,7 +816,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Razón de la Firma
+                      Motivo
                     </label>
                     <input
                       type="text"
@@ -828,7 +828,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Ubicación / Ciudad
+                      Ciudad
                     </label>
                     <input
                       type="text"
@@ -853,25 +853,25 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                           {initialResult.subject.cn}
                         </p>
                         <p className="text-[11px] text-emerald-800">
-                          CI/RUC: {initialResult.subject.serialNumber || '0802778749'} • Entidad: {initialResult.caAuthorityName}
+                          Identificación: {initialResult.subject.serialNumber || '0802778749'}
                         </p>
-                        <p className="text-[10px] text-emerald-700 font-mono mt-0.5">
-                          RSA {initialResult.keySize}-bit • SHA-256 Digest
+                        <p className="text-[10px] text-emerald-700 font-medium mt-0.5">
+                          Firma lista para usar
                         </p>
                       </div>
                     </div>
                     <span className="px-2 py-0.5 rounded bg-emerald-200 text-emerald-900 font-bold text-[10px]">
-                      Llave Lista
+                      Listo
                     </span>
                   </div>
                 ) : (
                   <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-2">
                     <div className="flex items-center gap-2 font-bold">
                       <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                      <span>No hay un certificado generado en esta sesión aún</span>
+                      <span>No tienes una firma guardada</span>
                     </div>
                     <p className="text-amber-800">
-                      Use la opción <strong>"Firma Rápida"</strong> o cree una firma digital en la sección <strong>"Generar .p12"</strong>.
+                      Usa <strong>Firma rápida</strong> o genera una nueva.
                     </p>
                     {onNavigateToGenerator && (
                       <button
@@ -879,7 +879,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                         onClick={onNavigateToGenerator}
                         className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs transition-colors cursor-pointer"
                       >
-                        Generar Firma Digital .p12
+                        Crear firma
                       </button>
                     )}
                   </div>
@@ -893,7 +893,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Archivo de Firma (.p12 / .pfx)
+                      Archivo de firma
                     </label>
                     <input
                       ref={p12FileInputRef}
@@ -912,13 +912,13 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Contraseña del archivo .p12
+                      Contraseña
                     </label>
                     <div className="flex gap-2">
                       <div className="flex-1 relative flex items-center">
                         <input
                           type={showUnlockPassword ? "text" : "password"}
-                          placeholder="Contraseña del .p12"
+                          placeholder="Contraseña"
                           value={p12Password}
                           onChange={(e) => setP12Password(e.target.value)}
                           className="w-full pl-3 pr-8 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-mono-code focus:bg-white focus:ring-2 focus:ring-blue-500"
@@ -938,7 +938,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                         disabled={isUnlockingP12 || !uploadedP12File || !p12Password}
                         className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg transition-colors disabled:opacity-50 cursor-pointer shrink-0"
                       >
-                        {isUnlockingP12 ? '...' : 'Desbloquear'}
+                        {isUnlockingP12 ? '...' : 'Cargar'}
                       </button>
                     </div>
                   </div>
@@ -956,11 +956,11 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       <span>
-                        Desbloqueado: <strong>{unlockedP12Data.subjectCn}</strong>
+                        Listo: <strong>{unlockedP12Data.subjectCn}</strong>
                       </span>
                     </div>
-                    <span className="font-mono text-[10px] font-bold text-emerald-700">
-                      RSA {unlockedP12Data.keySize}-bit
+                    <span className="text-[10px] font-bold text-emerald-700">
+                      Firma lista
                     </span>
                   </div>
                 )}
@@ -1007,11 +1007,11 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
           <div className="bg-slate-900 text-slate-100 rounded-2xl p-5 border border-slate-800 space-y-4 shadow-lg">
             <div className="flex items-center gap-2 pb-3 border-b border-slate-800 text-xs font-bold text-blue-400">
               <ShieldCheck className="w-4 h-4 text-blue-400" />
-              <span>Criptografía e Integridad Legal (PAdES / TSA / OCSP)</span>
+              <span>Seguridad de la firma</span>
             </div>
 
             <div className="space-y-3 text-xs">
-              {/* PAdES Diccionario /Sig Toggle */}
+              {/* Formato de firma */}
               <label className="flex items-start gap-2.5 cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -1020,14 +1020,14 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
                 />
                 <div>
-                  <span className="font-bold text-slate-200 block">Diccionario Criptográfico PAdES</span>
+                  <span className="font-bold text-slate-200 block">Formato estándar de firma</span>
                   <span className="text-[11px] text-slate-400">
-                    Contenedor PKCS#7 conforme a ISO 32000-1 para Adobe Acrobat.
+                    Compatible con cualquier lector de PDF.
                   </span>
                 </div>
               </label>
 
-              {/* TSA Timestamp Toggle & Selector */}
+              {/* Fecha y hora oficial */}
               <div className="space-y-2 pt-1 border-t border-slate-800/80">
                 <label className="flex items-start gap-2.5 cursor-pointer select-none">
                   <input
@@ -1037,9 +1037,9 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
                   />
                   <div>
-                    <span className="font-bold text-slate-200 block">Sello de Tiempo Criptográfico (TSA)</span>
+                    <span className="font-bold text-slate-200 block">Fecha y hora oficial</span>
                     <span className="text-[11px] text-slate-400">
-                      Incrustación de hora oficial e inalterable (PAdES-B-T).
+                      Registra el momento exacto en que firmaste.
                     </span>
                   </div>
                 </label>
@@ -1061,7 +1061,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 )}
               </div>
 
-              {/* OCSP Revocation Check Toggle */}
+              {/* Verificación de vigencia */}
               <div className="pt-1 border-t border-slate-800/80">
                 <label className="flex items-start gap-2.5 cursor-pointer select-none">
                   <input
@@ -1071,9 +1071,9 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 bg-slate-800 border-slate-700"
                   />
                   <div>
-                    <span className="font-bold text-slate-200 block">Validación de Revocación (OCSP / CRL)</span>
+                    <span className="font-bold text-slate-200 block">Verificar vigencia en línea</span>
                     <span className="text-[11px] text-slate-400">
-                      Verificación en tiempo real contra los servidores de ARCOTEL.
+                      Confirma que tu firma esté vigente.
                     </span>
                   </div>
                 </label>
@@ -1086,7 +1086,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold">Error en el proceso de firmado:</p>
+                <p className="font-bold">Error:</p>
                 <p className="mt-0.5">{signingError}</p>
               </div>
             </div>
@@ -1102,15 +1102,15 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             {isSigning ? (
               <>
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Estampando FirmaEC en {uploadedDocs.length} documento(s)...</span>
+                <span>Firmando...</span>
               </>
             ) : (
               <>
                 <FileSignature className="w-5 h-5" />
                 <span>
                   {uploadedDocs.length > 1 
-                    ? `Estampar Firma Digital en Todos los ${uploadedDocs.length} Documentos`
-                    : 'Estampar Firma Digital y Generar PDF Oficial'
+                    ? 'Firmar documentos'
+                    : 'Firmar documento'
                   }
                 </span>
               </>
@@ -1131,12 +1131,12 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 </div>
                 <div>
                   <span className="text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider block">
-                    Firma Válida e Íntegra
+                    Firma válida
                   </span>
                   <h3 className="text-base font-bold text-white mt-0.5">
                     {signedResults.length === 1 
-                      ? 'Documento PDF Firmado y Estampado' 
-                      : `¡${signedResults.length} Documentos PDF Firmados y Estampados!`
+                      ? 'Documento firmado' 
+                      : `${signedResults.length} documentos firmados`
                     }
                   </h3>
                 </div>
@@ -1158,22 +1158,19 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                       </button>
                     </div>
                     <p className="text-[10.5px] text-slate-400">
-                      Páginas firmadas: <span className="text-emerald-400 font-bold">{res.signedPages.join(', ')}</span> de {res.pageCount}
-                    </p>
-                    <p className="text-[9.5px] text-slate-400 break-all truncate">
-                      SHA-256: <span className="text-blue-400">{res.originalSha256}</span>
+                      Páginas: <span className="text-emerald-400 font-bold">{res.signedPages.join(', ')}</span> de {res.pageCount}
                     </p>
 
-                    {/* BADGES OF PADIES, TSA, OCSP, MULTI-FIRMA */}
+                    {/* BADGES */}
                     <div className="pt-2 border-t border-slate-700/60 space-y-1.5 text-[10px] font-sans">
                       {res.padesInfo && (
                         <div className="flex items-center justify-between text-blue-300 bg-blue-950/60 px-2 py-1 rounded border border-blue-800/40">
                           <span className="font-semibold flex items-center gap-1">
                             <Shield className="w-3 h-3 text-blue-400" />
-                            PAdES / ISO 32000-1
+                            Firma estándar
                           </span>
-                          <span className="font-mono text-[9px] text-blue-200">
-                            ByteRange: [{res.padesInfo.byteRange.join(', ')}]
+                          <span className="text-[9px] text-blue-200">
+                            Verificada
                           </span>
                         </div>
                       )}
@@ -1182,9 +1179,9 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                         <div className="flex items-center justify-between text-amber-300 bg-amber-950/60 px-2 py-1 rounded border border-amber-800/40">
                           <span className="font-semibold flex items-center gap-1">
                             <Clock className="w-3 h-3 text-amber-400" />
-                            TSA RFC 3161: {res.tsaInfo.tsaName.split(' ')[0]}
+                            Hora oficial
                           </span>
-                          <span className="font-mono text-[9px] text-amber-200">
+                          <span className="text-[9px] text-amber-200">
                             {res.tsaInfo.timestampFormattedEcuador}
                           </span>
                         </div>
@@ -1194,10 +1191,10 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                         <div className="flex items-center justify-between text-emerald-300 bg-emerald-950/60 px-2 py-1 rounded border border-emerald-800/40">
                           <span className="font-semibold flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                            OCSP ARCOTEL: {res.ocspInfo.status.toUpperCase()}
+                            Vigencia comprobada
                           </span>
-                          <span className="text-[9px] text-emerald-200 truncate max-w-[140px]">
-                            ECI: {res.ocspInfo.eciName}
+                          <span className="text-[9px] text-emerald-200">
+                            Válido
                           </span>
                         </div>
                       )}
@@ -1206,10 +1203,10 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                         <div className="flex items-center justify-between text-purple-300 bg-purple-950/60 px-2 py-1 rounded border border-purple-800/40">
                           <span className="font-semibold flex items-center gap-1">
                             <Layers className="w-3 h-3 text-purple-400" />
-                            Multi-Firma Preservada
+                            Firmas previas
                           </span>
                           <span className="font-bold text-[9px] text-purple-200">
-                            {res.previousSignaturesCount} firma(s) anterior(es) intacta(s)
+                            {res.previousSignaturesCount} conservada(s)
                           </span>
                         </div>
                       )}
@@ -1227,7 +1224,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Descargar Todos los PDF Firmados ({signedResults.length})</span>
+                    <span>Descargar todos ({signedResults.length})</span>
                   </button>
                 )}
 
@@ -1238,7 +1235,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
-                    <span>Descargar Documento PDF Firmado</span>
+                    <span>Descargar documento</span>
                   </button>
                 )}
 
@@ -1248,7 +1245,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                 >
                   <ShieldCheck className="w-4 h-4 text-white" />
-                  <span>Instalar CA Raíz de Confianza (Adobe / FirmaEC)</span>
+                  <span>Instalar certificado de confianza</span>
                 </button>
 
                 {onNavigateToValidator && (
@@ -1258,7 +1255,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     className="w-full py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer border border-slate-700"
                   >
                     <ShieldCheck className="w-4 h-4 text-blue-400" />
-                    <span>Verificar en Validador de Firmas</span>
+                    <span>Verificar firma</span>
                   </button>
                 )}
               </div>
@@ -1271,11 +1268,11 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4 text-blue-600" />
                 <span className="text-xs font-bold text-slate-800">
-                  Vista Previa del Sello Estampado
+                  Vista previa del sello
                 </span>
               </div>
               <span className="text-[10px] font-extrabold text-emerald-600 uppercase tracking-wider">
-                Estándar Oficial
+                Oficial
               </span>
             </div>
 
@@ -1317,7 +1314,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     <div className="flex-1 space-y-1 text-[11px]">
                       <p className="text-emerald-950 font-bold uppercase">{effectiveSignerName}</p>
                       <p className="text-slate-700 text-[10px]">Fecha Emisión: {new Date().toLocaleDateString('es-EC')} GMT-5</p>
-                      <p className="text-emerald-800 text-[9px] font-mono">SHA-256: 4a8f9c2d1b... (Verificable)</p>
+                      <p className="text-emerald-800 text-[9px]">Firma verificable en SRI</p>
                     </div>
                     {includeQrCode && previewQrDataUrl && (
                       <div className="w-16 h-16 bg-white p-0.5 rounded flex-shrink-0 flex items-center justify-center shadow-xs">
@@ -1334,7 +1331,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
               ) : stampStyle === 'legal-notary' ? (
                 <div className="p-3.5 rounded-xl border-2 border-amber-500 bg-amber-50/40 text-slate-900 text-xs space-y-2 relative shadow-xs">
                   <div className="border-b border-amber-300 pb-1 text-center font-bold text-amber-950 text-[11px] uppercase tracking-wider">
-                    Certificación Digital y Validez Probatoria
+                    Certificación digital
                   </div>
                   <div className="flex items-center gap-3 pt-1">
                     <div className="flex-1 space-y-1 text-[11px]">
@@ -1393,7 +1390,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 <div className="flex items-center justify-between text-[11px] font-bold text-slate-700">
                   <span className="flex items-center gap-1.5">
                     <Stamp className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Estampado en el Documento</span>
+                    <span>Ubicación en el documento</span>
                   </span>
                   <span className="text-[10px] text-slate-500">
                     Posición: {positionPreset}
@@ -1425,7 +1422,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
               <div className="flex items-center gap-2">
                 <Scan className="w-4 h-4 text-blue-600" />
                 <h4 className="text-xs font-bold text-slate-800">
-                  Código QR de Verificación Universal (ISO/IEC 18004)
+                  Código QR de verificación
                 </h4>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
@@ -1433,20 +1430,20 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   type="button"
                   onClick={() => setShowFullscreenQrModal(true)}
                   className="inline-flex items-center gap-1 text-[11px] text-indigo-700 bg-indigo-50 hover:bg-indigo-100 font-bold cursor-pointer px-2.5 py-1 rounded-lg transition-colors border border-indigo-200"
-                  title="Abrir vista grande de alta nitidez para escanear con la cámara del celular"
+                  title="Ampliar para escanear"
                 >
                   <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Escanear con Celular</span>
+                  <span>Escanear</span>
                 </button>
                 {previewQrPngUrl && (
                   <a
                     href={previewQrPngUrl}
                     download={`qr_verificacion_${(effectiveSignerName || 'firma').toLowerCase().replace(/\s+/g, '_')}.png`}
                     className="inline-flex items-center gap-1 text-[11px] text-slate-600 hover:text-slate-900 font-semibold cursor-pointer px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-                    title="Descargar imagen PNG del QR en alta resolución (2048px)"
+                    title="Descargar imagen del código QR"
                   >
                     <Download className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Descargar PNG</span>
+                    <span>Descargar QR</span>
                   </a>
                 )}
                 <button
@@ -1462,7 +1459,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   ) : (
                     <>
                       <Copy className="w-3.5 h-3.5" />
-                      <span>Copiar Texto</span>
+                      <span>Copiar datos</span>
                     </>
                   )}
                 </button>
@@ -1476,12 +1473,12 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   <div 
                     onClick={() => setShowFullscreenQrModal(true)}
                     className="w-36 h-36 bg-white p-2 rounded-lg flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow relative group"
-                    title="Clic para ampliar y escanear fácilmente con celular"
+                    title="Clic para ampliar"
                   >
                     <img 
                       src={previewQrDataUrl} 
-                      alt="Código QR de Verificación en Alta Definición" 
-                      className="w-full h-full object-contain"
+                      alt="Código QR" 
+                      className="w-full h-full object-contain" 
                       style={{ imageRendering: 'pixelated' }}
                     />
                     <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
@@ -1496,7 +1493,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                     className="text-[10px] font-bold text-blue-600 hover:text-blue-800 mt-2 flex items-center gap-1 cursor-pointer"
                   >
                     <Smartphone className="w-3 h-3" />
-                    <span>Abrir en tamaño grande para escanear</span>
+                    <span>Ampliar para escanear</span>
                   </button>
                 </div>
               )}
@@ -1505,24 +1502,24 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 <div className="grid grid-cols-2 gap-1.5 text-[10.5px]">
                   <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
                     <span className="text-slate-400 block text-[9.5px]">Formato</span>
-                    <strong className="text-slate-800">Vector SVG Nítido</strong>
+                    <strong className="text-slate-800">Imagen nítida</strong>
                   </div>
                   <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
-                    <span className="text-slate-400 block text-[9.5px]">Zona de Silencio</span>
-                    <strong className="text-slate-800">4 Módulos (ISO)</strong>
+                    <span className="text-slate-400 block text-[9.5px]">Lectura</span>
+                    <strong className="text-slate-800">Inmediata</strong>
                   </div>
                   <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
-                    <span className="text-slate-400 block text-[9.5px]">Corrección Error</span>
-                    <strong className="text-slate-800">Nivel M (15%)</strong>
+                    <span className="text-slate-400 block text-[9.5px]">Calidad</span>
+                    <strong className="text-slate-800">Alta</strong>
                   </div>
                   <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
                     <span className="text-slate-400 block text-[9.5px]">Compatibilidad</span>
-                    <strong className="text-emerald-700 font-extrabold">100% Celulares</strong>
+                    <strong className="text-emerald-700 font-extrabold">Todo celular</strong>
                   </div>
                 </div>
 
                 <p className="text-[11px] text-slate-600 leading-tight">
-                  Lectura directa con <strong>Google Lens</strong>, <strong>Cámara iPhone / iPad</strong>, <strong>Xiaomi</strong>, <strong>Samsung</strong> y lectores ópticos 2D.
+                  Léelo con la cámara de cualquier teléfono.
                 </p>
               </div>
             </div>
@@ -1530,7 +1527,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
             {/* RAW READABLE OUTPUT */}
             <div>
               <p className="text-[11px] text-slate-600 mb-1.5">
-                Texto descifrado al escanear con el teléfono móvil:
+                Datos que muestra al escanear:
               </p>
               <div className="p-3 bg-slate-900 text-slate-200 rounded-xl font-mono text-[10.5px] leading-relaxed whitespace-pre-wrap border border-slate-800 shadow-inner">
                 {qrVerificationReadableText}
@@ -1539,7 +1536,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
 
             <div className="flex items-center gap-2 text-[10px] text-slate-500 pt-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-              <span>Validador estatal compatible: <strong>firmadigital.gob.ec (MINTEL)</strong></span>
+              <span>Compatible con <strong>firmadigital.gob.ec</strong></span>
             </div>
           </div>
 
@@ -1561,8 +1558,8 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   <Smartphone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">Escanear con Celular</h3>
-                  <p className="text-xs text-slate-500">Apunta tu cámara a 15-25 cm de distancia</p>
+                  <h3 className="text-base font-bold text-slate-900">Escanear código</h3>
+                  <p className="text-xs text-slate-500">Apunta la cámara de tu teléfono.</p>
                 </div>
               </div>
               <button
@@ -1580,22 +1577,22 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                 {previewQrDataUrl && (
                   <img 
                     src={previewQrDataUrl} 
-                    alt="Código QR de Verificación en Gran Formato" 
-                    className="w-full h-full object-contain"
+                    alt="Código QR" 
+                    className="w-full h-full object-contain" 
                     style={{ imageRendering: 'pixelated' }}
                   />
                 )}
               </div>
               <span className="text-xs font-mono text-emerald-700 font-bold mt-2 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                Matriz Vectorial ISO/IEC 18004 Nítida
+                Código listo para escanear
               </span>
             </div>
 
             {/* Readable payload inside modal */}
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
               <div className="flex items-center justify-between text-slate-600 font-bold text-[11px]">
-                <span>Contenido codificado:</span>
+                <span>Datos del código:</span>
                 <button
                   type="button"
                   onClick={handleCopyQrText}
@@ -1618,7 +1615,7 @@ export const DocumentSignerDemo: React.FC<DocumentSignerDemoProps> = ({
                   className="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <Download className="w-4 h-4 text-slate-600" />
-                  <span>Descargar PNG HD (2048px)</span>
+                  <span>Descargar QR</span>
                 </a>
               )}
               <button

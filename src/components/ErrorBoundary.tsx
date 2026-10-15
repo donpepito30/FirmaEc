@@ -54,10 +54,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
             <div className="space-y-1">
               <h2 className="text-base font-bold text-slate-900">
-                {currentProps?.fallbackTitle || 'Ocurrió un inconveniente en esta vista'}
+                {currentProps?.fallbackTitle || 'Algo salió mal'}
               </h2>
               <p className="text-xs text-slate-600 leading-relaxed">
-                {currentState.error?.message || 'Inconveniente inesperado al procesar la información. El resto de la aplicación continúa operando con normalidad.'}
+                {currentState.error?.message || 'Ocurrió un error. Intenta de nuevo o recarga la página.'}
               </p>
             </div>
 
@@ -67,7 +67,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                <span>Reintentar esta vista</span>
+                <span>Reintentar</span>
               </button>
 
               <button
@@ -75,7 +75,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Home className="w-3.5 h-3.5" />
-                <span>Restaurar aplicación</span>
+                <span>Recargar</span>
               </button>
             </div>
 
@@ -86,7 +86,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                   onClick={() => (this as any).setState({ showDetails: !currentState.showDetails })}
                   className="text-[11px] font-semibold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer mx-auto"
                 >
-                  <span>Detalles técnicos del error</span>
+                  <span>Ver detalles</span>
                   {currentState.showDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                 </button>
 

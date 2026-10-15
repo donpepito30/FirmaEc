@@ -12,7 +12,7 @@ export const PWAInstallButton: React.FC<{ inline?: boolean }> = ({ inline = fals
       return (
         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">
           <Check className="w-3 h-3 text-emerald-600" />
-          <span>Aplicación Instalada</span>
+          <span>Instalada</span>
         </span>
       );
     }
@@ -27,10 +27,10 @@ export const PWAInstallButton: React.FC<{ inline?: boolean }> = ({ inline = fals
         className={`flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition shadow-xs cursor-pointer ${
           inline ? 'px-2.5 py-1.5' : 'px-3.5 py-2'
         }`}
-        title="Instalar FirmaEC PRO en tu dispositivo"
+        title="Instalar en tu dispositivo"
       >
         <AppWindow className="w-3.5 h-3.5" />
-        <span>Instalar App</span>
+        <span>Instalar</span>
       </button>
     );
   }
@@ -44,10 +44,10 @@ export const PWAInstallButton: React.FC<{ inline?: boolean }> = ({ inline = fals
           className={`flex items-center gap-1.5 rounded-lg border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition cursor-pointer ${
             inline ? 'px-2.5 py-1.5' : 'px-3.5 py-2'
           }`}
-          title="Instalar en tu iPhone o iPad"
+          title="Instalar en iPhone"
         >
           <Smartphone className="w-3.5 h-3.5 text-blue-600" />
-          <span>Instalar en iOS</span>
+          <span>Instalar</span>
         </button>
 
         {showIOSGuide && (
@@ -66,31 +66,31 @@ export const PWAInstallButton: React.FC<{ inline?: boolean }> = ({ inline = fals
                   <Smartphone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Instalar en tu iPhone / iPad</h3>
-                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">PWA Compatible con iOS</p>
+                  <h3 className="text-sm font-bold text-slate-900">Instala en tu iPhone</h3>
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Acceso directo</p>
                 </div>
               </div>
 
               <div className="space-y-3.5 text-xs text-slate-600 leading-relaxed">
                 <p>
-                  Sigue estos dos sencillos pasos para agregar **FirmaEC PRO** directamente a tu pantalla de inicio:
+                  Sigue estos dos pasos:
                 </p>
                 <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
                   <div className="flex gap-2">
                     <span className="font-extrabold text-blue-600">1.</span>
                     <p>
-                      Presiona el botón de <strong>Compartir</strong> en la barra inferior de Safari (ícono con un cuadrado y una flecha hacia arriba).
+                      Toca <strong>Compartir</strong> en Safari.
                     </p>
                   </div>
                   <div className="flex gap-2 pt-2 border-t border-slate-200">
                     <span className="font-extrabold text-blue-600">2.</span>
                     <p>
-                      Desplázate hacia abajo en el menú de opciones y selecciona <strong>"Agregar a pantalla de inicio"</strong>.
+                      Elige <strong>"Agregar a inicio"</strong>.
                     </p>
                   </div>
                 </div>
                 <p className="text-[11px] text-slate-500 italic">
-                  ¡Listo! Podrás ingresar de manera directa e incluso utilizarlo de forma offline.
+                  Úsala incluso sin internet.
                 </p>
               </div>
 

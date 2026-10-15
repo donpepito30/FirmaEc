@@ -216,17 +216,17 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
       {/* Breadcrumb & Section Header */}
       <div className="mb-6">
         <div className="flex items-center space-x-2 text-xs font-medium text-slate-400 mb-2">
-          <span className="hover:text-slate-600 transition-colors">Certificados Digitales</span>
+          <span className="hover:text-slate-600 transition-colors">Certificados</span>
           <span>/</span>
-          <span className="text-slate-700 font-semibold">Generador de Firma Electrónica (.p12)</span>
+          <span className="text-slate-700 font-semibold">Generador de firma</span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold font-display text-slate-900 tracking-tight">
-              Generador de Firma Electrónica (.p12)
+              Generador de firma (.p12)
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-3xl">
-              Generación criptográfica de firmas PKCS#12 con llaves RSA y certificados X.509 v3 compatibles con FirmaEC, SRI y Adobe Acrobat.
+              Crea tu archivo de firma electrónica personal para firmar en FirmaEC y SRI.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -235,11 +235,11 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
               className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition-colors cursor-pointer gap-1.5"
             >
               <ShieldCheck className="w-4 h-4" />
-              <span>CA Raíz & Guía</span>
+              <span>Guía y Confianza</span>
             </button>
             <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              100% Compatible con FirmaEC
+              Compatible con FirmaEC
             </span>
           </div>
         </div>
@@ -254,14 +254,14 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
             <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <div>
                 <h2 className="font-bold text-slate-900 text-sm sm:text-base">
-                  Parámetros del Certificado Digital
+                  Datos del certificado
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Defina los atributos de identidad y perfil de Autoridad Certificadora (CA)
+                  Ingresa tus datos personales y de identidad
                 </p>
               </div>
               <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-wider">
-                X.509 v3
+                Personal
               </span>
             </div>
 
@@ -271,7 +271,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1 flex items-center gap-1.5">
                     <Building2 className="w-3.5 h-3.5 text-blue-600" />
-                    Autoridad de Certificación Emisora (Perfil CA) *
+                    Entidad emisora *
                   </label>
                   <select
                     id="p12-ca-select"
@@ -286,14 +286,14 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                     ))}
                   </select>
                   <p className="text-[11px] text-slate-500 mt-1">
-                    {CA_PROFILES[form.caAuthority || 'firmaec_mintel']?.description}
+                    Entidad que emite y respalda tu certificado digital.
                   </p>
                 </div>
 
                 {/* Full Name */}
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Nombre Completo del Titular (CN) *
+                    Nombre completo *
                   </label>
                   <input
                     id="p12-fullname-input"
@@ -301,7 +301,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                     required
                     value={form.fullName}
                     onChange={(e) => setForm({ ...form, fullName: e.target.value.toUpperCase() })}
-                    placeholder="Ej. JOSE RICARDO CANCHINGRE NAPA"
+                    placeholder="Ej. JUAN PEREZ"
                     className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-lg text-slate-900 text-xs sm:text-sm font-semibold focus:bg-white focus:ring-2 transition-all uppercase ${
                       !fullNameValidation.isValid ? 'border-red-500 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500'
                     }`}
@@ -313,7 +313,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                     </p>
                   ) : (
                     <p className="text-[11px] text-slate-500 mt-1">
-                      Aparecerá en el Common Name (CN), la estampa visual y la cadena X.500.
+                      Aparecerá en tu firma y en el documento.
                     </p>
                   )}
                   {fullNameValidation.warnings && fullNameValidation.warnings.map((w, idx) => (
@@ -329,10 +329,10 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                        Cédula / RUC Ecuatoriano *
+                        Cédula o RUC *
                       </label>
                       <span className={`text-[10px] font-semibold ${idValidation.isValid ? 'text-emerald-600' : 'text-red-500'}`}>
-                        {idValidation.isValid ? (idValidation.type === 'cedula' ? '✓ Cédula Válida (Módulo 10)' : '✓ RUC Válido') : '✗ Invalida'}
+                        {idValidation.isValid ? '✓ Válido' : '✗ Inválido'}
                       </span>
                     </div>
                     <input
@@ -341,7 +341,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       maxLength={13}
                       value={form.idNumber}
                       onChange={(e) => setForm({ ...form, idNumber: e.target.value })}
-                      placeholder="10 dígitos o RUC 13 dígitos"
+                      placeholder="1715894320"
                       className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-lg text-slate-900 text-xs sm:text-sm font-mono-code focus:bg-white focus:ring-2 transition-all ${
                         !idValidation.isValid ? 'border-red-500 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500'
                       }`}
@@ -354,21 +354,21 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                     ) : (
                       <p className="text-[11px] text-emerald-600 mt-1 flex items-center gap-1 font-medium">
                         <Check className="w-3.5 h-3.5 shrink-0" />
-                        <span>Identificación verificada {idValidation.province ? `(Provincia ${idValidation.province.toString().padStart(2, '0')})` : ''}</span>
+                        <span>Identificación verificada</span>
                       </p>
                     )}
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      Ciudad / Provincia
+                      Ciudad
                     </label>
                     <input
                       id="p12-city-input"
                       type="text"
                       value={form.city}
                       onChange={(e) => setForm({ ...form, city: e.target.value })}
-                      placeholder="Esmeraldas, Quito, Guayaquil..."
+                      placeholder="Quito, Guayaquil..."
                       className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-lg text-slate-900 text-xs sm:text-sm focus:bg-white focus:ring-2 transition-all ${
                         !cityValidation.isValid ? 'border-red-500 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500'
                       }`}
@@ -386,7 +386,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      Correo Electrónico (SAN / RFC822)
+                      Correo electrónico
                     </label>
                     <input
                       id="p12-email-input"
@@ -408,7 +408,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      Tipo de Organización (O)
+                      Tipo
                     </label>
                     <select
                       id="p12-org-select"
@@ -416,10 +416,10 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       onChange={(e) => setForm({ ...form, organization: e.target.value })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
-                      <option value="Persona Natural">Persona Natural (Firma Personal)</option>
-                      <option value="Profesional Independiente">Profesional Independiente (RUC)</option>
-                      <option value="Representante Legal">Representante Legal (Empresa)</option>
-                      <option value="Servidor Público">Servidor Público / Quipux</option>
+                      <option value="Persona Natural">Persona Natural</option>
+                      <option value="Profesional Independiente">Profesional Independiente</option>
+                      <option value="Representante Legal">Representante Legal</option>
+                      <option value="Servidor Público">Servidor Público</option>
                     </select>
                   </div>
                 </div>
@@ -429,15 +429,15 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
                       <KeyRound className="w-3.5 h-3.5 text-blue-600" />
-                      Contraseña del Contenedor .p12 *
+                      Contraseña del archivo *
                     </label>
                     <button
                       type="button"
                       onClick={generateRandomPassword}
                       className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1 hover:underline cursor-pointer"
                     >
-                      <Sparkles className="w-3 h-3" />
-                      Generar Clave Segura
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Generar clave
                     </button>
                   </div>
 
@@ -448,14 +448,14 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       required
                       value={form.password}
                       onChange={(e) => setForm({ ...form, password: e.target.value })}
-                      placeholder="Ingrese o genere la clave..."
+                      placeholder="Escribe tu contraseña..."
                       className="w-full pl-3.5 pr-24 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm font-mono-code focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     />
                     <div className="absolute right-2 flex items-center gap-1">
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        title={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+                        title={showPassword ? 'Ocultar' : 'Mostrar'}
                         className="p-1.5 text-slate-400 hover:text-slate-700 rounded-md cursor-pointer"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -463,7 +463,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       <button
                         type="button"
                         onClick={handleCopyPassword}
-                        title="Copiar contraseña"
+                        title="Copiar"
                         className="p-1.5 text-slate-400 hover:text-blue-600 rounded-md cursor-pointer"
                       >
                         {copiedPassword ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
@@ -472,7 +472,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                   </div>
                   <div className="mt-2.5 space-y-1">
                     <div className="flex justify-between items-center text-[11px]">
-                      <span className="text-slate-500 font-medium">Fortaleza de contraseña:</span>
+                      <span className="text-slate-500 font-medium">Seguridad:</span>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${passwordStrength.color}`}>
                         {passwordStrength.label} ({passwordStrength.score}/100)
                       </span>
@@ -487,7 +487,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
 
                   <p className="text-[11px] text-slate-500 mt-2 flex items-center gap-1">
                     <Info className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                    <span>Esta es la contraseña que solicitará FirmaEC al seleccionar el archivo .p12.</span>
+                    <span>Esta contraseña te la pedirá FirmaEC al usar tu archivo .p12.</span>
                   </p>
                 </div>
 
@@ -495,7 +495,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      Vigencia del Certificado
+                      Vigencia
                     </label>
                     <select
                       id="p12-validity-select"
@@ -503,16 +503,16 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       onChange={(e) => setForm({ ...form, validityYears: parseInt(e.target.value, 10) })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
-                      <option value={1}>1 Año de Vigencia</option>
-                      <option value={2}>2 Años de Vigencia (Recomendado)</option>
-                      <option value={3}>3 Años de Vigencia</option>
-                      <option value={5}>5 Años de Vigencia</option>
+                      <option value={1}>1 Año</option>
+                      <option value={2}>2 Años (Recomendado)</option>
+                      <option value={3}>3 Años</option>
+                      <option value={5}>5 Años</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                      Algoritmo Asimétrico RSA
+                      Seguridad
                     </label>
                     <select
                       id="p12-keysize-select"
@@ -520,8 +520,8 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       onChange={(e) => setForm({ ...form, keySize: parseInt(e.target.value, 10) as 2048 | 4096 })}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-xs sm:text-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     >
-                      <option value={2048}>RSA 2048-bit (Estándar FirmaEC / SRI)</option>
-                      <option value={4096}>RSA 4096-bit (Alta Seguridad)</option>
+                      <option value={2048}>Estándar (FirmaEC / SRI)</option>
+                      <option value={4096}>Alta seguridad</option>
                     </select>
                   </div>
                 </div>
@@ -547,12 +547,12 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                   {isGenerating ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      <span>{progressStep || 'Generando llaves y certificados...'}</span>
+                      <span>{progressStep || 'Generando archivo...'}</span>
                     </>
                   ) : (
                     <>
                       <KeyRound className="w-4 h-4" />
-                      <span>Generar Archivo .p12 y Certificado Digital</span>
+                      <span>Generar archivo .p12</span>
                     </>
                   )}
                 </button>
@@ -566,17 +566,17 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
               <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className="space-y-2">
                 <h3 className="text-sm font-bold text-slate-900">
-                  Validez Criptográfica y Procedimiento para FirmaEC
+                  Información sobre tu archivo .p12
                 </h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  El archivo <code>.p12</code> generado es un contenedor PKCS#12 real con certificados X.509 v3 y llaves asimétricas RSA. Para que FirmaEC y Adobe Acrobat validen la firma con estado <strong>VERDE (100% de confianza)</strong>, descargue también el archivo <strong>CA_Raiz.crt</strong> e instálelo en el almacén de "Entidades Emisoras Raíz de Confianza" de su sistema operativo.
+                  El archivo descargado es compatible con FirmaEC y el SRI. Recuerda guardar tu contraseña en un lugar seguro.
                 </p>
                 <div className="pt-1">
                   <button
                     onClick={onNavigateToEntities}
                     className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
                   >
-                    Ver Entidades de Certificación Acreditadas por ARCOTEL →
+                    Ver entidades acreditadas por ARCOTEL →
                   </button>
                 </div>
               </div>
@@ -598,7 +598,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
 
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-2 uppercase tracking-wider">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Contenedor PKCS#12 Listo
+                  Archivo listo
                 </div>
 
                 <h2 className="text-xl font-bold font-display text-white mb-1">
@@ -614,7 +614,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                   className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer text-xs sm:text-sm"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Descargar Archivo .p12</span>
+                  <span>Descargar archivo .p12</span>
                 </button>
 
                 <div className="w-full mt-4">
@@ -636,7 +636,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                         : 'border-transparent text-slate-500 hover:text-slate-800'
                     }`}
                   >
-                    Detalles X.509
+                    Detalles
                   </button>
                   <button
                     onClick={() => setActiveResultsTab('tests')}
@@ -646,7 +646,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                         : 'border-transparent text-slate-500 hover:text-slate-800'
                     }`}
                   >
-                    <span>Test FirmaEC</span>
+                    <span>Pruebas</span>
                     <span className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[10px] flex items-center justify-center font-bold">
                       {testResults.filter(t => t.status === 'passed').length}
                     </span>
@@ -659,7 +659,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                         : 'border-transparent text-slate-500 hover:text-slate-800'
                     }`}
                   >
-                    Uso FirmaEC
+                    Uso
                   </button>
                 </div>
 
@@ -671,7 +671,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                     </div>
 
                     <div className="flex justify-between border-b border-slate-100 pb-2">
-                      <span className="text-slate-500">Autoridad Emisora</span>
+                      <span className="text-slate-500">Emisor</span>
                       <span className="font-semibold text-blue-600 text-right truncate max-w-[200px]">{generatedResult.issuer.cn}</span>
                     </div>
 
@@ -680,52 +680,27 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                       <span className="font-semibold text-slate-900">Hasta {generatedResult.notAfter.toLocaleDateString('es-EC')}</span>
                     </div>
 
-                    <div className="flex justify-between border-b border-slate-100 pb-2">
-                      <span className="text-slate-500">Criptografía</span>
-                      <span className="font-semibold text-slate-900">RSA {generatedResult.keySize}-bit / SHA-256</span>
-                    </div>
-
-                    <div className="flex justify-between border-b border-slate-100 pb-2">
-                      <span className="text-slate-500">Número de Serie</span>
-                      <span className="font-mono-code text-slate-700 text-[11px]">{generatedResult.serialNumber}</span>
-                    </div>
-
-                    <div className="pt-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-slate-500 font-medium">Huella Digital SHA-256:</span>
-                        <button
-                          onClick={handleCopyFingerprint}
-                          className="text-[10px] text-blue-600 hover:underline flex items-center gap-0.5 cursor-pointer"
-                        >
-                          {copiedFingerprint ? '¡Copiada!' : 'Copiar'}
-                        </button>
-                      </div>
-                      <div className="p-2 rounded bg-slate-50 border border-slate-200 text-[10px] font-mono-code text-slate-700 break-all">
-                        {generatedResult.sha256Fingerprint}
-                      </div>
-                    </div>
-
                     {/* Descargas Complementarias */}
                     <div className="pt-3 border-t border-slate-100 space-y-2">
-                      <p className="text-[11px] font-bold text-slate-700">Descargas Complementarias:</p>
+                      <p className="text-[11px] font-bold text-slate-700">Archivos adicionales:</p>
                       <div className="grid grid-cols-3 gap-2">
                         <button
                           onClick={handleDownloadCaCertPem}
-                          title="Descargar Certificado de Autoridad Raíz para confianza en Windows/Adobe/FirmaEC"
+                          title="Descargar certificado raíz"
                           className="py-1.5 px-2 rounded bg-blue-50 hover:bg-blue-100 text-[10px] font-bold text-blue-700 border border-blue-200 transition-colors cursor-pointer text-center"
                         >
                           CA_Raiz.crt
                         </button>
                         <button
                           onClick={handleDownloadCertPem}
-                          title="Descargar Certificado Público del Titular"
+                          title="Descargar certificado público"
                           className="py-1.5 px-2 rounded bg-slate-100 hover:bg-slate-200 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer text-center"
                         >
                           Titular.crt
                         </button>
                         <button
                           onClick={handleDownloadKeyPem}
-                          title="Descargar Clave Privada en formato PEM"
+                          title="Descargar clave privada"
                           className="py-1.5 px-2 rounded bg-slate-100 hover:bg-slate-200 text-[10px] font-bold text-slate-700 transition-colors cursor-pointer text-center"
                         >
                           Privada.key
@@ -740,7 +715,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                           className="w-full py-2.5 px-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 border border-emerald-200 cursor-pointer"
                         >
                           <Laptop className="w-4 h-4 text-emerald-600" />
-                          Probar Firma Digital de PDF con este Certificado →
+                          Firmar PDF con este certificado →
                         </button>
                       </div>
                     )}
@@ -750,7 +725,7 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                 {activeResultsTab === 'tests' && (
                   <div className="p-5 space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                      <span className="text-xs font-bold text-slate-900">Resultados de Conformidad Técnica</span>
+                      <span className="text-xs font-bold text-slate-900">Pruebas de compatibilidad</span>
                       <span className="text-xs font-bold text-emerald-600">
                         {testResults.filter(t => t.status === 'passed').length}/{testResults.length} Pasadas
                       </span>
@@ -768,9 +743,6 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                               )}
                               <span>{t.name}</span>
                             </span>
-                            <span className="text-[9px] font-mono-code text-slate-400 shrink-0">
-                              {t.standardRef}
-                            </span>
                           </div>
                           <p className="text-[11px] text-slate-600 mt-1 pl-5">
                             {t.detail}
@@ -784,28 +756,25 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                 {activeResultsTab === 'firmaec_guide' && (
                   <div className="p-5 text-xs text-slate-600 space-y-3">
                     <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider">
-                      Pasos para Abrir y Firmar en FirmaEC:
+                      Cómo usarlo en FirmaEC:
                     </h4>
                     <ol className="space-y-2 list-decimal pl-4">
                       <li>
-                        Abre <strong>FirmaEC</strong> en tu computador (descargable desde <em>firmadigital.gob.ec</em>).
+                        Abre <strong>FirmaEC</strong> en tu computador.
                       </li>
                       <li>
-                        En la pestaña <strong>"Firmar Documento"</strong>, selecciona la opción <strong>"Archivo (.p12 / .pfx)"</strong>.
+                        Selecciona la opción de archivo <strong>.p12</strong>.
                       </li>
                       <li>
-                        Haz clic en <em>Examinar</em> y selecciona el archivo <span className="font-mono-code text-[11px] bg-slate-100 px-1 py-0.5 rounded">{generatedResult.fileName}</span>.
+                        Elige tu archivo <span className="font-mono-code text-[11px] bg-slate-100 px-1 py-0.5 rounded">{generatedResult.fileName}</span>.
                       </li>
                       <li>
-                        Ingresa la contraseña exacta: <span className="font-mono-code font-bold text-slate-900">{generatedResult.password}</span>.
+                        Escribe tu contraseña: <span className="font-mono-code font-bold text-slate-900">{generatedResult.password}</span>.
                       </li>
                       <li>
-                        Selecciona el archivo PDF que deseas firmar, ubica la estampa visual y haz clic en <strong>"Estampar / Firmar"</strong>.
+                        Selecciona tu PDF y firma.
                       </li>
                     </ol>
-                    <div className="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-[11px] text-blue-900 mt-2">
-                      💡 <strong>Tip de Confianza:</strong> Para que FirmaEC no muestre "Certificado no confiable", instala el archivo <code>CA_Raiz.crt</code> en las Entidades de Confianza de Windows (ejecutar <code>certmgr.msc</code> &gt; Entidades de certificación raíz de confianza).
-                    </div>
                   </div>
                 )}
               </div>
@@ -819,13 +788,13 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
                 </div>
               </div>
               <h2 className="text-xl font-bold text-white mb-2">
-                Archivo de Firma Digital
+                Archivo de firma
               </h2>
               <p className="text-slate-400 text-xs sm:text-sm mb-6 max-w-xs leading-relaxed">
-                Haga clic en el botón inferior del formulario para generar su archivo de firma electrónica personal con llaves RSA y Autoridad Raíz.
+                Genera tu archivo .p12 completando el formulario.
               </p>
               <div className="w-full py-3 px-4 rounded-xl bg-slate-800/80 border border-slate-700 text-slate-400 text-xs font-medium">
-                Esperando generación de llaves criptográficas...
+                Esperando datos...
               </div>
             </div>
           )}
@@ -834,20 +803,16 @@ export const P12GeneratorView: React.FC<P12GeneratorViewProps> = ({
           <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
             <h3 className="text-xs font-bold text-slate-900 mb-3 flex items-center gap-2 uppercase tracking-wider">
               <Laptop className="w-4 h-4 text-blue-600" />
-              Requisitos de Firma Electrónica en Ecuador
+              Requisitos en Ecuador
             </h3>
             <ul className="text-xs text-slate-600 space-y-2">
               <li className="flex items-start gap-2">
                 <span className="text-blue-600 font-bold">•</span>
-                <span><strong>Formato Oficial:</strong> PKCS#12 (.p12) protegido con clave simétrica.</span>
+                <span><strong>Formato:</strong> Archivo .p12 protegido con clave.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-blue-600 font-bold">•</span>
-                <span><strong>Estándar Criptográfico:</strong> RSA 2048-bits con hashing SHA-256.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 font-bold">•</span>
-                <span><strong>Uso en Trámites:</strong> Facturación electrónica SRI, Quipux, IESS, BIESS y Supercías.</span>
+                <span><strong>Trámites:</strong> Válido para SRI, Quipux y documentos electrónicos.</span>
               </li>
             </ul>
           </div>
