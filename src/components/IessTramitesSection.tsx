@@ -46,23 +46,23 @@ export const IessTramitesSection: React.FC<IessTramitesSectionProps> = ({
       {/* Breadcrumbs & Header */}
       <div className="mb-6">
         <div className="flex items-center space-x-2 text-xs font-medium text-slate-400 mb-2">
-          <span className="hover:text-slate-600 transition-colors">Servicios Ciudadanos</span>
+          <span className="hover:text-slate-600 transition-colors">Trámites</span>
           <span>/</span>
-          <span className="text-slate-700 font-semibold">Guía de Trámites IESS & BIESS</span>
+          <span className="text-slate-700 font-semibold">Guía IESS y BIESS</span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold font-display text-slate-900 tracking-tight">
-              Guía de Trámites IESS & BIESS Ecuador
+              Trámites IESS y BIESS
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-3xl">
-              Instrucciones oficiales paso a paso, requisitos vigentes, tiempos de respuesta y enlaces directos para los trámites más solicitados ante el Instituto Ecuatoriano de Seguridad Social.
+              Requisitos, pasos y enlaces para hacer tus trámites en línea.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mr-1.5"></span>
-              Portal Oficial Actualizado
+              Portal oficial
             </span>
           </div>
         </div>
@@ -90,7 +90,7 @@ export const IessTramitesSection: React.FC<IessTramitesSectionProps> = ({
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
           <input
             type="text"
-            placeholder="Buscar fondos, jubilación, citas..."
+            placeholder="Buscar trámites..."
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
@@ -147,7 +147,7 @@ export const IessTramitesSection: React.FC<IessTramitesSectionProps> = ({
                   <div>
                     <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      Requisitos Obligatorios
+                      Requisitos obligatorios
                     </h4>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-700">
                       {tramite.requirements.map((req, idx) => (
@@ -163,7 +163,7 @@ export const IessTramitesSection: React.FC<IessTramitesSectionProps> = ({
                   <div>
                     <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                       <BookOpen className="w-4 h-4 text-blue-600" />
-                      Pasos para Realizar el Trámite en Línea
+                      Pasos del trámite
                     </h4>
                     <ol className="space-y-2 text-xs text-slate-700">
                       {tramite.steps.map((step, idx) => (
@@ -194,7 +194,7 @@ export const IessTramitesSection: React.FC<IessTramitesSectionProps> = ({
                           onClick={onNavigateToP12Generator}
                           className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
                         >
-                          Generar Archivo .p12 Ahora →
+                          Generar firma (.p12) →
                         </button>
                       )}
                       <a
@@ -203,7 +203,7 @@ export const IessTramitesSection: React.FC<IessTramitesSectionProps> = ({
                         rel="noopener noreferrer"
                         className="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5"
                       >
-                        <span>Ir al Portal Oficial IESS / BIESS</span>
+                        <span>Ir al portal oficial</span>
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     </div>
@@ -220,10 +220,10 @@ export const IessTramitesSection: React.FC<IessTramitesSectionProps> = ({
         <div className="mb-6">
           <div className="inline-flex items-center gap-1.5 text-blue-600 font-bold text-xs uppercase tracking-wider mb-1">
             <HelpCircle className="w-4 h-4" />
-            Preguntas Frecuentes (FAQ)
+            Preguntas frecuentes
           </div>
           <h2 className="text-xl sm:text-2xl font-bold font-display text-slate-900">
-            Dudas Comunes sobre Firma Electrónica, IESS y BIESS
+            Preguntas y respuestas
           </h2>
         </div>
 

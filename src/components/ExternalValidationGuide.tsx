@@ -89,10 +89,10 @@ yR4j8+2X1z9g4p...
             </div>
             <div>
               <h2 className="text-base font-bold font-display text-white">
-                Guía de Validaciones en Plataformas Externas
+                Validación en programas externos
               </h2>
               <p className="text-slate-400 text-xs">
-                Adobe Acrobat Reader, FirmaEC MINTEL, Windows, macOS y Linux
+                Instrucciones para validar tus firmas
               </p>
             </div>
           </div>
@@ -114,13 +114,13 @@ yR4j8+2X1z9g4p...
               <div className="space-y-1 max-w-xl">
                 <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase tracking-wider">
                   <Award className="w-3.5 h-3.5" />
-                  Cadena de Confianza PKI
+                  Certificado de confianza
                 </div>
                 <h3 className="text-lg font-bold text-white">
-                  Instalar Certificado Raíz (CA) de Confianza
+                  Instalar certificado raíz
                 </h3>
                 <p className="text-slate-300 text-xs leading-relaxed">
-                  Para que las firmas de tus PDFs y archivos .p12 muestren el visto verde de validez en <strong>Adobe Reader</strong> y <strong>FirmaEC</strong>, descarga la CA Raíz e instálala en tu almacén local.
+                  Descarga este archivo para que tus firmas aparezcan como válidas.
                 </p>
               </div>
 
@@ -130,10 +130,10 @@ yR4j8+2X1z9g4p...
                   className="w-full md:w-auto px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Descargar CA Raíz (.crt)</span>
+                  <span>Descargar certificado (.crt)</span>
                 </button>
                 <div className="text-[10px] text-center text-slate-400 font-mono-code">
-                  Formato X.509 v3 DER/PEM (64-bit)
+                  Certificado de seguridad
                 </div>
               </div>
             </div>
@@ -142,7 +142,7 @@ yR4j8+2X1z9g4p...
             <div className="mt-4 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center gap-3">
               <label className="text-xs font-bold text-slate-300 shrink-0 flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-blue-400" />
-                Perfil de Autoridad Emisora:
+                Entidad emisora:
               </label>
               <select
                 value={selectedCa}
@@ -161,12 +161,12 @@ yR4j8+2X1z9g4p...
           {/* Navigation Tabs */}
           <div className="flex border-b border-slate-200 overflow-x-auto gap-1 text-xs font-bold">
             {[
-              { id: 'quick', label: '1. Resumen de Validación' },
-              { id: 'adobe', label: '2. Adobe Acrobat Reader' },
-              { id: 'firmaec', label: '3. FirmaEC Desktop' },
+              { id: 'quick', label: '1. Pasos básicos' },
+              { id: 'adobe', label: '2. Adobe Reader' },
+              { id: 'firmaec', label: '3. FirmaEC' },
               { id: 'windows', label: '4. Windows' },
               { id: 'mac', label: '5. macOS' },
-              { id: 'linux', label: '6. Linux / CLI' }
+              { id: 'linux', label: '6. Linux' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -185,51 +185,17 @@ yR4j8+2X1z9g4p...
           {/* TAB 1: QUICK SUMMARY */}
           {activeTab === 'quick' && (
             <div className="space-y-4 text-xs text-slate-700">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                  <h4 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>¿Por qué instalar el Certificado Raíz?</span>
-                  </h4>
-                  <p className="text-slate-600 text-[11px] leading-relaxed">
-                    Las aplicaciones de escritorio no pueden validar firmas creadas por entidades nuevas hasta que el certificado emisor (CA Raíz) esté registrado en sus almacenes de confianza. Al instalar la CA Raíz de tu certificado, el sistema verifica la firma al 100%.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                  <h4 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
-                    <Building2 className="w-4 h-4 text-blue-600" />
-                    <span>Compatibilidad con Entidades Reales</span>
-                  </h4>
-                  <p className="text-slate-600 text-[11px] leading-relaxed">
-                    Si firmas con un certificado .p12 comprado en el <strong>Banco Central del Ecuador, Security Data o UANATACA</strong>, no necesitas instalar nada adicional: las plataformas gubernamentales y Adobe lo reconocerán de forma automática.
-                  </p>
-                </div>
-              </div>
-
-              {/* Quick Checklist */}
-              <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200 space-y-3">
-                <h4 className="font-bold text-blue-950 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                  <FileCheck2 className="w-4 h-4 text-blue-600" />
-                  Lista de Comprobación de Validación
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+                <h4 className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Pasos para validar tu firma</span>
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-2xs">
-                    <span className="text-blue-600 font-extrabold text-sm block mb-1">Pass 1</span>
-                    <strong className="text-slate-900 block text-xs">Apertura en Adobe</strong>
-                    <span className="text-[10px] text-slate-500">Muestra la estampa visual y QR intactos.</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-2xs">
-                    <span className="text-blue-600 font-extrabold text-sm block mb-1">Pass 2</span>
-                    <strong className="text-slate-900 block text-xs">Escaneo de QR</strong>
-                    <span className="text-[10px] text-slate-500">Decodifica firmante, CI/RUC, fecha y entidad.</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-2xs">
-                    <span className="text-blue-600 font-extrabold text-sm block mb-1">Pass 3</span>
-                    <strong className="text-slate-900 block text-xs">Panel de Firmas</strong>
-                    <span className="text-[10px] text-slate-500">Valida la cadena con la CA Raíz importada.</span>
-                  </div>
-                </div>
+                <ol className="text-xs text-slate-600 space-y-2 list-decimal list-inside leading-relaxed">
+                  <li>Descarga el certificado de confianza con el botón de arriba.</li>
+                  <li>Instala el certificado en tu sistema o en Adobe Reader.</li>
+                  <li>Abre tu documento PDF para ver la firma con visto verde.</li>
+                  <li>Si usas una firma comprada en el Banco Central o Security Data, se reconoce de inmediato.</li>
+                </ol>
               </div>
             </div>
           )}
@@ -240,31 +206,15 @@ yR4j8+2X1z9g4p...
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                 <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                   <FileCheck2 className="w-4 h-4 text-red-600" />
-                  <span>Configuración de Confianza en Adobe Acrobat Reader DC</span>
+                  <span>Configurar Adobe Acrobat Reader</span>
                 </h4>
                 <ol className="space-y-2 list-decimal list-inside text-slate-600 text-xs leading-relaxed">
-                  <li>
-                    Abre Adobe Acrobat Reader y ve a <strong>Edición &gt; Preferencias</strong> (o <code>Cmd + ,</code> en Mac).
-                  </li>
-                  <li>
-                    En el menú lateral izquierdo, selecciona <strong>Firmas</strong>.
-                  </li>
-                  <li>
-                    En la sección <em>"Identidades y certificados de confianza"</em>, haz clic en el botón <strong>Más...</strong>
-                  </li>
-                  <li>
-                    Selecciona <strong>Certificados de confianza</strong> en la columna izquierda y haz clic en <strong>Importar</strong>.
-                  </li>
-                  <li>
-                    Haz clic en <strong>Examinar</strong>, selecciona el archivo <span className="font-mono-code font-bold text-slate-900">CA_Raiz_{profile.caCommonName.replace(/[^A-Za-z0-9]/g, '_')}.crt</span> y pulsa <em>Importar</em>.
-                  </li>
-                  <li>
-                    Haz doble clic sobre el certificado importado, ve a la pestaña <strong>Confianza</strong> y marca la casilla:
-                    <br />
-                    <span className="font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 mt-1 inline-block">
-                      ✔ Utilizar este certificado como raíz de confianza
-                    </span>
-                  </li>
+                  <li>Abre Adobe Acrobat Reader y entra en Preferencias.</li>
+                  <li>En el menú lateral izquierdo, selecciona Firmas.</li>
+                  <li>En Identidades y certificados de confianza, haz clic en Más.</li>
+                  <li>Selecciona Certificados de confianza y pulsa Importar.</li>
+                  <li>Busca el archivo de certificado descargado y pulsa Importar.</li>
+                  <li>En la pestaña Confianza, marca "Utilizar este certificado como raíz de confianza".</li>
                 </ol>
               </div>
             </div>
@@ -276,26 +226,16 @@ yR4j8+2X1z9g4p...
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                 <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
                   <Laptop className="w-4 h-4 text-blue-600" />
-                  <span>Uso y Verificación en la Suite Oficial FirmaEC (MINTEL)</span>
+                  <span>Usar la aplicación FirmaEC</span>
                 </h4>
-                <div className="space-y-3 text-xs leading-relaxed">
-                  <p>
-                    Para validar tus archivos <code>.p12</code> y PDFs firmados en el ejecutable oficial <strong>FirmaEC</strong>:
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="p-3 bg-white rounded-lg border border-slate-200">
-                      <strong className="text-slate-900 block mb-1">1. Firma con Archivo .p12:</strong>
-                      <span>Selecciona "Archivo (.p12 / .pfx)", ingresa tu clave y estampa sobre el PDF.</span>
-                    </div>
-                    <div className="p-3 bg-white rounded-lg border border-slate-200">
-                      <strong className="text-slate-900 block mb-1">2. Módulo de Verificación:</strong>
-                      <span>Abre la pestaña "Verificar Documento" en FirmaEC y arrastra el PDF firmado.</span>
-                    </div>
-                  </div>
-                  <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-[11px]">
-                    💡 <strong>Ubicación de Certificados en FirmaEC:</strong> FirmaEC almacena los certificados reconocidos en la carpeta de usuario <code>~/.firmaec/certs</code> (en Linux/Mac) o en <code>C:\Users\NombreUsuario\.firmaec\certs</code> (en Windows).
-                  </div>
-                </div>
+                <ol className="space-y-2 list-decimal list-inside text-slate-600 text-xs leading-relaxed">
+                  <li>Descarga e instala FirmaEC en tu computadora.</li>
+                  <li>Abre la pestaña Firmar Documento.</li>
+                  <li>Selecciona tu firma (.p12) y escribe tu contraseña.</li>
+                  <li>Elige tu documento PDF y ubica el sello en la página.</li>
+                  <li>Haz clic en Estampar para guardar el documento firmado.</li>
+                  <li>Si necesitas revisar documentos de otros, usa la pestaña Verificar Documento.</li>
+                </ol>
               </div>
             </div>
           )}
@@ -307,14 +247,14 @@ yR4j8+2X1z9g4p...
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
                     <Terminal className="w-4 h-4 text-blue-600" />
-                    <span>Comando de Instalación Automática en Windows (PowerShell)</span>
+                    <span>Instalación en Windows</span>
                   </h4>
                   <button
                     onClick={() => copyToClipboard(windowsCmd, 'win')}
                     className="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-[10px] hover:bg-blue-500 transition-colors flex items-center gap-1 cursor-pointer"
                   >
                     {copiedCmd === 'win' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedCmd === 'win' ? '¡Copiado!' : 'Copiar Comando'}</span>
+                    <span>{copiedCmd === 'win' ? '¡Copiado!' : 'Copiar comando'}</span>
                   </button>
                 </div>
 
@@ -323,7 +263,7 @@ yR4j8+2X1z9g4p...
                 </div>
 
                 <p className="text-[11px] text-slate-500">
-                  Ejecuta PowerShell como Administrador en la misma carpeta donde descargaste el archivo <code>CA_Raiz.crt</code>.
+                  Abre PowerShell como administrador en la carpeta donde descargaste el certificado.
                 </p>
               </div>
             </div>
@@ -336,14 +276,14 @@ yR4j8+2X1z9g4p...
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
                     <Terminal className="w-4 h-4 text-slate-800" />
-                    <span>Comando de Instalación Automática en macOS (Terminal)</span>
+                    <span>Instalación en macOS</span>
                   </h4>
                   <button
                     onClick={() => copyToClipboard(macCmd, 'mac')}
                     className="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-[10px] hover:bg-blue-500 transition-colors flex items-center gap-1 cursor-pointer"
                   >
                     {copiedCmd === 'mac' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedCmd === 'mac' ? '¡Copiado!' : 'Copiar Comando'}</span>
+                    <span>{copiedCmd === 'mac' ? '¡Copiado!' : 'Copiar comando'}</span>
                   </button>
                 </div>
 
@@ -352,7 +292,7 @@ yR4j8+2X1z9g4p...
                 </div>
 
                 <p className="text-[11px] text-slate-500">
-                  Acepta la confirmación de la contraseña de administrador de tu Mac.
+                  Ingresa tu contraseña de usuario en la terminal si el sistema te la pide.
                 </p>
               </div>
             </div>
@@ -365,14 +305,14 @@ yR4j8+2X1z9g4p...
                 <div className="flex items-center justify-between">
                   <h4 className="font-bold text-slate-900 text-xs flex items-center gap-1.5">
                     <Terminal className="w-4 h-4 text-purple-600" />
-                    <span>Comando de Instalación en Linux (Ubuntu / Debian / RedHat)</span>
+                    <span>Instalación en Linux</span>
                   </h4>
                   <button
                     onClick={() => copyToClipboard(linuxCmd, 'linux')}
                     className="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-[10px] hover:bg-blue-500 transition-colors flex items-center gap-1 cursor-pointer"
                   >
                     {copiedCmd === 'linux' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedCmd === 'linux' ? '¡Copiado!' : 'Copiar Comando'}</span>
+                    <span>{copiedCmd === 'linux' ? '¡Copiado!' : 'Copiar comando'}</span>
                   </button>
                 </div>
 
@@ -388,7 +328,7 @@ yR4j8+2X1z9g4p...
         <div className="bg-slate-50 border-t border-slate-200 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Infraestructura PKI Ecuador X.509 v3 / ISO 32000-1</span>
+            <span>Firma electrónica para Ecuador</span>
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -397,7 +337,7 @@ yR4j8+2X1z9g4p...
               className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer w-full sm:w-auto"
             >
               <Download className="w-4 h-4" />
-              <span>Descargar CA Raíz (.crt)</span>
+              <span>Descargar certificado (.crt)</span>
             </button>
             {onClose && (
               <button

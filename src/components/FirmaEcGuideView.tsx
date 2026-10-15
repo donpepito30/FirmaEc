@@ -25,17 +25,17 @@ export const FirmaEcGuideView: React.FC = () => {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center space-x-2 text-xs font-semibold text-slate-400 mb-2">
-          <span>Infraestructura PKI Ecuador</span>
+          <span>Firma electrónica</span>
           <span>/</span>
-          <span className="text-blue-600 font-bold">Guía Técnica & Normativa Oficial</span>
+          <span className="text-blue-600 font-bold">Guía oficial</span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-display">
-              Guía Técnica de FirmaEC & Estándares Digitales
+              Guía de firma electrónica
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-3xl">
-              Manual operativo, configuración de almacén de certificados en Java y Adobe Acrobat, y marco legal de la Ley de Comercio Electrónico de la República del Ecuador.
+              Aprende a usar tu firma y validar tus documentos en tu equipo.
             </p>
           </div>
         </div>
@@ -44,10 +44,10 @@ export const FirmaEcGuideView: React.FC = () => {
       {/* Navigation Pills */}
       <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6 border-b border-slate-200">
         {[
-          { id: 'desktop', label: 'Uso con Software FirmaEC Desktop', icon: Terminal },
-          { id: 'trust', label: 'Instalación de CA Raíz en Sistema Operativo', icon: ShieldCheck },
-          { id: 'pki', label: 'Formatos: Archivo .p12 vs Token USB', icon: Cpu },
-          { id: 'legal', label: 'Marco Legal & Validez Probatoria', icon: BookOpen }
+          { id: 'desktop', label: 'Uso en FirmaEC', icon: Terminal },
+          { id: 'trust', label: 'Instalar certificado raíz', icon: ShieldCheck },
+          { id: 'pki', label: 'Archivo vs Token', icon: Cpu },
+          { id: 'legal', label: 'Marco legal', icon: BookOpen }
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -73,33 +73,43 @@ export const FirmaEcGuideView: React.FC = () => {
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Terminal className="w-5 h-5 text-blue-600" />
-              <span>Cómo usar tu archivo .p12 en la aplicación oficial FirmaEC (MINTEL)</span>
+              <span>Pasos para usar FirmaEC</span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              <strong>FirmaEC</strong> es el software oficial desarrollado por el Ministerio de Telecomunicaciones y de la Sociedad de la Información (MINTEL) de la República del Ecuador para firmar y verificar documentos PDF y XML (comprobantes electrónicos SRI).
+              FirmaEC es la aplicación oficial del MINTEL para firmar documentos en Ecuador.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               {[
                 {
                   step: '01',
-                  title: 'Descargar .p12 y CA',
-                  desc: 'Genera o descarga tu archivo con extensión .p12 y la contraseña configurada desde nuestro portal.'
+                  title: 'Instala FirmaEC',
+                  desc: 'Descarga e instala la aplicación oficial desde el sitio del MINTEL.'
                 },
                 {
                   step: '02',
-                  title: 'Abrir FirmaEC Desktop',
-                  desc: 'Inicia la aplicación FirmaEC en tu equipo (Windows, macOS o Linux). Asegúrate de tener Java 8+ instalado.'
+                  title: 'Abre la aplicación',
+                  desc: 'Inicia FirmaEC y ve a la pestaña Firmar Documento.'
                 },
                 {
                   step: '03',
-                  title: 'Seleccionar Modo Archivo',
-                  desc: 'En la pestaña "Firmar Documento", marca la opción "Archivo (.p12 / .pfx)" y selecciona tu archivo.'
+                  title: 'Elige tu archivo',
+                  desc: 'Selecciona la opción Archivo y busca tu firma (.p12).'
                 },
                 {
                   step: '04',
-                  title: 'Ingresar Contraseña & Estampar',
-                  desc: 'Escribe tu contraseña, selecciona el documento PDF, ubica la estampa visual en la vista previa y pulsa "Estampar".'
+                  title: 'Ingresa tu clave',
+                  desc: 'Escribe tu contraseña y selecciona tu documento PDF.'
+                },
+                {
+                  step: '05',
+                  title: 'Ubica la firma',
+                  desc: 'Elige la página y acomoda el sello en la vista previa.'
+                },
+                {
+                  step: '06',
+                  title: 'Estampa y guarda',
+                  desc: 'Haz clic en Estampar para guardar el documento firmado.'
                 }
               ].map((s) => (
                 <div key={s.step} className="p-4 rounded-xl bg-slate-50 border border-slate-200">
@@ -115,20 +125,16 @@ export const FirmaEcGuideView: React.FC = () => {
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Requisitos Técnicos del Software FirmaEC</span>
+                <span>Requisitos del sistema</span>
               </h3>
               <ul className="text-xs text-slate-600 space-y-2">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-600 font-bold">•</span>
-                  <span><strong>Java Runtime Environment (JRE):</strong> Versión 1.8 o superior (Oracle JRE u OpenJDK).</span>
+                  <span>Java 8 o superior instalado en tu equipo.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-600 font-bold">•</span>
-                  <span><strong>Algoritmo Criptográfico:</strong> RSA con longitud mínima de 2048 bits y digest SHA-256.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-600 font-bold">•</span>
-                  <span><strong>Extensiones X.509 v3:</strong> Digital Signature y Key Encipherment requeridos.</span>
+                  <span>Tu archivo de firma (.p12) y contraseña.</span>
                 </li>
               </ul>
             </div>
@@ -136,10 +142,10 @@ export const FirmaEcGuideView: React.FC = () => {
             <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <ExternalLink className="w-4 h-4 text-blue-600" />
-                <span>Enlaces Oficiales de Descarga FirmaEC</span>
+                <span>Descarga oficial</span>
               </h3>
               <p className="text-xs text-slate-600">
-                Puedes obtener el instalador oficial y actualizado directamente desde los repositorios del MINTEL:
+                Obtén el instalador oficial desde el portal del MINTEL.
               </p>
               <div className="space-y-2">
                 <a
@@ -148,7 +154,7 @@ export const FirmaEcGuideView: React.FC = () => {
                   rel="noreferrer"
                   className="flex items-center justify-between p-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 text-xs font-bold transition-colors"
                 >
-                  <span>Portal Oficial Firma Digital MINTEL</span>
+                  <span>Portal de firma MINTEL</span>
                   <ExternalLink className="w-4 h-4 text-blue-600" />
                 </a>
               </div>
@@ -163,41 +169,41 @@ export const FirmaEcGuideView: React.FC = () => {
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-600" />
-              <span>Instalación del Certificado de Entidad Emisora (CA Raíz)</span>
+              <span>Instalar certificado raíz</span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Para que los lectores de PDF como Adobe Acrobat Reader, Foxit o el navegador muestren el distintivo <strong>"Firma Válida e Íntegra"</strong> con el visto verde en lugar de una advertencia de emisor desconocido, debes registrar el certificado de la Autoridad Certificadora (CA) en el almacén de confianza de tu equipo.
+              Registra el certificado en tu equipo para que tus firmas muestren el visto verde.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <h3 className="font-bold text-slate-900 text-xs">En Windows 10 / 11</h3>
+                <h3 className="font-bold text-slate-900 text-xs">Windows</h3>
                 <ol className="text-[11px] text-slate-600 space-y-1 list-decimal list-inside leading-relaxed">
-                  <li>Haz doble clic en el archivo <strong>CA_Raiz.crt</strong> descargado.</li>
-                  <li>Pulsa en <strong>"Instalar certificado..."</strong>.</li>
-                  <li>Selecciona <em>"Equipo local"</em> o <em>"Usuario actual"</em>.</li>
-                  <li>Elige <strong>"Colocar todos los certificados en el siguiente almacén"</strong>.</li>
-                  <li>Selecciona <strong>"Entidades de certificación raíz de confianza"</strong> y finaliza.</li>
+                  <li>Haz doble clic en el archivo descargado.</li>
+                  <li>Pulsa en "Instalar certificado".</li>
+                  <li>Elige "Usuario actual" o "Equipo local".</li>
+                  <li>Selecciona "Entidades de certificación raíz de confianza".</li>
+                  <li>Haz clic en Finalizar para completar la instalación.</li>
                 </ol>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <h3 className="font-bold text-slate-900 text-xs">En macOS</h3>
+                <h3 className="font-bold text-slate-900 text-xs">macOS</h3>
                 <ol className="text-[11px] text-slate-600 space-y-1 list-decimal list-inside leading-relaxed">
-                  <li>Abre la aplicación <strong>Acceso a Llaveros (Keychain Access)</strong>.</li>
-                  <li>Arrastra el archivo <strong>CA_Raiz.crt</strong> a la pestaña <em>"Sistema"</em>.</li>
+                  <li>Abre la aplicación Acceso a Llaveros.</li>
+                  <li>Arrastra el archivo a la pestaña Sistema.</li>
                   <li>Haz doble clic sobre el certificado importado.</li>
-                  <li>Despliega la sección <strong>"Confiar"</strong> y selecciona <em>"Confiar siempre"</em>.</li>
+                  <li>En la sección Confiar, elige "Confiar siempre".</li>
                 </ol>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                <h3 className="font-bold text-slate-900 text-xs">En Adobe Acrobat Reader</h3>
+                <h3 className="font-bold text-slate-900 text-xs">Adobe Acrobat Reader</h3>
                 <ol className="text-[11px] text-slate-600 space-y-1 list-decimal list-inside leading-relaxed">
-                  <li>Ve a <strong>Edición &gt; Preferencias &gt; Firmas</strong>.</li>
-                  <li>En <em>"Identidades y certificados de confianza"</em>, pulsa <strong>Más...</strong></li>
-                  <li>Ve a <em>"Certificados de confianza"</em> e importa el archivo CRT.</li>
-                  <li>Marca la casilla <strong>"Utilizar este certificado como raíz de confianza"</strong>.</li>
+                  <li>Ve a Preferencias y selecciona Firmas.</li>
+                  <li>En Identidades y certificados, pulsa Más.</li>
+                  <li>Importa el certificado descargado.</li>
+                  <li>Marca "Utilizar este certificado como raíz de confianza".</li>
                 </ol>
               </div>
             </div>
@@ -215,22 +221,22 @@ export const FirmaEcGuideView: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 uppercase">
-                  Más Popular
+                  Más usado
                 </span>
-                <h3 className="text-base font-bold text-slate-900 mt-1">Archivo Software (.p12 / .pfx)</h3>
+                <h3 className="text-base font-bold text-slate-900 mt-1">Archivo (.p12)</h3>
               </div>
               <ul className="text-xs text-slate-600 space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Se almacena como archivo en tu computador, celular o servidor.</span>
+                  <span>Guárdalo en tu computador o celular.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Ideal para <strong>Facturación Electrónica SRI</strong>, Quipux y firma de PDFs.</span>
+                  <span>Sirve para facturas del SRI y firmar PDFs.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Fácil respaldo y portabilidad protegida por contraseña AES/3DES.</span>
+                  <span>Protegido con tu contraseña personal.</span>
                 </li>
               </ul>
             </div>
@@ -241,22 +247,22 @@ export const FirmaEcGuideView: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-800 uppercase">
-                  Máxima Seguridad
+                  Alta seguridad
                 </span>
-                <h3 className="text-base font-bold text-slate-900 mt-1">Token USB Criptográfico</h3>
+                <h3 className="text-base font-bold text-slate-900 mt-1">Token USB</h3>
               </div>
               <ul className="text-xs text-slate-600 space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Dispositivo físico de hardware con certificación FIPS 140-2 Nivel 3.</span>
+                  <span>Dispositivo físico de alta seguridad.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>La clave privada nunca puede ser extraída ni copiada del chip.</span>
+                  <span>La clave no sale del dispositivo.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Requerido para trámites aduaneros VUE / SENAE y comercio exterior.</span>
+                  <span>Requerido para aduana y comercio exterior.</span>
                 </li>
               </ul>
             </div>
@@ -267,22 +273,22 @@ export const FirmaEcGuideView: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800 uppercase">
-                  Acceso Remoto
+                  Remoto
                 </span>
-                <h3 className="text-base font-bold text-slate-900 mt-1">Firma en la Nube (Cloud HSM)</h3>
+                <h3 className="text-base font-bold text-slate-900 mt-1">Firma en la nube</h3>
               </div>
               <ul className="text-xs text-slate-600 space-y-2">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Alojada en módulos de seguridad HSM de la entidad certificadora.</span>
+                  <span>Alojada en servidores de la entidad emisora.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Permite firmar desde cualquier dispositivo con autenticación 2FA/OTP.</span>
+                  <span>Firma desde cualquier equipo con tu clave.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Ideal para empresas con múltiples firmantes o sistemas web centralizados.</span>
+                  <span>Ideal para empresas con varios firmantes.</span>
                 </li>
               </ul>
             </div>
@@ -296,28 +302,28 @@ export const FirmaEcGuideView: React.FC = () => {
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
             <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-blue-600" />
-              <span>Marco Legal Ecuatoriano: Ley de Comercio Electrónico (R.O. 557)</span>
+              <span>Ley de Comercio Electrónico</span>
             </h2>
             
             <div className="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
               <div className="p-4 rounded-xl bg-slate-50 border-l-4 border-blue-600 space-y-1">
-                <h4 className="font-bold text-slate-900">Artículo 13.- Concepto de Firma Electrónica</h4>
+                <h4 className="font-bold text-slate-900">Artículo 13.- Firma electrónica</h4>
                 <p className="text-slate-600 text-xs">
-                  "Son los datos en forma electrónica consignados en un mensaje de datos, o adjuntados o lógicamente asociados al mismo, que puedan ser utilizados para identificar al titular de la firma en relación con el mensaje de datos, e indicar la aprobación del titular de la información contenida en el mensaje de datos."
+                  Identifica al titular y confirma su aprobación sobre el documento.
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 border-l-4 border-emerald-600 space-y-1">
-                <h4 className="font-bold text-slate-900">Artículo 14.- Efectos y Validez de la Firma Electrónica</h4>
+                <h4 className="font-bold text-slate-900">Artículo 14.- Validez jurídica</h4>
                 <p className="text-slate-600 text-xs">
-                  "La firma electrónica tendrá igual validez y se le reconocerán los mismos efectos jurídicos que a una firma manuscrita en relación con los datos consignados en documentos escritos, y será admitida como prueba en juicio."
+                  Tiene el mismo valor jurídico que la firma manuscrita y sirve como prueba en juicio.
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-50 border-l-4 border-amber-600 space-y-1">
-                <h4 className="font-bold text-slate-900">Artículo 17.- Extinción del Certificado de Firma</h4>
+                <h4 className="font-bold text-slate-900">Artículo 17.- Extinción</h4>
                 <p className="text-slate-600 text-xs">
-                  "El certificado de firma electrónica quedará extinguido por: expiración del plazo de validez, revocación por parte de la entidad de certificación, o solicitud voluntaria del titular."
+                  Se extingue al expirar su plazo, por revocación o por renuncia del titular.
                 </p>
               </div>
             </div>

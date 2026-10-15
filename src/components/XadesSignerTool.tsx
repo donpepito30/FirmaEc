@@ -140,7 +140,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
 
       setSignedResult(result);
     } catch (err: any) {
-      setSigningError(err?.message || 'Error al firmar el XML con XAdES-BES.');
+      setSigningError(err?.message || 'Error al firmar el comprobante XML.');
     } finally {
       setIsSigning(false);
     }
@@ -171,14 +171,14 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Estándar Oficial SRI Ecuador (XAdES-BES)</span>
+            <span>Comprobantes SRI Ecuador</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
             <FileCode className="w-7 h-7 text-emerald-600" />
-            Firmador XML para Comprobantes Electrónicos SRI
+            Firmador de facturas SRI
           </h2>
           <p className="text-sm text-slate-600 mt-1">
-            Firma facturación electrónica, retenciones, notas de crédito y guías de remisión cumpliendo la especificación W3C XMLDSig / ETSI XAdES.
+            Firma tus facturas, retenciones y notas de crédito para el SRI.
           </p>
         </div>
 
@@ -187,7 +187,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
           className="self-start md:self-auto inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition"
         >
           <Code className="w-4 h-4" />
-          <span>Cargar XML Ejemplo SRI (Factura)</span>
+          <span>Cargar factura de ejemplo</span>
         </button>
       </div>
 
@@ -196,22 +196,22 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
         <div className="lg:col-span-7 space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-800 flex items-center justify-between">
-              <span>Contenido XML del Comprobante SRI:</span>
-              <span className="text-xs font-normal text-slate-500">Formato UTF-8 sin firmar</span>
+              <span>Contenido XML del comprobante:</span>
+              <span className="text-xs font-normal text-slate-500">Sin firmar</span>
             </label>
             <textarea
               value={xmlText}
               onChange={(e) => setXmlText(e.target.value)}
               rows={12}
               className="w-full font-mono text-xs bg-slate-900 text-emerald-400 p-4 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-y"
-              placeholder="Pegue aquí el contenido XML del comprobante SRI..."
+              placeholder="Pega aquí el XML de tu comprobante..."
             />
           </div>
 
           {/* Config Data */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <div>
-              <label className="text-xs font-semibold text-slate-700">Nombre del Firmante:</label>
+              <label className="text-xs font-semibold text-slate-700">Tu nombre:</label>
               <input
                 type="text"
                 value={signerName}
@@ -220,7 +220,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-700">Cédula o RUC del Emisor:</label>
+              <label className="text-xs font-semibold text-slate-700">Cédula o RUC:</label>
               <input
                 type="text"
                 value={idNumber}
@@ -233,7 +233,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
           {/* Optional P12 custom upload */}
           <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
             <span className="text-xs font-bold text-slate-800 block">
-              Certificado Digital PKCS#12 (.p12 / .pfx):
+              Tu firma electrónica (.p12):
             </span>
             <div className="flex flex-col sm:flex-row gap-3">
               <input
@@ -244,7 +244,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
               />
               <input
                 type="password"
-                placeholder="Contraseña del .p12"
+                placeholder="Contraseña"
                 value={p12Password}
                 onChange={(e) => setP12Password(e.target.value)}
                 className="px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
@@ -253,7 +253,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
             {unlockedKeys && !p12File && (
               <div className="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Usando certificado activo en sesión.</span>
+                <span>Usando tu firma guardada.</span>
               </div>
             )}
           </div>
@@ -267,12 +267,12 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
             {isSigning ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Generando Estructura XAdES-BES para SRI...</span>
+                <span>Firmando comprobante...</span>
               </>
             ) : (
               <>
                 <ShieldCheck className="w-5 h-5" />
-                <span>Firmar Comprobante XML (XAdES-BES)</span>
+                <span>Firmar comprobante XML</span>
               </>
             )}
           </button>
@@ -292,7 +292,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
               <div className="flex items-center justify-between pb-4 border-b border-slate-800">
                 <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
                   <CheckCircle2 className="w-5 h-5" />
-                  <span>Comprobante Firmado Exitosamente</span>
+                  <span>Comprobante firmado con éxito</span>
                 </div>
                 <span className="text-[10px] px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50">
                   {signedResult.sriDocumentType}
@@ -302,17 +302,17 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
               {/* Technical breakdown */}
               <div className="space-y-3 text-xs">
                 <div className="bg-slate-800/70 p-3 rounded-lg border border-slate-700 space-y-1.5">
-                  <span className="text-slate-400 font-semibold block">Identificador de Firma XAdES:</span>
+                  <span className="text-slate-400 font-semibold block">Código de la firma:</span>
                   <span className="font-mono text-emerald-300 font-bold">{signedResult.signatureId}</span>
                 </div>
 
                 <div className="bg-slate-800/70 p-3 rounded-lg border border-slate-700 space-y-1.5">
-                  <span className="text-slate-400 font-semibold block">Marca de Tiempo ISO 8601:</span>
+                  <span className="text-slate-400 font-semibold block">Fecha y hora:</span>
                   <span className="font-mono text-slate-200">{signedResult.signedTime}</span>
                 </div>
 
                 <div className="bg-slate-800/70 p-3 rounded-lg border border-slate-700 space-y-1.5">
-                  <span className="text-slate-400 font-semibold block">Digest SHA-256 del XML Original:</span>
+                  <span className="text-slate-400 font-semibold block">Resumen del documento:</span>
                   <span className="font-mono text-[10px] text-slate-300 break-all">{signedResult.sha256DocumentDigestHex}</span>
                 </div>
               </div>
@@ -324,7 +324,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
                   className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/30"
                 >
                   <Download className="w-4 h-4" />
-                  <span>Descargar XML Firmado para SRI</span>
+                  <span>Descargar XML firmado</span>
                 </button>
 
                 <button
@@ -332,7 +332,7 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
                   className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs rounded-xl transition flex items-center justify-center gap-2"
                 >
                   {copiedXml ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                  <span>{copiedXml ? '¡Copiado al Portapapeles!' : 'Copiar XML Firmado Completo'}</span>
+                  <span>{copiedXml ? '¡Copiado!' : 'Copiar XML firmado'}</span>
                 </button>
               </div>
             </div>
@@ -342,9 +342,9 @@ export const XadesSignerTool: React.FC<XadesSignerToolProps> = ({ initialP12Pem 
                 <FileCode className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-800 text-sm">Listo para Firmar XML SRI</h3>
+                <h3 className="font-bold text-slate-800 text-sm">Listo para firmar</h3>
                 <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-                  El resultado generará la estructura <code className="text-emerald-700">&lt;ds:Signature&gt;</code> con extensiones ETSI XAdES-BES para validación directa en el portal del SRI.
+                  Tu comprobante quedará listo para enviarlo al portal del SRI.
                 </p>
               </div>
             </div>

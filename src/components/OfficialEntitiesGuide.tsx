@@ -32,21 +32,21 @@ export const OfficialEntitiesGuide: React.FC = () => {
         <div className="flex items-center space-x-2 text-xs font-medium text-slate-400 mb-2">
           <span className="hover:text-slate-600 transition-colors">Entidades</span>
           <span>/</span>
-          <span className="text-slate-700 font-semibold">Autoridades de Certificación Acreditadas</span>
+          <span className="text-slate-700 font-semibold">Entidades acreditadas</span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold font-display text-slate-900 tracking-tight">
-              Entidades Acreditadas por ARCOTEL
+              Entidades autorizadas en Ecuador
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-3xl">
-              Para que su firma electrónica tenga <strong className="text-slate-800">plena validez jurídica vinculante</strong> en el SRI (producción), Quipux, IESS y ámbito legal en Ecuador.
+              Emisores de firma válidos para el SRI, Quipux e IESS.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Ley de Comercio Electrónico EC
+              Entidades oficiales
             </span>
           </div>
         </div>
@@ -56,19 +56,19 @@ export const OfficialEntitiesGuide: React.FC = () => {
       <div className="bg-slate-900 rounded-xl p-6 text-white mb-8 border border-slate-800 shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
           <div className="space-y-1">
-            <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">Costo Promedio (1 Año)</span>
+            <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">Costo promedio anual</span>
             <p className="text-lg font-bold font-display text-white">$15.00 a $22.00 + IVA</p>
-            <p className="text-slate-400 text-[11px]">En formato archivo (.p12) descargable al instante.</p>
+            <p className="text-slate-400 text-[11px]">En archivo (.p12) descargable.</p>
           </div>
           <div className="space-y-1">
-            <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">Tiempo de Emisión</span>
+            <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">Tiempo de entrega</span>
             <p className="text-lg font-bold font-display text-emerald-400">15 Minutos a 24 Horas</p>
-            <p className="text-slate-400 text-[11px]">100% en línea mediante validación biométrica con cámara.</p>
+            <p className="text-slate-400 text-[11px]">Trámite en línea con tu cámara.</p>
           </div>
           <div className="space-y-1">
-            <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">Requisitos Principales</span>
+            <span className="text-slate-400 font-bold uppercase text-[10px] tracking-wider block">Requisitos básicos</span>
             <p className="text-lg font-bold font-display text-white">Cédula + Selfie / RUC</p>
-            <p className="text-slate-400 text-[11px]">Foto clara de cédula o pasaporte y verificación facial en vivo.</p>
+            <p className="text-slate-400 text-[11px]">Foto de tu cédula y verificación facial.</p>
           </div>
         </div>
       </div>
@@ -82,7 +82,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
               filterType === 'Todos' ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
             }`}
           >
-            Todas las Entidades
+            Todas
           </button>
           <button
             onClick={() => setFilterType('Público')}
@@ -90,7 +90,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
               filterType === 'Público' ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
             }`}
           >
-            Sector Público (BCE / Judicatura)
+            Públicas
           </button>
           <button
             onClick={() => setFilterType('Privado')}
@@ -98,7 +98,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
               filterType === 'Privado' ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
             }`}
           >
-            Sector Privado (Entrega Rápida)
+            Privadas
           </button>
         </div>
 
@@ -106,7 +106,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
           <input
             type="text"
-            placeholder="Buscar entidad o uso..."
+            placeholder="Buscar entidad..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
@@ -146,7 +146,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500 flex items-center gap-1">
                     <DollarSign className="w-3.5 h-3.5 text-slate-400" />
-                    Precio 1 Año (.p12):
+                    Precio anual:
                   </span>
                   <span className="font-bold text-slate-900">{entity.price1Year}</span>
                 </div>
@@ -154,7 +154,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500 flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    Tiempo de Entrega:
+                    Tiempo de entrega:
                   </span>
                   <span className="font-semibold text-emerald-700">{entity.issuanceTime}</span>
                 </div>
@@ -172,7 +172,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
 
               <div className="space-y-1.5 mb-4">
                 <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
-                  Requisitos Principales:
+                  Requisitos:
                 </span>
                 <ul className="text-[11px] text-slate-600 space-y-1">
                   {entity.requirements.slice(0, 3).map((req, idx) => (
@@ -192,7 +192,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
                 rel="noopener noreferrer"
                 className="w-full py-2.5 px-3 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs transition-colors flex items-center justify-center gap-1.5 border border-blue-200"
               >
-                <span>Solicitar Firma en {entity.name.split(' ')[0]}</span>
+                <span>Solicitar firma en {entity.name.split(' ')[0]}</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>
@@ -203,7 +203,7 @@ export const OfficialEntitiesGuide: React.FC = () => {
       {/* Step-by-Step Guide on How to Apply */}
       <div className="mt-10 bg-slate-50 rounded-xl p-6 sm:p-8 border border-slate-200">
         <h2 className="text-base sm:text-lg font-bold text-slate-900 font-display mb-4">
-          Guía Paso a Paso: Cómo Solicitar tu Firma Electrónica Oficial en Ecuador
+          Cómo solicitar tu firma
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
@@ -211,9 +211,9 @@ export const OfficialEntitiesGuide: React.FC = () => {
             <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center mb-2">
               1
             </div>
-            <h4 className="font-bold text-slate-900 mb-1">Elegir Entidad y Formato</h4>
+            <h4 className="font-bold text-slate-900 mb-1">Elige entidad y formato</h4>
             <p className="text-slate-600">
-              Selecciona una entidad acreditada (ej. Banco Central o Security Data) y elige el formato <strong>Archivo (.p12)</strong> para máxima comodidad en celulares y computadoras.
+              Selecciona una entidad acreditada y pide tu firma en archivo (.p12) para usarla en tu computador o celular.
             </p>
           </div>
 
@@ -221,9 +221,9 @@ export const OfficialEntitiesGuide: React.FC = () => {
             <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center mb-2">
               2
             </div>
-            <h4 className="font-bold text-slate-900 mb-1">Llenar Formulario y Subir Cédula</h4>
+            <h4 className="font-bold text-slate-900 mb-1">Llena tus datos</h4>
             <p className="text-slate-600">
-              Ingresa tus datos personales (nombres, cédula, correo, RUC si aplica) y adjunta fotos nítidas de ambos lados de tu cédula o pasaporte.
+              Ingresa tus datos personales y adjunta fotos claras de tu documento de identidad.
             </p>
           </div>
 
@@ -231,9 +231,9 @@ export const OfficialEntitiesGuide: React.FC = () => {
             <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center mb-2">
               3
             </div>
-            <h4 className="font-bold text-slate-900 mb-1">Validación Biométrica</h4>
+            <h4 className="font-bold text-slate-900 mb-1">Verificación facial</h4>
             <p className="text-slate-600">
-              Realiza la prueba de vida mirando a la cámara web de tu teléfono o laptop para comprobar que eres el titular legítimo del documento.
+              Mira a la cámara de tu teléfono o computador para confirmar tu identidad.
             </p>
           </div>
 
@@ -241,9 +241,9 @@ export const OfficialEntitiesGuide: React.FC = () => {
             <div className="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center mb-2">
               4
             </div>
-            <h4 className="font-bold text-slate-900 mb-1">Descargar Archivo .p12</h4>
+            <h4 className="font-bold text-slate-900 mb-1">Descarga tu firma</h4>
             <p className="text-slate-600">
-              Recibirás un enlace por correo electrónico para descargar tu archivo <strong>.p12</strong> y establecer tu contraseña definitiva.
+              Recibe el enlace en tu correo para descargar el archivo (.p12) y crea tu contraseña.
             </p>
           </div>
         </div>

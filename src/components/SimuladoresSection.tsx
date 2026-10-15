@@ -45,18 +45,18 @@ export const SimuladoresSection: React.FC = () => {
 
   if (aniosAporte >= 40) {
     cumpleRequisitosJubilacion = true;
-    motivoRequisito = 'Cumple: 40 o más años de aportes (sin límite de edad).';
+    motivoRequisito = 'Cumples con 40 o más años de aportes.';
   } else if (edad >= 60 && aniosAporte >= 30) {
     cumpleRequisitosJubilacion = true;
-    motivoRequisito = 'Cumple: Mínimo 60 años de edad y 30 años de aportes (360 imposiciones).';
+    motivoRequisito = 'Cumples con la edad (60+) y 30 años de aportes.';
   } else if (edad >= 65 && aniosAporte >= 15) {
     cumpleRequisitosJubilacion = true;
-    motivoRequisito = 'Cumple: Mínimo 65 años de edad y 15 años de aportes (180 imposiciones).';
+    motivoRequisito = 'Cumples con la edad (65+) y 15 años de aportes.';
   } else if (edad >= 70 && aniosAporte >= 10) {
     cumpleRequisitosJubilacion = true;
-    motivoRequisito = 'Cumple: Mínimo 70 años de edad y 10 años de aportes (120 imposiciones).';
+    motivoRequisito = 'Cumples con la edad (70+) y 10 años de aportes.';
   } else {
-    motivoRequisito = `No cumple los requisitos mínimos de edad (${edad} años) y aportes (${aniosAporte} años) para jubilación ordinaria.`;
+    motivoRequisito = 'Aún no cumples la edad o los años de aporte necesarios.';
   }
 
   // Tabla oficial de coeficientes de pensión por años de aporte
@@ -94,23 +94,23 @@ export const SimuladoresSection: React.FC = () => {
       {/* Breadcrumbs & Header */}
       <div className="mb-6">
         <div className="flex items-center space-x-2 text-xs font-medium text-slate-400 mb-2">
-          <span className="hover:text-slate-600 transition-colors">Seguridad Social</span>
+          <span className="hover:text-slate-600 transition-colors">Simuladores</span>
           <span>/</span>
-          <span className="text-slate-700 font-semibold">Simuladores y Calculadoras</span>
+          <span className="text-slate-700 font-semibold">Calculadoras IESS</span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold font-display text-slate-900 tracking-tight">
-              Simuladores Financieros IESS / BIESS
+              Calculadoras IESS y BIESS
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm mt-1 max-w-3xl">
-              Cálculo de cuotas de créditos quirografarios, proyección de pensión de jubilación ordinaria y desglose de aportes patronales y personales.
+              Calcula tus cuotas de préstamos, tu pensión estimada y tus aportes mensuales.
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mr-1.5"></span>
-              Tasas Oficiales 2026
+              Valores referenciales
             </span>
           </div>
         </div>
@@ -127,7 +127,7 @@ export const SimuladoresSection: React.FC = () => {
           }`}
         >
           <DollarSign className="w-4 h-4" />
-          Préstamo Quirografario BIESS
+          Préstamo quirografario
         </button>
 
         <button
@@ -139,7 +139,7 @@ export const SimuladoresSection: React.FC = () => {
           }`}
         >
           <TrendingUp className="w-4 h-4" />
-          Calculadora de Jubilación IESS
+          Jubilación estimada
         </button>
 
         <button
@@ -151,7 +151,7 @@ export const SimuladoresSection: React.FC = () => {
           }`}
         >
           <PiggyBank className="w-4 h-4" />
-          Desglose de Aportes al IESS
+          Aportes mensuales
         </button>
       </div>
 
@@ -162,17 +162,17 @@ export const SimuladoresSection: React.FC = () => {
             <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-blue-600" />
-                Parámetros de Solicitud
+                Datos del préstamo
               </h3>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
-                Tasa 11.85% Anual
+                Tasa 11.85% anual
               </span>
             </div>
 
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Sueldo Mensual de Aportación ($ USD)
+                  Tu sueldo mensual ($)
                 </label>
                 <input
                   type="number"
@@ -182,13 +182,13 @@ export const SimuladoresSection: React.FC = () => {
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-sm font-bold font-mono-code focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 />
                 <span className="text-[11px] text-slate-500 mt-1 block">
-                  Capacidad máxima de endeudamiento mensual (50%): <strong>${capacidadMaximaCuota.toFixed(2)}</strong>
+                  Cuota máxima recomendada (50%): <strong>${capacidadMaximaCuota.toFixed(2)}</strong>
                 </span>
               </div>
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Fondos de Reserva y Cesantía Disponibles ($ USD)
+                  Tus fondos disponibles ($)
                 </label>
                 <input
                   type="number"
@@ -198,13 +198,13 @@ export const SimuladoresSection: React.FC = () => {
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 text-sm font-bold font-mono-code focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 />
                 <span className="text-[11px] text-slate-500 mt-1 block">
-                  Monto máximo garantizado por tus fondos (95%): <strong>${montoMaximoGarantia.toFixed(2)}</strong>
+                  Garantía disponible (95%): <strong>${montoMaximoGarantia.toFixed(2)}</strong>
                 </span>
               </div>
 
               <div>
                 <div className="flex justify-between text-xs font-bold text-slate-700 mb-1">
-                  <span>Monto que Deseas Solicitar ($ USD)</span>
+                  <span>Monto a solicitar ($)</span>
                   <span className="text-blue-600 font-mono-code font-bold">${montoSolicitado}</span>
                 </div>
                 <input
@@ -221,33 +221,33 @@ export const SimuladoresSection: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Plazo en Meses
+                    Plazo
                   </label>
                   <select
                     value={plazoMeses}
                     onChange={(e) => setPlazoMeses(Number(e.target.value))}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   >
-                    <option value={6}>6 Meses (Medio año)</option>
-                    <option value={12}>12 Meses (1 Año)</option>
-                    <option value={24}>24 Meses (2 Años)</option>
-                    <option value={36}>36 Meses (3 Años)</option>
-                    <option value={48}>48 Meses (4 Años)</option>
-                    <option value={60}>60 Meses (5 Años)</option>
+                    <option value={6}>6 meses</option>
+                    <option value={12}>12 meses</option>
+                    <option value={24}>24 meses</option>
+                    <option value={36}>36 meses</option>
+                    <option value={48}>48 meses</option>
+                    <option value={60}>60 meses</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Amortización
+                    Tipo de cuota
                   </label>
                   <select
                     value={sistemaAmortizacion}
                     onChange={(e) => setSistemaAmortizacion(e.target.value as any)}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   >
-                    <option value="francesa">Francesa (Cuota Fija)</option>
-                    <option value="alemana">Alemana (Cuota Decreciente)</option>
+                    <option value="francesa">Cuota fija (Francesa)</option>
+                    <option value="alemana">Cuota decreciente (Alemana)</option>
                   </select>
                 </div>
               </div>
@@ -258,28 +258,28 @@ export const SimuladoresSection: React.FC = () => {
           <div className="lg:col-span-6 space-y-6">
             <div className="bg-slate-900 rounded-xl p-6 text-white border border-slate-800 shadow-sm">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
-                Resultado de la Simulación BIESS
+                Tu cuota estimada
               </span>
 
               <div className="mb-6">
-                <span className="text-xs text-slate-400 block">Cuota Mensual Estimada:</span>
+                <span className="text-xs text-slate-400 block">Pagas cada mes:</span>
                 <span className="text-3xl sm:text-4xl font-bold font-display text-emerald-400">
                   ${cuotaFrancesa.toFixed(2)}
                 </span>
-                <span className="text-xs text-slate-400 ml-2">/ mes ({plazoMeses} cuotas)</span>
+                <span className="text-xs text-slate-400 ml-2">/ mes ({plazoMeses} meses)</span>
               </div>
 
               <div className="space-y-2 text-xs border-t border-slate-800 pt-4 text-slate-300">
                 <div className="flex justify-between py-1 border-b border-slate-800/80">
-                  <span className="text-slate-400">Monto del Capital Solicitado:</span>
+                  <span className="text-slate-400">Monto del crédito:</span>
                   <span className="font-bold text-white font-mono-code">${montoSolicitado.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-800/80">
-                  <span className="text-slate-400">Total de Intereses Estimados (11.85% anual):</span>
+                  <span className="text-slate-400">Intereses estimados:</span>
                   <span className="font-bold text-amber-400 font-mono-code">${totalInteresesFrancesa.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-slate-800/80">
-                  <span className="text-slate-400">Total Final a Devolver:</span>
+                  <span className="text-slate-400">Total a pagar:</span>
                   <span className="font-bold text-emerald-400 font-mono-code">${totalPagarFrancesa.toFixed(2)}</span>
                 </div>
               </div>
@@ -288,12 +288,12 @@ export const SimuladoresSection: React.FC = () => {
                 {esCuotaValida ? (
                   <div className="flex items-center gap-2 text-emerald-400">
                     <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                    <span>Tu cuota está dentro del límite permitido del 50% de tu sueldo (${capacidadMaximaCuota.toFixed(2)}).</span>
+                    <span>Tu cuota está dentro de tu límite de pago (${capacidadMaximaCuota.toFixed(2)}).</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 text-rose-400">
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>Atención: El monto o cuota supera tu capacidad de pago o tu garantía disponible. Reduce el monto o amplía el plazo.</span>
+                    <span>El monto o cuota supera tu límite. Reduce el monto o amplía el plazo.</span>
                   </div>
                 )}
               </div>
